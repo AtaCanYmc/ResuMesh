@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Project } from '../types';
 import axios from 'axios';
-import { Github, Star, GitFork, Loader2 } from 'lucide-react';
+import { Code, Star, GitFork, Loader2 } from 'lucide-react';
 
 export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -85,7 +85,7 @@ export default function Projects() {
               </h3>
               {project.github_url && (
                 <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white">
-                  <Github size={20} />
+                  <Code size={20} />
                 </a>
               )}
             </div>
