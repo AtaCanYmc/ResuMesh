@@ -29,12 +29,20 @@ def setup_postgres(request):
 
     # Set up DB connection and schema
     db_url = postgres.get_connection_url()
-    # Replace +psycopg2 with asyncpg if needed, or just use sync engine for setup
+    # Create the sync engine for the testcontainer
     engine = create_engine(db_url)
+
+    # Crucially, override the app's global engine
+    # and SessionLocal to point to the testcontainer!
+    import app.config.database as db_module
+
+    db_module.engine = engine
+    db_module.SessionLocal.configure(bind=engine)
+
     Base.metadata.create_all(bind=engine)
 
     # Set environment variable so the app uses this DB
-    os.environ["DATABASE_URL"] = db_url.replace("psycopg2", "asyncpg")
+    os.environ["DATABASE_URL"] = db_url
 
 
 @pytest.mark.asyncio
