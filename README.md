@@ -15,14 +15,10 @@ ResuMesh is a self-hosted, dynamic portfolio hub designed for modern developers.
 
 It features a lightning-fast **Global Search Bar** for recruiters to filter your skills instantly and an **AI-driven CV Generator** that scrapes job descriptions and generates a tailored, high-impact resume based on your actual career data.
 
-### 🌟 Key Features
+## 📂 Project Structure & Component READMEs
 
-- 🔄 **Asynchronous Data Ingestion:** Automated nightly cron jobs that parse GitHub repositories, Medium XML RSS feeds, and Dev.to articles.
-- 🔍 **Instant Global Search:** Multi-table text-search filtering across projects, articles, certificates, and experiences powered by PostgreSQL GIN and B-Tree indexes.
-- 🤖 **Agnostic AI Resume Builder:** Built-in LLM integration via **LangChain** that automatically matches your background with scraped job postings to generate contextual Markdown/PDFs. Thanks to the Factory Pattern, you can seamlessly switch between **OpenAI**, **Groq**, **Ollama (Local)**, or a **Mock Provider** for testing.
-- 🔐 **Bulletproof Security:** Secured admin dashboards powered by OAuth2 JWT authentication, rigorous CORS policies, and rate-limiting (Throttling) mechanisms via `slowapi`.
-- 📊 **Structured Logging Pool:** A dedicated database log sink (accessible via `/admin`) to monitor background synchronization health, AI token usage, and system events directly from the UI.
-- 🐳 **Dockerized Infrastructure:** Frontend, Backend, and Databases are containerized and orchestrated seamlessly using Docker Compose.
+- [/backend](./backend): FastAPI architecture, Database providers, Alembic migrations, AI CV Generator, and Pytest suite.
+- [/frontend](./frontend): React + TypeScript client, Vite configuration, Tailwind CSS design system, and Oxlint rules.
 
 ---
 
@@ -76,23 +72,12 @@ graph TD
 
 ---
 
-## 🛠️ Tech Stack
-
-- **Backend:** Python, FastAPI, SQLAlchemy ORM, APScheduler, Slowapi (Rate Limiting), PyJWT, LangChain, Jinja2 (Prompt Templates).
-- **Frontend:** React (Vite), Tailwind CSS v4, Lucide React, Axios.
-- **Database:** Agnostic Repository Pattern supporting **PostgreSQL** (with `JSONB` and array containment querying) and **MongoDB** (for logs/NoSQL usage).
-- **DevOps:** Docker, Docker Compose, GitHub Actions (CI/CD), NGINX.
-
----
-
-## 🚀 Getting Started
+## 🚀 Global Docker Setup
 
 ### Prerequisites
 
 Before running the project locally, ensure you have the following installed:
 - Docker and Docker Compose
-- Node.js 20+ (If running frontend outside Docker)
-- Python 3.11+ (If running backend outside Docker)
 
 ### Installation & Setup
 
@@ -109,7 +94,7 @@ Before running the project locally, ensure you have the following installed:
    # Add your API keys to the backend environment variables or docker-compose.yml
    ```
 
-3. **Run with Docker Compose (Recommended):**
+3. **Run with Docker Compose:**
    ```bash
    docker-compose up --build -d
    ```
@@ -119,21 +104,14 @@ Before running the project locally, ensure you have the following installed:
 
 ---
 
-## 🧪 Running Tests
+## 🤝 Contributing & Code Quality
 
-To execute the asynchronous test suite, run the following command inside the `backend` directory:
-
+Before submitting a pull request, make sure to install the **pre-commit** hooks to ensure consistent code styling:
 ```bash
-cd backend
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-PYTHONPATH=. pytest -v
+pip install pre-commit
+pre-commit install
 ```
-
----
-
-## 🤝 Contributing
+This will automatically check linting rules on every commit.
 
 Contributions are welcome! Please check our [Contributing Guidelines](CONTRIBUTING.md) for details on how to submit a Pull Request, our code styling rules, and conventional commit standards.
 

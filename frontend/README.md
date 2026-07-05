@@ -1,16 +1,60 @@
-# React + Vite
+# 🖥️ ResuMesh - Client Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+This is the frontend user interface for ResuMesh, designed as a modern dark-themed single-page application (SPA) using **React**, **Vite**, and **TypeScript**.
 
-Currently, two official plugins are available:
+## 🛠️ Tech Stack & Tooling
+- **Build Tool:** Vite (Ultra-fast Hot Module Replacement)
+- **Language:** TypeScript (`StrictMode` enforced)
+- **Styling:** Tailwind CSS + Lucide React Icons
+- **Linter:** Oxlint (High-performance JS/TS linter)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Local Development Setup
 
-## React Compiler
+### Prerequisites
+- Node.js 18+
+- npm or yarn
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Installation Steps
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
 
-## Expanding the Oxlint configuration
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+3. Create your local configuration by copying `.env.example`:
+   ```bash
+   cp .env.example .env.local
+   ```
+
+4. Start the Vite development server:
+   ```bash
+   npm run dev
+   ```
+
+Open `http://localhost:5173` in your browser.
+
+## 📂 Codebase Architecture
+
+* `/src/components`: Atomic and reusable UI primitives (e.g., `SearchBar.tsx`).
+* `/src/pages`: Higher-level views and route components (e.g., `AdminDashboard.jsx`).
+* `/src/assets`: Static visuals and global design vectors.
+
+## 🧹 Linting and Formatting
+
+To maintain optimal code quality and lightning-fast static analysis, we use **Oxlint**. You can audit the codebase by running:
+
+```bash
+npx oxlint
+```
+
+## 🤝 Contributing & Code Quality
+Before submitting a pull request, make sure to install the **pre-commit** hooks to ensure consistent code styling:
+```bash
+pip install pre-commit
+pre-commit install
+```
+This will automatically check linting rules on every commit.
