@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 from app.db.base import ProjectRepository
 from app.schemas.system_log import SystemLogCreate
 
-logger = logging.getLogger("StackEcho")
+logger = logging.getLogger("ResuMesh")
 
 
 class LogService:

@@ -1,4 +1,4 @@
-name: StackEcho Backend CI
+name: ResuMesh Backend CI
 
 on:
   push:

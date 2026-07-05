@@ -26,7 +26,7 @@ class IngestionService:
         url = f"https://api.github.com/users/{username}/repos?per_page=100&sort=updated"
 
         async with httpx.AsyncClient() as client:
-            response = await client.get(url, headers={"User-Agent": "StackEcho-App"})
+            response = await client.get(url, headers={"User-Agent": "ResuMesh-App"})
             if response.status_code != 200:
                 await LogService.warning(
                     log_provider,

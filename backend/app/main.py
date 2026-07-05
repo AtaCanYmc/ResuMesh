@@ -20,7 +20,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="StackEcho API",
+    title="ResuMesh API",
     description="Açık Kaynak Akıllı Portfolyo ve CV Yönetim Sistemi",
     version="1.0.0",
     lifespan=lifespan,
