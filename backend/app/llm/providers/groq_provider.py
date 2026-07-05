@@ -4,6 +4,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_groq import ChatGroq
 
 from app.llm.base import LLMProvider
+from app.services.template_service import TemplateService
 
 
 class GroqProvider(LLMProvider):
@@ -18,23 +19,11 @@ class GroqProvider(LLMProvider):
             temperature=0.3,
         )
 
-        self.prompt = PromptTemplate(
-            input_variables=["job_description", "user_context"],
-            template="""
-You are an expert career consultant and CV writer.
-I will provide you with a Job Description and a User Context containing all their projects, articles, experiences, and certificates.
-
-Job Description:
-{job_description}
-
-User Context:
-{user_context}
-
-Your task is to generate a tailored, professional CV in Markdown format.
-Highlight the experiences, projects, and skills from the User Context that best match the Job Description.  # noqa: E501
-Do not invent any information. Only use the facts provided in the User Context.
-The output should only contain the Markdown CV, without any conversational filler.
-""",
+        template_str = TemplateService.get_template_content(
+            "prompts/cv_generator.jinja2"
+        )
+        self.prompt = PromptTemplate.from_template(
+            template_str, template_format="jinja2"
         )
 
         self.chain = self.prompt | self.llm
