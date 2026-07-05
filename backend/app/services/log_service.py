@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Dict, Optional
 
-from app.db.base import ProjectRepository
+from app.db.base import ISystemLogRepository
 from app.schemas.system_log import SystemLogCreate
 
 logger = logging.getLogger("ResuMesh")
@@ -10,7 +10,7 @@ logger = logging.getLogger("ResuMesh")
 class LogService:
     @staticmethod
     async def log(
-        log_provider: ProjectRepository,
+        log_provider: ISystemLogRepository,
         level: str,
         module: str,
         message: str,
@@ -38,7 +38,7 @@ class LogService:
 
     @staticmethod
     async def info(
-        log_provider: ProjectRepository,
+        log_provider: ISystemLogRepository,
         module: str,
         message: str,
         details: Optional[Dict[str, Any]] = None,
@@ -47,7 +47,7 @@ class LogService:
 
     @staticmethod
     async def error(
-        log_provider: ProjectRepository,
+        log_provider: ISystemLogRepository,
         module: str,
         message: str,
         details: Optional[Dict[str, Any]] = None,
@@ -56,7 +56,7 @@ class LogService:
 
     @staticmethod
     async def warning(
-        log_provider: ProjectRepository,
+        log_provider: ISystemLogRepository,
         module: str,
         message: str,
         details: Optional[Dict[str, Any]] = None,

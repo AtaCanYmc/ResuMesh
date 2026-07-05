@@ -1,10 +1,30 @@
 import pytest
 
+from app.main import app
 from app.schemas.system_log import SystemLogCreate
+from app.services.auth_service import get_current_admin
+
+
+async def override_get_current_admin():
+    return {"username": "admin", "role": "admin"}
+
+
+@pytest.fixture
+def auth_override():
+    app.dependency_overrides[get_current_admin] = override_get_current_admin
+    yield
+    app.dependency_overrides.pop(get_current_admin, None)
 
 
 @pytest.mark.asyncio
-async def test_get_system_logs(client, mock_provider):
+async def test_unauthorized_access_to_logs(client):
+    # Without auth override, this should fail with 401
+    response = await client.get("/api/v1/admin/logs")
+    assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_get_system_logs(client, mock_provider, auth_override):
     # Seed some logs
     await mock_provider.create_log(
         SystemLogCreate(level="INFO", module="TEST", message="Msg 1")
@@ -21,7 +41,7 @@ async def test_get_system_logs(client, mock_provider):
 
 
 @pytest.mark.asyncio
-async def test_get_system_logs_filtered(client, mock_provider):
+async def test_get_system_logs_filtered(client, mock_provider, auth_override):
     await mock_provider.create_log(
         SystemLogCreate(level="INFO", module="TEST", message="Msg 1")
     )
@@ -37,7 +57,7 @@ async def test_get_system_logs_filtered(client, mock_provider):
 
 
 @pytest.mark.asyncio
-async def test_generate_cv(client, monkeypatch):
+async def test_generate_cv(client, monkeypatch, auth_override):
     # Mock ScraperService to avoid network call
     async def mock_scrape(url):
         return "We are looking for a Python developer with FastAPI experience."

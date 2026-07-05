@@ -1,11 +1,26 @@
-from app.db.base import ProjectRepository
+from app.db.base import (
+    IArticleRepository,
+    ICertificateRepository,
+    IExperienceRepository,
+    IProjectRepository,
+)
 from app.llm.base import LLMProvider
 from app.services.scraper_service import ScraperService
 
 
 class CVGeneratorService:
-    def __init__(self, db_provider: ProjectRepository, llm_provider: LLMProvider):
-        self.db = db_provider
+    def __init__(
+        self,
+        project_repo: IProjectRepository,
+        experience_repo: IExperienceRepository,
+        article_repo: IArticleRepository,
+        cert_repo: ICertificateRepository,
+        llm_provider: LLMProvider,
+    ):
+        self.project_repo = project_repo
+        self.experience_repo = experience_repo
+        self.article_repo = article_repo
+        self.cert_repo = cert_repo
         self.llm = llm_provider
 
     async def generate_tailored_cv(self, job_url: str) -> str:
@@ -13,10 +28,10 @@ class CVGeneratorService:
         job_description = await ScraperService.scrape_job_description(job_url)
 
         # 2. Assemble context from DB
-        projects = await self.db.get_projects(limit=10)
-        experiences = await self.db.get_all_experiences()
-        articles = await self.db.get_all_articles()
-        certificates = await self.db.get_all_certificates()
+        projects = await self.project_repo.get_projects(limit=10)
+        experiences = await self.experience_repo.get_all_experiences()
+        articles = await self.article_repo.get_all_articles()
+        certificates = await self.cert_repo.get_all_certificates()
 
         context_lines = []
 

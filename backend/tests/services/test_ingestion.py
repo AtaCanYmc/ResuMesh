@@ -1,11 +1,12 @@
-from unittest.mock import AsyncMock, patch
-
 import pytest
+import respx
+from httpx import Response
 
 from app.services.ingestion_service import IngestionService
 
 
 @pytest.mark.asyncio
+@respx.mock
 async def test_fetch_github_repos_success(mock_provider):
     mock_response = [
         {
@@ -20,19 +21,14 @@ async def test_fetch_github_repos_success(mock_provider):
         }
     ]
 
-    from unittest.mock import MagicMock
+    respx.get("https://api.github.com/users/test_user/repos").mock(
+        return_value=Response(200, json=mock_response)
+    )
 
-    mock_response_obj = MagicMock()
-    mock_response_obj.status_code = 200
-    mock_response_obj.json.return_value = mock_response
+    await IngestionService.fetch_github_repos("test_user", mock_provider)
 
-    with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
-        mock_get.return_value = mock_response_obj
-
-        await IngestionService.fetch_github_repos("test_user", mock_provider)
-
-        projects = await mock_provider.get_projects()
-        assert len(projects) == 1
-        assert projects[0].title == "ResuMesh"
-        assert projects[0].stars == 10
-        assert "Python" in projects[0].languages
+    projects = await mock_provider.get_projects()
+    assert len(projects) == 1
+    assert projects[0].title == "ResuMesh"
+    assert projects[0].stars == 10
+    assert "Python" in projects[0].languages

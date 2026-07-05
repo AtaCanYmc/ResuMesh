@@ -5,8 +5,20 @@ from pydantic import BaseModel, HttpUrl
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from app.db.base import IProjectRepository, ISystemLogRepository
-from app.db.dependencies import get_project_repo, get_system_log_repo
+from app.db.base import (
+    IArticleRepository,
+    ICertificateRepository,
+    IExperienceRepository,
+    IProjectRepository,
+    ISystemLogRepository,
+)
+from app.db.dependencies import (
+    get_article_repo,
+    get_certificate_repo,
+    get_experience_repo,
+    get_project_repo,
+    get_system_log_repo,
+)
 from app.llm.factory import get_llm_provider
 from app.services.auth_service import get_current_admin
 from app.services.cv_generator_service import CVGeneratorService
@@ -25,12 +37,17 @@ class CVGenerateRequest(BaseModel):
 async def generate_cv(
     request: Request,
     payload: CVGenerateRequest,
-    provider: IProjectRepository = Depends(get_project_repo),
+    project_repo: IProjectRepository = Depends(get_project_repo),
+    experience_repo: IExperienceRepository = Depends(get_experience_repo),
+    article_repo: IArticleRepository = Depends(get_article_repo),
+    cert_repo: ICertificateRepository = Depends(get_certificate_repo),
     admin=Depends(get_current_admin),
 ):
     try:
         llm_provider = get_llm_provider()
-        cv_service = CVGeneratorService(provider, llm_provider)
+        cv_service = CVGeneratorService(
+            project_repo, experience_repo, article_repo, cert_repo, llm_provider
+        )
 
         cv_markdown = await cv_service.generate_tailored_cv(str(payload.job_url))
 
