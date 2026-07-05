@@ -206,6 +206,15 @@ class MockProvider(ProjectRepository):
             certificates=certificates,
         )
 
+    async def get_all_experiences(self) -> List[ExperienceResponse]:
+        return self.experiences
+
+    async def get_all_articles(self) -> List[ArticleResponse]:
+        return self.articles
+
+    async def get_all_certificates(self) -> List[CertificateResponse]:
+        return self.certificates
+
 
 @pytest.fixture(scope="session")
 def event_loop():

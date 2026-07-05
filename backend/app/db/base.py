@@ -69,3 +69,15 @@ class ProjectRepository(ABC):
     @abstractmethod
     async def global_search(self, query: str) -> GlobalSearchResponse:
         pass
+
+    @abstractmethod
+    async def get_all_experiences(self) -> List[ExperienceResponse]:
+        pass
+
+    @abstractmethod
+    async def get_all_articles(self) -> List[ArticleResponse]:
+        pass
+
+    @abstractmethod
+    async def get_all_certificates(self) -> List[CertificateResponse]:
+        pass

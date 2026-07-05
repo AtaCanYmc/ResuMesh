@@ -361,3 +361,30 @@ class MongoProvider(ProjectRepository):
             experiences=experiences,
             certificates=certificates,
         )
+
+    async def get_all_experiences(self) -> List[ExperienceResponse]:
+        cursor = self.db.experiences.find().sort("start_date", -1)
+        experiences = await cursor.to_list(length=100)
+        result = []
+        for e in experiences:
+            e.pop("_id", None)
+            result.append(ExperienceResponse(**e))
+        return result
+
+    async def get_all_articles(self) -> List[ArticleResponse]:
+        cursor = self.db.articles.find().sort("published_at", -1)
+        articles = await cursor.to_list(length=100)
+        result = []
+        for a in articles:
+            a.pop("_id", None)
+            result.append(ArticleResponse(**a))
+        return result
+
+    async def get_all_certificates(self) -> List[CertificateResponse]:
+        cursor = self.db.certificates.find().sort("issue_date", -1)
+        certificates = await cursor.to_list(length=100)
+        result = []
+        for c in certificates:
+            c.pop("_id", None)
+            result.append(CertificateResponse(**c))
+        return result

@@ -34,3 +34,26 @@ async def test_get_system_logs_filtered(client, mock_provider):
     data = response.json()
     assert data["total"] == 1
     assert data["data"][0]["level"] == "ERROR"
+
+
+@pytest.mark.asyncio
+async def test_generate_cv(client, monkeypatch):
+    # Mock ScraperService to avoid network call
+    async def mock_scrape(url):
+        return "We are looking for a Python developer with FastAPI experience."
+
+    from app.services.scraper_service import ScraperService
+
+    monkeypatch.setattr(ScraperService, "scrape_job_description", mock_scrape)
+
+    # Force LLM Provider to be mock
+    monkeypatch.setenv("LLM_PROVIDER", "mock")
+
+    response = await client.post(
+        "/api/v1/admin/generate-cv", json={"job_url": "https://example.com/job"}
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert "Mock CV" in data["cv_markdown"]
