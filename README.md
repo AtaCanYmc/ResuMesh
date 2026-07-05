@@ -96,7 +96,7 @@ Before running the project locally, ensure you have the following installed:
 
 3. **Run with Docker Compose:**
    ```bash
-   docker-compose up --build -d
+   docker compose up --build -d
    ```
    - The UI will be available at `http://localhost:3000`
    - The API will be available at `http://localhost:8000` (or `/api` via NGINX)
