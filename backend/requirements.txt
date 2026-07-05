@@ -17,7 +17,7 @@ apscheduler==3.10.4
 passlib[bcrypt]>=1.7.4
 bcrypt==4.0.1
 pyjwt>=2.8.0
-slowapi>=0.1.9
+slowapi>=0.1.10
 
 # Scraping & AI
 beautifulsoup4>=4.12.3
