@@ -5,6 +5,7 @@ from app.schemas.article import ArticleCreate, ArticleResponse
 from app.schemas.certificate import CertificateCreate, CertificateResponse
 from app.schemas.experience import ExperienceCreate, ExperienceResponse
 from app.schemas.project import ProjectCreate, ProjectResponse
+from app.schemas.search import SearchResponse
 from app.schemas.system_log import SystemLogCreate, SystemLogResponse
 
 
@@ -63,4 +64,8 @@ class ProjectRepository(ABC):
     async def get_logs_count(
         self, level: Optional[str] = None, module: Optional[str] = None
     ) -> int:
+        pass
+
+    @abstractmethod
+    async def global_search(self, query: str) -> List[SearchResponse]:
         pass

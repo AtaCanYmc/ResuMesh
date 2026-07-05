@@ -10,6 +10,7 @@ from app.schemas.article import ArticleCreate, ArticleResponse
 from app.schemas.certificate import CertificateCreate, CertificateResponse
 from app.schemas.experience import ExperienceCreate, ExperienceResponse
 from app.schemas.project import ProjectCreate, ProjectResponse
+from app.schemas.search import SearchResponse
 from app.schemas.system_log import SystemLogCreate, SystemLogResponse
 
 
@@ -219,3 +220,81 @@ class MongoProvider(ProjectRepository):
             query["module"] = module.upper()
 
         return await self.db.system_logs.count_documents(query)
+
+    async def global_search(self, query: str) -> List[SearchResponse]:
+        results = []
+        regex_query = {"$regex": query, "$options": "i"}
+
+        # Search Projects
+        projects = await self.db.projects.find(
+            {
+                "$or": [
+                    {"name": regex_query},
+                    {"description": regex_query},
+                    {"technologies": regex_query},
+                ]
+            }
+        ).to_list(length=100)
+        for p in projects:
+            results.append(
+                SearchResponse(
+                    id=str(p.get("id", p.get("_id"))),
+                    type="project",
+                    title=p.get("name", ""),
+                    description=p.get("description"),
+                    url=p.get("github_url") or p.get("homepage_url"),
+                )
+            )
+
+        # Search Articles
+        articles = await self.db.articles.find(
+            {"$or": [{"title": regex_query}, {"description": regex_query}]}
+        ).to_list(length=100)
+        for a in articles:
+            results.append(
+                SearchResponse(
+                    id=str(a.get("id", a.get("_id"))),
+                    type="article",
+                    title=a.get("title", ""),
+                    description=a.get("description"),
+                    url=a.get("url"),
+                )
+            )
+
+        # Search Experiences
+        experiences = await self.db.experiences.find(
+            {
+                "$or": [
+                    {"title": regex_query},
+                    {"company_name": regex_query},
+                    {"description": regex_query},
+                ]
+            }
+        ).to_list(length=100)
+        for e in experiences:
+            results.append(
+                SearchResponse(
+                    id=str(e.get("id", e.get("_id"))),
+                    type="experience",
+                    title=f"{e.get('title')} at {e.get('company_name')}",
+                    description=e.get("description"),
+                    url=e.get("company_url"),
+                )
+            )
+
+        # Search Certificates
+        certificates = await self.db.certificates.find(
+            {"$or": [{"name": regex_query}, {"issuing_organization": regex_query}]}
+        ).to_list(length=100)
+        for c in certificates:
+            results.append(
+                SearchResponse(
+                    id=str(c.get("id", c.get("_id"))),
+                    type="certificate",
+                    title=c.get("name", ""),
+                    description=f"Issued by {c.get('issuing_organization')}",
+                    url=c.get("credential_url"),
+                )
+            )
+
+        return results

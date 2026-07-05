@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.config.database import Base, SessionLocal, engine
@@ -13,6 +14,7 @@ from app.schemas.article import ArticleCreate, ArticleResponse
 from app.schemas.certificate import CertificateCreate, CertificateResponse
 from app.schemas.experience import ExperienceCreate, ExperienceResponse
 from app.schemas.project import ProjectCreate, ProjectResponse
+from app.schemas.search import SearchResponse
 from app.schemas.system_log import SystemLogCreate, SystemLogResponse
 
 
@@ -157,3 +159,100 @@ class PostgresProvider(ProjectRepository):
             if module:
                 query = query.filter(SystemLog.module == module.upper())
             return query.count()
+
+    async def global_search(self, query: str) -> List[SearchResponse]:
+        results = []
+        search_term = f"%{query}%"
+
+        with self._get_session() as db:
+            # Search Projects
+            projects = (
+                db.query(Project)
+                .filter(
+                    or_(
+                        Project.name.ilike(search_term),
+                        Project.description.ilike(search_term),
+                        Project.technologies.ilike(search_term),
+                    )
+                )
+                .all()
+            )
+            for p in projects:
+                results.append(
+                    SearchResponse(
+                        id=str(p.id),
+                        type="project",
+                        title=p.name,
+                        description=p.description,
+                        url=p.github_url or p.homepage_url,
+                    )
+                )
+
+            # Search Articles
+            articles = (
+                db.query(Article)
+                .filter(
+                    or_(
+                        Article.title.ilike(search_term),
+                        Article.description.ilike(search_term),
+                    )
+                )
+                .all()
+            )
+            for a in articles:
+                results.append(
+                    SearchResponse(
+                        id=str(a.id),
+                        type="article",
+                        title=a.title,
+                        description=a.description,
+                        url=a.url,
+                    )
+                )
+
+            # Search Experiences
+            experiences = (
+                db.query(Experience)
+                .filter(
+                    or_(
+                        Experience.title.ilike(search_term),
+                        Experience.company_name.ilike(search_term),
+                        Experience.description.ilike(search_term),
+                    )
+                )
+                .all()
+            )
+            for e in experiences:
+                results.append(
+                    SearchResponse(
+                        id=str(e.id),
+                        type="experience",
+                        title=f"{e.title} at {e.company_name}",
+                        description=e.description,
+                        url=e.company_url,
+                    )
+                )
+
+            # Search Certificates
+            certificates = (
+                db.query(Certificate)
+                .filter(
+                    or_(
+                        Certificate.name.ilike(search_term),
+                        Certificate.issuing_organization.ilike(search_term),
+                    )
+                )
+                .all()
+            )
+            for c in certificates:
+                results.append(
+                    SearchResponse(
+                        id=str(c.id),
+                        type="certificate",
+                        title=c.name,
+                        description=f"Issued by {c.issuing_organization}",
+                        url=c.credential_url,
+                    )
+                )
+
+        return results

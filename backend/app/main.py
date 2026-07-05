@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import admin, projects
+from app.routers import admin, projects, search
 from app.schedulers.sync_scheduler import scheduler, start_scheduler
 
 
@@ -35,6 +35,7 @@ app.add_middleware(
 # Include routers
 app.include_router(projects.router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1")
+app.include_router(search.router, prefix="/api/v1")
 
 
 @app.get("/")
