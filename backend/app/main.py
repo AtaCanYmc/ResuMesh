@@ -1,12 +1,26 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import projects
+from app.schedulers.sync_scheduler import scheduler, start_scheduler
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Uygulama başlarken: Zamanlayıcıyı çalıştır
+    start_scheduler()
+    yield
+    # Uygulama kapanırken: Zamanlayıcıyı güvenli kapat
+    scheduler.shutdown()
+
 
 app = FastAPI(
-    title="ResuMesh API",
-    description="API for personal portfolio and CV generation",
-    version="0.1.0"
+    title="StackEcho API",
+    description="Açık Kaynak Akıllı Portfolyo ve CV Yönetim Sistemi",
+    version="1.0.0",
+    lifespan=lifespan,
 )
 
 # Configure CORS for frontend
@@ -25,6 +39,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(projects.router)
+
 
 @app.get("/")
 def read_root():

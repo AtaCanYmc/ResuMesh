@@ -1,6 +1,8 @@
-from pydantic import BaseModel, HttpUrl, Field
-from typing import List, Optional, Any, Dict
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field, HttpUrl
+
 
 class ProjectBase(BaseModel):
     title: str
@@ -13,8 +15,10 @@ class ProjectBase(BaseModel):
     tags: List[str] = Field(default_factory=list)
     raw_github_data: Optional[Dict[str, Any]] = None
 
+
 class ProjectCreate(ProjectBase):
     pass
+
 
 class ProjectResponse(ProjectBase):
     id: str
