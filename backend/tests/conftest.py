@@ -204,6 +204,24 @@ class MockSearchRepository(ISearchRepository):
                     )
                 )
 
+        for a in MOCK_DB_STATE["articles"]:
+            if (q in a.title.lower()) or (a.summary and q in a.summary.lower()):
+                url_val = str(a.url) if a.url else None
+                articles.append(
+                    SearchResultItem(
+                        id=a.id,
+                        title=a.title,
+                        subtitle=a.summary[:100] if a.summary else None,
+                        url=url_val,
+                        tags=[],
+                        date=(
+                            a.published_at.strftime("%Y-%m-%d")
+                            if a.published_at
+                            else None
+                        ),
+                    )
+                )
+
         return GlobalSearchResponse(
             query=query,
             projects=projects,
@@ -240,6 +258,9 @@ class MockProviderWrapper:
 
     async def get_logs(self, **kwargs):
         return await self.log_repo.get_logs(**kwargs)
+
+    async def create_article(self, article):
+        return await self.article_repo.create_article(article)
 
 
 @pytest.fixture(scope="session")

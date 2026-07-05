@@ -4,20 +4,26 @@ import pytest
 from sqlalchemy import create_engine
 from testcontainers.postgres import PostgresContainer
 
+from app.config.database import Base
 from app.db.providers.postgres_provider import PostgresSearchRepository
-from app.models.base import Base
 
-# Set up test container for PostgreSQL
-postgres = PostgresContainer("postgres:15-alpine")
+# Will be initialized in fixture
+postgres = None
 
 
 @pytest.fixture(scope="module", autouse=True)
 def setup_postgres(request):
     """Start PostgreSQL container and create tables"""
-    postgres.start()
+    try:
+        global postgres
+        postgres = PostgresContainer("postgres:15-alpine")
+        postgres.start()
+    except Exception as e:
+        pytest.skip(f"Docker is not available or container failed to start: {e}")
 
     def remove_container():
-        postgres.stop()
+        if postgres:
+            postgres.stop()
 
     request.addfinalizer(remove_container)
 
