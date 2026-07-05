@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.0.0...v1.1.0) (2026-07-05)
+
+
+### Features
+
+* enhance search functionality and improve PostgreSQL container setup in tests ([d74d58f](https://github.com/AtaCanYmc/ResuMesh/commit/d74d58fe107e1274fdf88808a5679e53de612bfa))
+* implement admin login and dashboard components with authentication context ([01d12e5](https://github.com/AtaCanYmc/ResuMesh/commit/01d12e5e957fe4fd27ee4e69d82e0b72d4d602e1))
+* refactor database dependency management and repository interfaces ([c323ba7](https://github.com/AtaCanYmc/ResuMesh/commit/c323ba75277f57ecf5f24a2daf3dba9ee47dbaa9))
+* refactor database repository interfaces and implement Alembic configuration ([b0e8b4f](https://github.com/AtaCanYmc/ResuMesh/commit/b0e8b4fe3448f455f36ba78f63b3c39d49de0880))
+* refactor repositories and update CV generation service to use new interfaces ([082b869](https://github.com/AtaCanYmc/ResuMesh/commit/082b8697d95b1cb4e88b8231b32c65132ff8295d))
+
 ## 1.0.0 (2026-07-05)
 
 
