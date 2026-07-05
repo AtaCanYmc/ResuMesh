@@ -1,8 +1,18 @@
-from datetime import datetime, timezone
-from typing import Any, Dict
+"""
+Ingestion Service
+==================
+Platform scraper servislerini orkestre eder ve çekilen verileri
+repository katmanı aracılığıyla veritabanına kaydeder.
 
-import feedparser
-import httpx
+Scraping mantığı bu serviste bulunmaz; her platform için ayrı
+servis sınıfları kullanılır:
+    - GitHubScraperService  → app/services/scrapers/github_scraper.py
+    - MediumScraperService  → app/services/scrapers/medium_scraper.py
+    - DevToScraperService   → app/services/scrapers/devto_scraper.py
+"""
+
+from datetime import datetime
+from typing import Any, Dict
 
 from app.db.base import (
     IArticleRepository,
@@ -11,11 +21,13 @@ from app.db.base import (
     IProjectRepository,
     ISystemLogRepository,
 )
-from app.schemas.article import ArticleCreate, ArticlePlatform
 from app.schemas.certificate import CertificateCreate
 from app.schemas.experience import ExperienceCreate
-from app.schemas.project import ProjectCreate
 from app.services.log_service import LogService
+from app.services.scrapers.devto_scraper import DevToScraperService
+from app.services.scrapers.exceptions import ScraperError
+from app.services.scrapers.github_scraper import GitHubScraperService
+from app.services.scrapers.medium_scraper import MediumScraperService
 
 
 class IngestionService:
@@ -25,45 +37,21 @@ class IngestionService:
         provider: IProjectRepository,
         log_provider: ISystemLogRepository = None,
     ):
-        """Fetches repos using GitHub REST API and saves via provider."""
+        """GitHub repolarını çeker ve provider üzerinden kaydeder."""
         if not log_provider:
             log_provider = provider
 
-        url = f"https://api.github.com/users/{username}/repos?per_page=100&sort=updated"
-
-        async with httpx.AsyncClient() as client:
-            response = await client.get(url, headers={"User-Agent": "ResuMesh-App"})
-            if response.status_code != 200:
-                await LogService.warning(
-                    log_provider,
-                    "GITHUB",
-                    f"GitHub API error: {response.status_code}",
-                    {"url": url},
-                )
-                return
-
-            repos = response.json()
-
-            for repo in repos:
-                if repo.get("fork"):
-                    continue
-
-                primary_lang = repo.get("language")
-                languages = [primary_lang] if primary_lang else []
-                tags = list(set(languages + [repo["name"].lower()]))
-
-                project = ProjectCreate(
-                    title=repo["name"],
-                    description=repo.get("description"),
-                    github_url=repo["html_url"],
-                    stars=repo["stargazers_count"],
-                    watchers=repo["watchers_count"],
-                    forks=repo["forks_count"],
-                    languages=languages,
-                    tags=tags,
-                    raw_github_data=repo,
-                )
+        try:
+            projects = await GitHubScraperService.fetch_repos(username)
+            for project in projects:
                 await provider.upsert_project(project)
+        except ScraperError as exc:
+            await LogService.warning(
+                log_provider,
+                "GITHUB",
+                f"GitHub scraper error: {exc}",
+                {"username": username, "status_code": exc.status_code},
+            )
 
     @staticmethod
     async def fetch_devto_articles(
@@ -71,65 +59,43 @@ class IngestionService:
         provider: IArticleRepository,
         log_provider: ISystemLogRepository = None,
     ):
-        """Fetches articles from Dev.to API and saves via provider."""
+        """Dev.to makalelerini çeker ve provider üzerinden kaydeder."""
         if not log_provider:
             log_provider = provider
-        url = f"https://dev.to/api/articles?username={username}"
 
-        async with httpx.AsyncClient() as client:
-            response = await client.get(url)
-            if response.status_code == 200:
-                articles = response.json()
-                for art in articles:
-                    published_at = None
-                    if art.get("published_at"):
-                        published_at = datetime.strptime(
-                            art["published_at"], "%Y-%m-%dT%H:%M:%SZ"
-                        ).replace(tzinfo=timezone.utc)
-
-                    article = ArticleCreate(
-                        title=art["title"],
-                        summary=art.get("description"),
-                        url=art["url"],
-                        platform=ArticlePlatform.DEV_TO,
-                        reading_time_minutes=art.get("reading_time_minutes", 0),
-                        published_at=published_at,
-                        raw_platform_data=art,
-                    )
-                    await provider.upsert_article(article)
+        try:
+            articles = await DevToScraperService.fetch_articles(username)
+            for article in articles:
+                await provider.upsert_article(article)
+        except ScraperError as exc:
+            await LogService.warning(
+                log_provider,
+                "DEV_TO",
+                f"Dev.to scraper error: {exc}",
+                {"username": username, "status_code": exc.status_code},
+            )
 
     @staticmethod
-    async def fetch_medium_articles(username: str, provider: IArticleRepository):
-        """Fetches Medium RSS Feed and parses using feedparser."""
-        url = f"https://medium.com/feed/@{username}"
+    async def fetch_medium_articles(
+        username: str,
+        provider: IArticleRepository,
+        log_provider: ISystemLogRepository = None,
+    ):
+        """Medium RSS makalelerini çeker ve provider üzerinden kaydeder."""
+        if not log_provider:
+            log_provider = provider
 
-        async with httpx.AsyncClient() as client:
-            response = await client.get(url)
-            if response.status_code == 200:
-                feed = feedparser.parse(response.text)
-                for entry in feed.entries:
-                    clean_url = entry.link.split("?")[0]
-
-                    published_at = None
-                    if entry.get("published_parsed"):
-                        published_at = datetime(
-                            *entry.published_parsed[:6], tzinfo=timezone.utc
-                        )
-                    else:
-                        published_at = datetime.now(timezone.utc)
-
-                    tags = [t.term for t in entry.tags] if entry.get("tags") else []
-
-                    article = ArticleCreate(
-                        title=entry.title,
-                        summary=entry.get("summary", ""),
-                        url=clean_url,
-                        platform=ArticlePlatform.MEDIUM,
-                        reading_time_minutes=0,
-                        published_at=published_at,
-                        raw_platform_data={"tags": tags},
-                    )
-                    await provider.upsert_article(article)
+        try:
+            articles = await MediumScraperService.fetch_articles(username)
+            for article in articles:
+                await provider.upsert_article(article)
+        except ScraperError as exc:
+            await LogService.warning(
+                log_provider,
+                "MEDIUM",
+                f"Medium scraper error: {exc}",
+                {"username": username, "status_code": exc.status_code},
+            )
 
     @staticmethod
     async def import_linkedin_data(
@@ -137,7 +103,7 @@ class IngestionService:
         exp_provider: IExperienceRepository,
         cert_provider: ICertificateRepository,
     ):
-        """Processes LinkedIn data package (experiences and certificates)."""
+        """LinkedIn veri paketini (deneyimler ve sertifikalar) işler."""
         if "experiences" in data:
             for exp in data["experiences"]:
                 start_date = None
