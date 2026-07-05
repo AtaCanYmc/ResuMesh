@@ -15,6 +15,7 @@ __pycache__/
 htmlcov/
 backend/.env
 backend/firebase-credentials.json
+backend/alembic/versions/*
 
 # Node / Frontend
 node_modules/

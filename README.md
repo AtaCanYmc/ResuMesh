@@ -124,6 +124,31 @@ Before running the project locally, ensure you have the following installed:
 
 ---
 
+## 🗄️ Database Migrations (Alembic)
+
+This project uses [Alembic](https://alembic.sqlalchemy.org/) to handle PostgreSQL database migrations (Infrastructure as Code).
+
+### Setting up Supabase / Remote DB
+1. In `backend/.env`, set your pooler connection string (e.g., Supabase Port 6543):
+   ```env
+   DATABASE_URL=postgresql://[user]:[password]@[host]:6543/postgres
+   ```
+
+### Running Migrations via Docker
+Because the backend container isolates its filesystem, you must mount your local volume when generating new migration files so they save to your local codebase:
+
+**1. Create a new migration:**
+```bash
+docker compose run --rm -v $(pwd)/backend:/app backend alembic revision --autogenerate -m "your_message"
+```
+
+**2. Apply migrations to the database:**
+```bash
+docker compose run --rm backend alembic upgrade head
+```
+
+---
+
 ## 🤝 Contributing & Code Quality
 
 Before submitting a pull request, make sure to install the **pre-commit** hooks to ensure consistent code styling:
