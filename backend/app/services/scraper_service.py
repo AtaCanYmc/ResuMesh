@@ -1,33 +1,42 @@
 import logging
 
-import httpx
 from bs4 import BeautifulSoup
+from playwright.async_api import async_playwright
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 logger = logging.getLogger(__name__)
 
 
 class ScraperService:
     @staticmethod
+    @retry(
+        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
+    )
     async def scrape_job_description(url: str) -> str:
         """
         Fetches the HTML content of a given URL and extracts the visible text.
-        Useful for reading job descriptions.
+        Uses Playwright to render JavaScript and bypass simple bot protections.
         """
+        logger.info(f"Attempting to scrape {url} using Playwright...")
         try:
-            headers = {
-                "User-Agent": (
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/91.0.4472.124 Safari/537.36"
+            async with async_playwright() as p:
+                browser = await p.chromium.launch(headless=True)
+                page = await browser.new_page(
+                    user_agent=(
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/114.0.0.0 Safari/537.36"
+                    )
                 )
-            }
-            async with httpx.AsyncClient(
-                headers=headers, follow_redirects=True, timeout=15.0
-            ) as client:
-                response = await client.get(url)
-                response.raise_for_status()
+                await page.goto(url, wait_until="domcontentloaded", timeout=30000)
 
-            soup = BeautifulSoup(response.text, "html.parser")
+                # Wait a little bit for dynamic content to load
+                await page.wait_for_timeout(2000)
+
+                html_content = await page.content()
+                await browser.close()
+
+            soup = BeautifulSoup(html_content, "html.parser")
 
             # Remove scripts and styles
             for script in soup(
@@ -41,9 +50,10 @@ class ScraperService:
             lines = [line.strip() for line in text.splitlines() if line.strip()]
             cleaned_text = "\n".join(lines)
 
+            if not cleaned_text:
+                raise ValueError("No text content could be extracted from the page.")
+
             return cleaned_text
         except Exception as e:
             logger.error(f"Failed to scrape {url}: {str(e)}")
-            raise ValueError(
-                f"Failed to extract job description from {url}. Error: {str(e)}"
-            )
+            raise

@@ -5,8 +5,8 @@ from pydantic import BaseModel, HttpUrl
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from app.db.base import ProjectRepository
-from app.db.factory import get_db_provider, get_log_provider
+from app.db.base import IProjectRepository, ISystemLogRepository
+from app.db.dependencies import get_project_repo, get_system_log_repo
 from app.llm.factory import get_llm_provider
 from app.services.auth_service import get_current_admin
 from app.services.cv_generator_service import CVGeneratorService
@@ -25,7 +25,7 @@ class CVGenerateRequest(BaseModel):
 async def generate_cv(
     request: Request,
     payload: CVGenerateRequest,
-    provider: ProjectRepository = Depends(get_db_provider),
+    provider: IProjectRepository = Depends(get_project_repo),
     admin=Depends(get_current_admin),
 ):
     try:
@@ -47,7 +47,7 @@ async def get_system_logs(
     limit: int = Query(20, le=100),
     level: Optional[str] = None,
     module: Optional[str] = None,
-    provider: ProjectRepository = Depends(get_log_provider),
+    provider: ISystemLogRepository = Depends(get_system_log_repo),
     current_admin: dict = Depends(get_current_admin),
 ):
     """Veritabanındaki log havuzunu sayfalı ve filtreli olarak getirir."""

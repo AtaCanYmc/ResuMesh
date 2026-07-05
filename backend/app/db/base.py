@@ -9,7 +9,7 @@ from app.schemas.search import GlobalSearchResponse
 from app.schemas.system_log import SystemLogCreate, SystemLogResponse
 
 
-class ProjectRepository(ABC):
+class IProjectRepository(ABC):
     @abstractmethod
     async def create_project(self, project: ProjectCreate) -> ProjectResponse:
         pass
@@ -29,11 +29,19 @@ class ProjectRepository(ABC):
         """Insert or update a project based on github_url"""
         pass
 
+
+class IArticleRepository(ABC):
     @abstractmethod
     async def upsert_article(self, article: ArticleCreate) -> ArticleResponse:
         """Insert or update an article based on url"""
         pass
 
+    @abstractmethod
+    async def get_all_articles(self) -> List[ArticleResponse]:
+        pass
+
+
+class IExperienceRepository(ABC):
     @abstractmethod
     async def create_experience(
         self, experience: ExperienceCreate
@@ -41,11 +49,23 @@ class ProjectRepository(ABC):
         pass
 
     @abstractmethod
+    async def get_all_experiences(self) -> List[ExperienceResponse]:
+        pass
+
+
+class ICertificateRepository(ABC):
+    @abstractmethod
     async def create_certificate(
         self, certificate: CertificateCreate
     ) -> CertificateResponse:
         pass
 
+    @abstractmethod
+    async def get_all_certificates(self) -> List[CertificateResponse]:
+        pass
+
+
+class ISystemLogRepository(ABC):
     @abstractmethod
     async def create_log(self, log: SystemLogCreate) -> SystemLogResponse:
         pass
@@ -66,18 +86,8 @@ class ProjectRepository(ABC):
     ) -> int:
         pass
 
+
+class ISearchRepository(ABC):
     @abstractmethod
     async def global_search(self, query: str) -> GlobalSearchResponse:
-        pass
-
-    @abstractmethod
-    async def get_all_experiences(self) -> List[ExperienceResponse]:
-        pass
-
-    @abstractmethod
-    async def get_all_articles(self) -> List[ArticleResponse]:
-        pass
-
-    @abstractmethod
-    async def get_all_certificates(self) -> List[CertificateResponse]:
         pass

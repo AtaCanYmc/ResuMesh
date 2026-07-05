@@ -4,7 +4,13 @@ from typing import Any, Dict
 import feedparser
 import httpx
 
-from app.db.base import ProjectRepository
+from app.db.base import (
+    IArticleRepository,
+    ICertificateRepository,
+    IExperienceRepository,
+    IProjectRepository,
+    ISystemLogRepository,
+)
 from app.schemas.article import ArticleCreate, ArticlePlatform
 from app.schemas.certificate import CertificateCreate
 from app.schemas.experience import ExperienceCreate
@@ -16,8 +22,8 @@ class IngestionService:
     @staticmethod
     async def fetch_github_repos(
         username: str,
-        provider: ProjectRepository,
-        log_provider: ProjectRepository = None,
+        provider: IProjectRepository,
+        log_provider: ISystemLogRepository = None,
     ):
         """Fetches repos using GitHub REST API and saves via provider."""
         if not log_provider:
@@ -62,8 +68,8 @@ class IngestionService:
     @staticmethod
     async def fetch_devto_articles(
         username: str,
-        provider: ProjectRepository,
-        log_provider: ProjectRepository = None,
+        provider: IArticleRepository,
+        log_provider: ISystemLogRepository = None,
     ):
         """Fetches articles from Dev.to API and saves via provider."""
         if not log_provider:
@@ -93,7 +99,7 @@ class IngestionService:
                     await provider.upsert_article(article)
 
     @staticmethod
-    async def fetch_medium_articles(username: str, provider: ProjectRepository):
+    async def fetch_medium_articles(username: str, provider: IArticleRepository):
         """Fetches Medium RSS Feed and parses using feedparser."""
         url = f"https://medium.com/feed/@{username}"
 
@@ -126,7 +132,11 @@ class IngestionService:
                     await provider.upsert_article(article)
 
     @staticmethod
-    async def import_linkedin_data(data: Dict[str, Any], provider: ProjectRepository):
+    async def import_linkedin_data(
+        data: Dict[str, Any],
+        exp_provider: IExperienceRepository,
+        cert_provider: ICertificateRepository,
+    ):
         """Processes LinkedIn data package (experiences and certificates)."""
         if "experiences" in data:
             for exp in data["experiences"]:
@@ -146,7 +156,7 @@ class IngestionService:
                     is_current=exp.get("is_current", False),
                     description=exp.get("description"),
                 )
-                await provider.create_experience(experience)
+                await exp_provider.create_experience(experience)
 
         if "certificates" in data:
             for cert in data["certificates"]:
@@ -161,4 +171,4 @@ class IngestionService:
                     credential_id=cert.get("license_number"),
                     credential_url=cert.get("url"),
                 )
-                await provider.create_certificate(certificate)
+                await cert_provider.create_certificate(certificate)

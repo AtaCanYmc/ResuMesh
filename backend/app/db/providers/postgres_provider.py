@@ -3,8 +3,15 @@ from typing import List, Optional
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
-from app.config.database import Base, SessionLocal, engine
-from app.db.base import ProjectRepository
+from app.config.database import SessionLocal
+from app.db.base import (
+    IArticleRepository,
+    ICertificateRepository,
+    IExperienceRepository,
+    IProjectRepository,
+    ISearchRepository,
+    ISystemLogRepository,
+)
 from app.models.article import Article
 from app.models.certificate import Certificate
 from app.models.experience import Experience
@@ -18,14 +25,12 @@ from app.schemas.search import GlobalSearchResponse, SearchResultItem
 from app.schemas.system_log import SystemLogCreate, SystemLogResponse
 
 
-class PostgresProvider(ProjectRepository):
-    def __init__(self):
-        # Create tables if they don't exist
-        Base.metadata.create_all(bind=engine)
-
+class BasePostgresRepository:
     def _get_session(self) -> Session:
         return SessionLocal()
 
+
+class PostgresProjectRepository(BasePostgresRepository, IProjectRepository):
     async def create_project(self, project: ProjectCreate) -> ProjectResponse:
         with self._get_session() as db:
             project_data = project.model_dump()
@@ -77,6 +82,8 @@ class PostgresProvider(ProjectRepository):
             db.refresh(db_project)
             return ProjectResponse.model_validate(db_project)
 
+
+class PostgresArticleRepository(BasePostgresRepository, IArticleRepository):
     async def upsert_article(self, article: ArticleCreate) -> ArticleResponse:
         with self._get_session() as db:
             db_article = (
@@ -96,6 +103,13 @@ class PostgresProvider(ProjectRepository):
             db.refresh(db_article)
             return ArticleResponse.model_validate(db_article)
 
+    async def get_all_articles(self) -> List[ArticleResponse]:
+        with self._get_session() as db:
+            articles = db.query(Article).order_by(Article.published_at.desc()).all()
+            return [ArticleResponse.model_validate(a) for a in articles]
+
+
+class PostgresExperienceRepository(BasePostgresRepository, IExperienceRepository):
     async def create_experience(
         self, experience: ExperienceCreate
     ) -> ExperienceResponse:
@@ -106,6 +120,15 @@ class PostgresProvider(ProjectRepository):
             db.refresh(db_exp)
             return ExperienceResponse.model_validate(db_exp)
 
+    async def get_all_experiences(self) -> List[ExperienceResponse]:
+        with self._get_session() as db:
+            experiences = (
+                db.query(Experience).order_by(Experience.start_date.desc()).all()
+            )
+            return [ExperienceResponse.model_validate(e) for e in experiences]
+
+
+class PostgresCertificateRepository(BasePostgresRepository, ICertificateRepository):
     async def create_certificate(
         self, certificate: CertificateCreate
     ) -> CertificateResponse:
@@ -119,6 +142,15 @@ class PostgresProvider(ProjectRepository):
             db.refresh(db_cert)
             return CertificateResponse.model_validate(db_cert)
 
+    async def get_all_certificates(self) -> List[CertificateResponse]:
+        with self._get_session() as db:
+            certificates = (
+                db.query(Certificate).order_by(Certificate.issue_date.desc()).all()
+            )
+            return [CertificateResponse.model_validate(c) for c in certificates]
+
+
+class PostgresSystemLogRepository(BasePostgresRepository, ISystemLogRepository):
     async def create_log(self, log: SystemLogCreate) -> SystemLogResponse:
         with self._get_session() as db:
             db_log = SystemLog(**log.model_dump())
@@ -160,6 +192,8 @@ class PostgresProvider(ProjectRepository):
                 query = query.filter(SystemLog.module == module.upper())
             return query.count()
 
+
+class PostgresSearchRepository(BasePostgresRepository, ISearchRepository):
     async def global_search(self, query: str) -> GlobalSearchResponse:
         search_term = f"%{query}%"
 
@@ -273,22 +307,3 @@ class PostgresProvider(ProjectRepository):
             experiences=experiences,
             certificates=certificates,
         )
-
-    async def get_all_experiences(self) -> List[ExperienceResponse]:
-        with self._get_session() as db:
-            experiences = (
-                db.query(Experience).order_by(Experience.start_date.desc()).all()
-            )
-            return [ExperienceResponse.model_validate(e) for e in experiences]
-
-    async def get_all_articles(self) -> List[ArticleResponse]:
-        with self._get_session() as db:
-            articles = db.query(Article).order_by(Article.published_at.desc()).all()
-            return [ArticleResponse.model_validate(a) for a in articles]
-
-    async def get_all_certificates(self) -> List[CertificateResponse]:
-        with self._get_session() as db:
-            certificates = (
-                db.query(Certificate).order_by(Certificate.issue_date.desc()).all()
-            )
-            return [CertificateResponse.model_validate(c) for c in certificates]

@@ -2,7 +2,7 @@ import os
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from app.db.factory import get_db_provider, get_log_provider
+from app.db.dependencies import get_article_repo, get_project_repo, get_system_log_repo
 from app.services.ingestion_service import IngestionService
 from app.services.log_service import LogService
 
@@ -11,8 +11,9 @@ scheduler = AsyncIOScheduler()
 
 async def nightly_data_sync_job():
     """Her gece verileri arka planda güncelleyen ana görev."""
-    provider = get_db_provider()
-    log_provider = get_log_provider()
+    project_provider = get_project_repo()
+    article_provider = get_article_repo()
+    log_provider = get_system_log_repo()
 
     github_username = os.getenv("GITHUB_USERNAME")
     medium_username = os.getenv("MEDIUM_USERNAME")
@@ -27,20 +28,22 @@ async def nightly_data_sync_job():
     try:
         if github_username and github_username != "your_github_username":
             await IngestionService.fetch_github_repos(
-                github_username, provider, log_provider
+                github_username, project_provider, log_provider
             )
             await LogService.info(
                 log_provider, "GITHUB", "GitHub depoları başarıyla senkronize edildi."
             )
         if devto_username and devto_username != "your_devto_username":
             await IngestionService.fetch_devto_articles(
-                devto_username, provider, log_provider
+                devto_username, article_provider, log_provider
             )
             await LogService.info(
                 log_provider, "DEV_TO", "Dev.to makaleleri başarıyla senkronize edildi."
             )
         if medium_username and medium_username != "your_medium_username":
-            await IngestionService.fetch_medium_articles(medium_username, provider)
+            await IngestionService.fetch_medium_articles(
+                medium_username, article_provider
+            )
             await LogService.info(
                 log_provider, "MEDIUM", "Medium makaleleri başarıyla senkronize edildi."
             )

@@ -2,8 +2,8 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.db.base import ProjectRepository
-from app.db.factory import get_db_provider
+from app.db.base import IProjectRepository
+from app.db.dependencies import get_project_repo
 from app.schemas.project import ProjectCreate, ProjectResponse
 
 router = APIRouter(prefix="/projects", tags=["projects"])
@@ -11,7 +11,7 @@ router = APIRouter(prefix="/projects", tags=["projects"])
 
 @router.post("/", response_model=ProjectResponse)
 async def create_project(
-    project: ProjectCreate, provider: ProjectRepository = Depends(get_db_provider)
+    project: ProjectCreate, provider: IProjectRepository = Depends(get_project_repo)
 ):
     try:
         result = await provider.create_project(project)
@@ -24,7 +24,7 @@ async def create_project(
 async def get_projects(
     skip: int = 0,
     limit: int = 100,
-    provider: ProjectRepository = Depends(get_db_provider),
+    provider: IProjectRepository = Depends(get_project_repo),
 ):
     try:
         projects = await provider.get_projects(skip=skip, limit=limit)
@@ -35,7 +35,7 @@ async def get_projects(
 
 @router.get("/{project_id}", response_model=ProjectResponse)
 async def get_project(
-    project_id: str, provider: ProjectRepository = Depends(get_db_provider)
+    project_id: str, provider: IProjectRepository = Depends(get_project_repo)
 ):
     project = await provider.get_project_by_id(project_id)
     if not project:
