@@ -5,7 +5,14 @@ from typing import List, Optional
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from app.db.base import ProjectRepository
+from app.db.base import (
+    IArticleRepository,
+    ICertificateRepository,
+    IExperienceRepository,
+    IProjectRepository,
+    ISearchRepository,
+    ISystemLogRepository,
+)
 from app.schemas.article import ArticleCreate, ArticleResponse
 from app.schemas.certificate import CertificateCreate, CertificateResponse
 from app.schemas.experience import ExperienceCreate, ExperienceResponse
@@ -14,7 +21,14 @@ from app.schemas.search import GlobalSearchResponse, SearchResultItem
 from app.schemas.system_log import SystemLogCreate, SystemLogResponse
 
 
-class MongoProvider(ProjectRepository):
+class MongoProvider(
+    IProjectRepository,
+    IArticleRepository,
+    IExperienceRepository,
+    ICertificateRepository,
+    ISystemLogRepository,
+    ISearchRepository,
+):
     def __init__(self):
         mongo_url = os.getenv("MONGO_URL", "mongodb://localhost:27017")
         db_name = os.getenv("MONGO_DB_NAME", "resumesh")

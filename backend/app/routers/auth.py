@@ -2,19 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from app.config.database import SessionLocal
 from app.config.security import SecurityUtils
+from app.db.dependencies import get_db
 from app.models.user import User
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @router.post("/login")
