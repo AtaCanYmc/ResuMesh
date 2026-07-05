@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.2.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.1.0...v1.2.0) (2026-07-05)
+
+
+### Features
+
+* add Docker run configuration for docker-compose deployment ([49884fd](https://github.com/AtaCanYmc/ResuMesh/commit/49884fdb7f0da699407bfbe47ebdbedb09bb0bbd))
+* add profiles for PostgreSQL and MongoDB services in docker-compose.yml ([6637aae](https://github.com/AtaCanYmc/ResuMesh/commit/6637aaef01ec38b331da0bd232650a32372756c3))
+* enhance admin dashboard with AI CV generator and log management; add articles, certificates, and experiences sections with filtering ([521aac1](https://github.com/AtaCanYmc/ResuMesh/commit/521aac1de77e24b4a958e9e1d8cd53ac8a428e6f))
+* implement Supabase client for asynchronous operations and add CRUD methods for projects, articles, experiences, and certificates ([d845792](https://github.com/AtaCanYmc/ResuMesh/commit/d8457929b6bf431ebbd5a3547d0689483265015a))
+* restructure app layout and add new pages for Home, Experiences, Projects, Articles, and Certificates ([9d5f273](https://github.com/AtaCanYmc/ResuMesh/commit/9d5f273203eacc3da2123904ce775586119c22a7))
+* update README to include Docker Compose profiles for database configurations ([795e419](https://github.com/AtaCanYmc/ResuMesh/commit/795e419d9942d623fef50626e0cb0fc64bd36429))
+* update README with project structure, local development setup, and contribution guidelines ([8ef646d](https://github.com/AtaCanYmc/ResuMesh/commit/8ef646d9c1b7c28bf171d9eaa7dbd7b14fe37bb1))
+
+
+### Bug Fixes
+
+* downgrade langchain-community package version to 0.2.12 in requirements.txt ([c672ce1](https://github.com/AtaCanYmc/ResuMesh/commit/c672ce1f6c37a6514bc0772d7587bde0b1f6980c))
+* replace Github icon with Code icon in Projects component ([fb987b7](https://github.com/AtaCanYmc/ResuMesh/commit/fb987b75fa389dcfeb8e723d6d7008368e809a59))
+* update Docker commands in README and remove version from docker-compose.yml ([2e56001](https://github.com/AtaCanYmc/ResuMesh/commit/2e5600144200128ddb20dc89e2d36272b82ae2bd))
+* update langchain package versions in requirements.txt ([6465efb](https://github.com/AtaCanYmc/ResuMesh/commit/6465efbe790e7f916a496b117f9286fd435682b8))
+* update postgres integration test to use synchronous engine and configure app's database session ([8b3e37f](https://github.com/AtaCanYmc/ResuMesh/commit/8b3e37fd75f20bb8bbb37054a6fae05335912ab4))
+* update postgres integration test to use synchronous engine for table creation ([da9ed85](https://github.com/AtaCanYmc/ResuMesh/commit/da9ed8516dda06b3cbc715a4b987093832b291b9))
+* update supabase package version in requirements.txt to 2.5.1 ([e8b5efd](https://github.com/AtaCanYmc/ResuMesh/commit/e8b5efd760200fad79b32f9d5837b618835411ff))
+
 ## [1.1.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.0.0...v1.1.0) (2026-07-05)
 
 
