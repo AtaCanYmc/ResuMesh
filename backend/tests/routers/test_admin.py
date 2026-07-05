@@ -13,7 +13,7 @@ async def test_get_system_logs(client, mock_provider):
         SystemLogCreate(level="ERROR", module="TEST", message="Msg 2")
     )
 
-    response = await client.get("/api/v1/admin/logs/")
+    response = await client.get("/api/v1/admin/logs")
     assert response.status_code == 200
     data = response.json()
     assert data["total"] == 2
@@ -29,7 +29,7 @@ async def test_get_system_logs_filtered(client, mock_provider):
         SystemLogCreate(level="ERROR", module="TEST", message="Msg 2")
     )
 
-    response = await client.get("/api/v1/admin/logs/?level=ERROR")
+    response = await client.get("/api/v1/admin/logs?level=ERROR")
     assert response.status_code == 200
     data = response.json()
     assert data["total"] == 1
@@ -56,4 +56,4 @@ async def test_generate_cv(client, monkeypatch):
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "success"
-    assert "Mock CV" in data["cv_markdown"]
+    assert "Mocked CV" in data["cv_markdown"]

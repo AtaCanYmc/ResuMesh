@@ -12,7 +12,7 @@ class Article(Base):
     id = Column(
         String(36), primary_key=True, index=True, default=lambda: str(uuid.uuid4())
     )
-    title = Column(String(255), nullable=False)
+    title = Column(String(255), nullable=False, index=True)
     summary = Column(Text, nullable=True)
     url = Column(String(512), nullable=False, unique=True)
     platform = Column(String(50), nullable=False)  # 'MEDIUM' or 'DEV_TO'

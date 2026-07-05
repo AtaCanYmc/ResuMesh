@@ -1,7 +1,9 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import SearchBar from './components/SearchBar';
+import AdminDashboard from './pages/AdminDashboard';
 
-function App() {
+function Home() {
   return (
     <div className="min-h-screen bg-black text-white flex flex-col justify-content items-center pt-20">
       <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
@@ -12,6 +14,17 @@ function App() {
       </p>
       <SearchBar />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+      </Routes>
+    </Router>
   );
 }
 

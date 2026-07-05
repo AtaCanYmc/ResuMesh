@@ -13,7 +13,7 @@ from app.services.cv_generator_service import CVGeneratorService
 
 limiter = Limiter(key_func=get_remote_address)
 
-router = APIRouter(prefix="/admin/logs", tags=["Admin Log Management"])
+router = APIRouter(prefix="/admin", tags=["Admin Log Management"])
 
 
 class CVGenerateRequest(BaseModel):
@@ -39,7 +39,7 @@ async def generate_cv(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/")
+@router.get("/logs")
 @limiter.limit("10/minute")
 async def get_system_logs(
     request: Request,
