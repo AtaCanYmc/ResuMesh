@@ -41,15 +41,14 @@ def setup_postgres(request):
 async def test_postgres_global_search_ilike():
     """Verify PostgreSQL search queries with ILIKE and array containment"""
 
-    from app.config.database import Base as AsyncBase
     from app.config.database import engine
     from app.db.providers.postgres_provider import PostgresProjectRepository
     from app.schemas.project import ProjectCreate
 
-    # Create tables in async engine
-    async with engine.begin() as conn:
-        await conn.run_sync(AsyncBase.metadata.drop_all)
-        await conn.run_sync(AsyncBase.metadata.create_all)
+    # Create tables in sync engine
+    with engine.begin():
+        Base.metadata.drop_all(bind=engine)
+        Base.metadata.create_all(bind=engine)
 
     # Seed data
     project_repo = PostgresProjectRepository()
