@@ -14,7 +14,7 @@ from app.schemas.article import ArticleCreate, ArticleResponse
 from app.schemas.certificate import CertificateCreate, CertificateResponse
 from app.schemas.experience import ExperienceCreate, ExperienceResponse
 from app.schemas.project import ProjectCreate, ProjectResponse
-from app.schemas.search import SearchResponse
+from app.schemas.search import GlobalSearchResponse, SearchResultItem
 from app.schemas.system_log import SystemLogCreate, SystemLogResponse
 
 
@@ -160,81 +160,91 @@ class PostgresProvider(ProjectRepository):
                 query = query.filter(SystemLog.module == module.upper())
             return query.count()
 
-    async def global_search(self, query: str) -> List[SearchResponse]:
-        results = []
+    async def global_search(self, query: str) -> GlobalSearchResponse:
         search_term = f"%{query}%"
 
         with self._get_session() as db:
             # Search Projects
-            projects = (
+            projects_db = (
                 db.query(Project)
                 .filter(
                     or_(
-                        Project.name.ilike(search_term),
+                        Project.title.ilike(search_term),
                         Project.description.ilike(search_term),
-                        Project.technologies.ilike(search_term),
+                        Project.languages.any(query.capitalize()),
+                        Project.tags.any(query.lower()),
                     )
                 )
+                .limit(10)
                 .all()
             )
-            for p in projects:
-                results.append(
-                    SearchResponse(
-                        id=str(p.id),
-                        type="project",
-                        title=p.name,
-                        description=p.description,
-                        url=p.github_url or p.homepage_url,
-                    )
+            projects = [
+                SearchResultItem(
+                    id=str(p.id),
+                    title=p.title,
+                    subtitle=p.description[:100] if p.description else None,
+                    url=p.github_url,
+                    tags=(p.languages or []) + (p.tags or []),
+                    date=p.created_at.strftime("%Y-%m") if p.created_at else None,
                 )
+                for p in projects_db
+            ]
 
             # Search Articles
-            articles = (
+            articles_db = (
                 db.query(Article)
                 .filter(
                     or_(
                         Article.title.ilike(search_term),
-                        Article.description.ilike(search_term),
+                        Article.summary.ilike(search_term),
                     )
                 )
+                .limit(10)
                 .all()
             )
-            for a in articles:
-                results.append(
-                    SearchResponse(
-                        id=str(a.id),
-                        type="article",
-                        title=a.title,
-                        description=a.description,
-                        url=a.url,
-                    )
+            articles = [
+                SearchResultItem(
+                    id=str(a.id),
+                    title=a.title,
+                    subtitle=f"Platform: {a.platform}",
+                    url=a.url,
+                    date=a.published_at.strftime("%Y-%m") if a.published_at else None,
                 )
+                for a in articles_db
+            ]
 
             # Search Experiences
-            experiences = (
+            experiences_db = (
                 db.query(Experience)
                 .filter(
                     or_(
-                        Experience.title.ilike(search_term),
                         Experience.company_name.ilike(search_term),
+                        Experience.title.ilike(search_term),
                         Experience.description.ilike(search_term),
                     )
                 )
+                .limit(5)
                 .all()
             )
-            for e in experiences:
-                results.append(
-                    SearchResponse(
+            experiences = []
+            for e in experiences_db:
+                s_date = e.start_date.strftime("%Y") if e.start_date else ""
+                e_date = (
+                    "Günümüz"
+                    if e.is_current
+                    else (e.end_date.strftime("%Y") if e.end_date else "")
+                )
+                experiences.append(
+                    SearchResultItem(
                         id=str(e.id),
-                        type="experience",
-                        title=f"{e.title} at {e.company_name}",
-                        description=e.description,
-                        url=e.company_url,
+                        title=f"{e.title} @ {e.company_name}",
+                        subtitle=e.description[:150] if e.description else None,
+                        date=f"{s_date} - {e_date}",
                     )
                 )
 
             # Search Certificates
-            certificates = (
+            certificates_db = (
                 db.query(Certificate)
                 .filter(
                     or_(
@@ -242,17 +252,24 @@ class PostgresProvider(ProjectRepository):
                         Certificate.issuing_organization.ilike(search_term),
                     )
                 )
+                .limit(5)
                 .all()
             )
-            for c in certificates:
-                results.append(
-                    SearchResponse(
-                        id=str(c.id),
-                        type="certificate",
-                        title=c.name,
-                        description=f"Issued by {c.issuing_organization}",
-                        url=c.credential_url,
-                    )
+            certificates = [
+                SearchResultItem(
+                    id=str(c.id),
+                    title=c.name,
+                    subtitle=c.issuing_organization,
+                    url=c.credential_url,
+                    date=c.issue_date.strftime("%Y-%m") if c.issue_date else None,
                 )
+                for c in certificates_db
+            ]
 
-        return results
+        return GlobalSearchResponse(
+            query=query,
+            projects=projects,
+            articles=articles,
+            experiences=experiences,
+            certificates=certificates,
+        )

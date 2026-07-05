@@ -11,7 +11,7 @@ async def test_global_search(client, mock_provider):
             title="React Portfolio",
             description="A cool portfolio built with React",
             github_url="http://test.com",
-            technologies=["React"],
+            languages=["React"],
         )
     )
     await mock_provider.create_article(
@@ -28,7 +28,12 @@ async def test_global_search(client, mock_provider):
     assert response.status_code == 200
     data = response.json()
 
-    assert len(data) == 2
-    types = [item["type"] for item in data]
-    assert "project" in types
-    assert "article" in types
+    assert data["query"] == "react"
+    assert len(data["projects"]) == 1
+    assert data["projects"][0]["title"] == "React Portfolio"
+
+    assert len(data["articles"]) == 1
+    assert data["articles"][0]["title"] == "Why I love React"
+
+    assert len(data["experiences"]) == 0
+    assert len(data["certificates"]) == 0

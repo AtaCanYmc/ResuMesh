@@ -14,7 +14,7 @@ from app.schemas.article import ArticleCreate, ArticleResponse
 from app.schemas.certificate import CertificateCreate, CertificateResponse
 from app.schemas.experience import ExperienceCreate, ExperienceResponse
 from app.schemas.project import ProjectCreate, ProjectResponse
-from app.schemas.search import SearchResponse
+from app.schemas.search import GlobalSearchResponse, SearchResultItem
 from app.schemas.system_log import SystemLogCreate, SystemLogResponse
 from app.services.auth_service import get_current_admin
 
@@ -143,27 +143,41 @@ class MockProvider(ProjectRepository):
             filtered = [log for log in filtered if log.module == module.upper()]
         return len(filtered)
 
-    async def global_search(self, query: str) -> List[SearchResponse]:
-        results = []
+    async def global_search(self, query: str) -> GlobalSearchResponse:
+        projects = []
+        articles = []
+        experiences = []
+        certificates = []
+
         q = query.lower()
         for p in self.projects:
+            # simple mock check
+            p_langs = " ".join(p.languages).lower() if p.languages else ""
+            p_tags = " ".join(p.tags).lower() if p.tags else ""
+
             if (
                 q in p.title.lower()
                 or (p.description and q in p.description.lower())
-                or (p.technologies and q in p.technologies.lower())
+                or (q in p_langs)
+                or (q in p_tags)
             ):
                 url_val = (
                     str(p.github_url)
                     if p.github_url
-                    else (str(p.homepage_url) if p.homepage_url else None)
+                    else (
+                        str(p.homepage_url)
+                        if hasattr(p, "homepage_url") and p.homepage_url
+                        else None
+                    )
                 )
-                results.append(
-                    SearchResponse(
+                projects.append(
+                    SearchResultItem(
                         id=p.id,
-                        type="project",
                         title=p.title,
-                        description=p.description,
+                        subtitle=p.description[:100] if p.description else None,
                         url=url_val,
+                        tags=(p.languages or []) + (p.tags or []),
+                        date=p.created_at.strftime("%Y-%m") if p.created_at else None,
                     )
                 )
         for a in self.articles:
@@ -171,16 +185,26 @@ class MockProvider(ProjectRepository):
                 hasattr(a, "summary") and a.summary and q in a.summary.lower()
             ):
                 url_val = str(a.url) if a.url else None
-                results.append(
-                    SearchResponse(
+                p_val = a.platform.value if hasattr(a.platform, "value") else a.platform
+                articles.append(
+                    SearchResultItem(
                         id=a.id,
-                        type="article",
                         title=a.title,
-                        description=getattr(a, "summary", None),
+                        subtitle=f"Platform: {p_val}",
                         url=url_val,
+                        date=(
+                            a.published_at.strftime("%Y-%m") if a.published_at else None
+                        ),
                     )
                 )
-        return results
+
+        return GlobalSearchResponse(
+            query=query,
+            projects=projects,
+            articles=articles,
+            experiences=experiences,
+            certificates=certificates,
+        )
 
 
 @pytest.fixture(scope="session")

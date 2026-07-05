@@ -10,7 +10,7 @@ from app.schemas.article import ArticleCreate, ArticleResponse
 from app.schemas.certificate import CertificateCreate, CertificateResponse
 from app.schemas.experience import ExperienceCreate, ExperienceResponse
 from app.schemas.project import ProjectCreate, ProjectResponse
-from app.schemas.search import SearchResponse
+from app.schemas.search import GlobalSearchResponse, SearchResultItem
 from app.schemas.system_log import SystemLogCreate, SystemLogResponse
 
 
@@ -221,80 +221,143 @@ class MongoProvider(ProjectRepository):
 
         return await self.db.system_logs.count_documents(query)
 
-    async def global_search(self, query: str) -> List[SearchResponse]:
-        results = []
+    async def global_search(self, query: str) -> GlobalSearchResponse:
         regex_query = {"$regex": query, "$options": "i"}
 
         # Search Projects
-        projects = await self.db.projects.find(
-            {
-                "$or": [
-                    {"name": regex_query},
-                    {"description": regex_query},
-                    {"technologies": regex_query},
-                ]
-            }
-        ).to_list(length=100)
-        for p in projects:
-            results.append(
-                SearchResponse(
+        projects_db = (
+            await self.db.projects.find(
+                {
+                    "$or": [
+                        {"title": regex_query},
+                        {"description": regex_query},
+                        {"languages": regex_query},
+                        {"tags": regex_query},
+                    ]
+                }
+            )
+            .limit(10)
+            .to_list(length=10)
+        )
+
+        projects = []
+        for p in projects_db:
+            created_at = p.get("created_at")
+            date_str = (
+                created_at.strftime("%Y-%m")
+                if isinstance(created_at, datetime)
+                else None
+            )
+            projects.append(
+                SearchResultItem(
                     id=str(p.get("id", p.get("_id"))),
-                    type="project",
-                    title=p.get("name", ""),
-                    description=p.get("description"),
-                    url=p.get("github_url") or p.get("homepage_url"),
+                    title=p.get("title", ""),
+                    subtitle=(
+                        p.get("description", "")[:100] if p.get("description") else None
+                    ),
+                    url=p.get("github_url"),
+                    tags=(p.get("languages") or []) + (p.get("tags") or []),
+                    date=date_str,
                 )
             )
 
         # Search Articles
-        articles = await self.db.articles.find(
-            {"$or": [{"title": regex_query}, {"description": regex_query}]}
-        ).to_list(length=100)
-        for a in articles:
-            results.append(
-                SearchResponse(
+        articles_db = (
+            await self.db.articles.find(
+                {"$or": [{"title": regex_query}, {"summary": regex_query}]}
+            )
+            .limit(10)
+            .to_list(length=10)
+        )
+
+        articles = []
+        for a in articles_db:
+            pub_date = a.get("published_at")
+            date_str = (
+                pub_date.strftime("%Y-%m") if isinstance(pub_date, datetime) else None
+            )
+            articles.append(
+                SearchResultItem(
                     id=str(a.get("id", a.get("_id"))),
-                    type="article",
                     title=a.get("title", ""),
-                    description=a.get("description"),
+                    subtitle=f"Platform: {a.get('platform')}",
                     url=a.get("url"),
+                    date=date_str,
                 )
             )
 
         # Search Experiences
-        experiences = await self.db.experiences.find(
-            {
-                "$or": [
-                    {"title": regex_query},
-                    {"company_name": regex_query},
-                    {"description": regex_query},
-                ]
-            }
-        ).to_list(length=100)
-        for e in experiences:
-            results.append(
-                SearchResponse(
+        experiences_db = (
+            await self.db.experiences.find(
+                {
+                    "$or": [
+                        {"title": regex_query},
+                        {"company_name": regex_query},
+                        {"description": regex_query},
+                    ]
+                }
+            )
+            .limit(5)
+            .to_list(length=5)
+        )
+
+        experiences = []
+        for e in experiences_db:
+            start_date = e.get("start_date")
+            end_date = e.get("end_date")
+            is_current = e.get("is_current")
+
+            s_date = (
+                start_date.strftime("%Y") if isinstance(start_date, datetime) else ""
+            )
+            e_date = (
+                "Günümüz"
+                if is_current
+                else (end_date.strftime("%Y") if isinstance(end_date, datetime) else "")
+            )
+
+            experiences.append(
+                SearchResultItem(
                     id=str(e.get("id", e.get("_id"))),
-                    type="experience",
-                    title=f"{e.get('title')} at {e.get('company_name')}",
-                    description=e.get("description"),
-                    url=e.get("company_url"),
+                    title=f"{e.get('title')} @ {e.get('company_name')}",
+                    subtitle=(
+                        e.get("description", "")[:150] if e.get("description") else None
+                    ),
+                    date=f"{s_date} - {e_date}",
                 )
             )
 
         # Search Certificates
-        certificates = await self.db.certificates.find(
-            {"$or": [{"name": regex_query}, {"issuing_organization": regex_query}]}
-        ).to_list(length=100)
-        for c in certificates:
-            results.append(
-                SearchResponse(
+        certificates_db = (
+            await self.db.certificates.find(
+                {"$or": [{"name": regex_query}, {"issuing_organization": regex_query}]}
+            )
+            .limit(5)
+            .to_list(length=5)
+        )
+
+        certificates = []
+        for c in certificates_db:
+            issue_date = c.get("issue_date")
+            date_str = (
+                issue_date.strftime("%Y-%m")
+                if isinstance(issue_date, datetime)
+                else None
+            )
+            certificates.append(
+                SearchResultItem(
                     id=str(c.get("id", c.get("_id"))),
-                    type="certificate",
                     title=c.get("name", ""),
-                    description=f"Issued by {c.get('issuing_organization')}",
+                    subtitle=c.get("issuing_organization"),
                     url=c.get("credential_url"),
+                    date=date_str,
                 )
             )
 
-        return results
+        return GlobalSearchResponse(
+            query=query,
+            projects=projects,
+            articles=articles,
+            experiences=experiences,
+            certificates=certificates,
+        )
