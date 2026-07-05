@@ -41,4 +41,37 @@ def get_db_provider() -> ProjectRepository:
         return _supabase_provider
 
     else:
-        raise ValueError(f"Unknown DB_PROVIDER: {provider_name}")
+        raise ValueError(f"Unknown database provider: {provider_name}")
+
+
+def get_log_provider() -> ProjectRepository:
+    provider_name = os.getenv(
+        "LOG_DB_PROVIDER", os.getenv("DB_PROVIDER", "local-postgres")
+    ).lower()
+
+    if provider_name == "local-postgres":
+        global _postgres_provider
+        if not _postgres_provider:
+            _postgres_provider = PostgresProvider()
+        return _postgres_provider
+
+    elif provider_name == "mongodb":
+        global _mongo_provider
+        if not _mongo_provider:
+            _mongo_provider = MongoProvider()
+        return _mongo_provider
+
+    elif provider_name == "firebase":
+        global _firebase_provider
+        if not _firebase_provider:
+            _firebase_provider = FirebaseProvider()
+        return _firebase_provider
+
+    elif provider_name == "supabase":
+        global _supabase_provider
+        if not _supabase_provider:
+            _supabase_provider = SupabaseProvider()
+        return _supabase_provider
+
+    else:
+        raise ValueError(f"Unknown log database provider: {provider_name}")

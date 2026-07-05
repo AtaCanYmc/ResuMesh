@@ -9,18 +9,31 @@ from app.schemas.article import ArticleCreate, ArticlePlatform
 from app.schemas.certificate import CertificateCreate
 from app.schemas.experience import ExperienceCreate
 from app.schemas.project import ProjectCreate
+from app.services.log_service import LogService
 
 
 class IngestionService:
     @staticmethod
-    async def fetch_github_repos(username: str, provider: ProjectRepository):
+    async def fetch_github_repos(
+        username: str,
+        provider: ProjectRepository,
+        log_provider: ProjectRepository = None,
+    ):
         """Fetches repos using GitHub REST API and saves via provider."""
+        if not log_provider:
+            log_provider = provider
+
         url = f"https://api.github.com/users/{username}/repos?per_page=100&sort=updated"
 
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers={"User-Agent": "StackEcho-App"})
             if response.status_code != 200:
-                print(f"GitHub API error: {response.status_code}")
+                await LogService.warning(
+                    log_provider,
+                    "GITHUB",
+                    f"GitHub API error: {response.status_code}",
+                    {"url": url},
+                )
                 return
 
             repos = response.json()
@@ -47,8 +60,14 @@ class IngestionService:
                 await provider.upsert_project(project)
 
     @staticmethod
-    async def fetch_devto_articles(username: str, provider: ProjectRepository):
+    async def fetch_devto_articles(
+        username: str,
+        provider: ProjectRepository,
+        log_provider: ProjectRepository = None,
+    ):
         """Fetches articles from Dev.to API and saves via provider."""
+        if not log_provider:
+            log_provider = provider
         url = f"https://dev.to/api/articles?username={username}"
 
         async with httpx.AsyncClient() as client:

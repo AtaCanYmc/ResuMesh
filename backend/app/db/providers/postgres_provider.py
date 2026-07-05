@@ -8,10 +8,12 @@ from app.models.article import Article
 from app.models.certificate import Certificate
 from app.models.experience import Experience
 from app.models.project import Project
+from app.models.system_log import SystemLog
 from app.schemas.article import ArticleCreate, ArticleResponse
 from app.schemas.certificate import CertificateCreate, CertificateResponse
 from app.schemas.experience import ExperienceCreate, ExperienceResponse
 from app.schemas.project import ProjectCreate, ProjectResponse
+from app.schemas.system_log import SystemLogCreate, SystemLogResponse
 
 
 class PostgresProvider(ProjectRepository):
@@ -114,3 +116,44 @@ class PostgresProvider(ProjectRepository):
             db.commit()
             db.refresh(db_cert)
             return CertificateResponse.model_validate(db_cert)
+
+    async def create_log(self, log: SystemLogCreate) -> SystemLogResponse:
+        with self._get_session() as db:
+            db_log = SystemLog(**log.model_dump())
+            db.add(db_log)
+            db.commit()
+            db.refresh(db_log)
+            return SystemLogResponse.model_validate(db_log)
+
+    async def get_logs(
+        self,
+        page: int = 1,
+        limit: int = 20,
+        level: Optional[str] = None,
+        module: Optional[str] = None,
+    ) -> List[SystemLogResponse]:
+        with self._get_session() as db:
+            query = db.query(SystemLog)
+            if level:
+                query = query.filter(SystemLog.level == level.upper())
+            if module:
+                query = query.filter(SystemLog.module == module.upper())
+
+            logs = (
+                query.order_by(SystemLog.created_at.desc())
+                .offset((page - 1) * limit)
+                .limit(limit)
+                .all()
+            )
+            return [SystemLogResponse.model_validate(log_item) for log_item in logs]
+
+    async def get_logs_count(
+        self, level: Optional[str] = None, module: Optional[str] = None
+    ) -> int:
+        with self._get_session() as db:
+            query = db.query(SystemLog)
+            if level:
+                query = query.filter(SystemLog.level == level.upper())
+            if module:
+                query = query.filter(SystemLog.module == module.upper())
+            return query.count()

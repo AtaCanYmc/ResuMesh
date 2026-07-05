@@ -10,6 +10,7 @@ from app.schemas.article import ArticleCreate, ArticleResponse
 from app.schemas.certificate import CertificateCreate, CertificateResponse
 from app.schemas.experience import ExperienceCreate, ExperienceResponse
 from app.schemas.project import ProjectCreate, ProjectResponse
+from app.schemas.system_log import SystemLogCreate, SystemLogResponse
 
 
 class MongoProvider(ProjectRepository):
@@ -167,3 +168,54 @@ class MongoProvider(ProjectRepository):
         await self.db.certificates.insert_one(cert_dict)
         cert_dict.pop("_id", None)
         return CertificateResponse(**cert_dict)
+
+    async def create_log(self, log: SystemLogCreate) -> SystemLogResponse:
+        log_dict = log.model_dump()
+        log_id = str(uuid.uuid4())
+        now = datetime.now(timezone.utc)
+
+        log_dict["id"] = log_id
+        log_dict["created_at"] = now
+        log_dict["_id"] = log_id
+
+        await self.db.system_logs.insert_one(log_dict)
+        log_dict.pop("_id", None)
+        return SystemLogResponse(**log_dict)
+
+    async def get_logs(
+        self,
+        page: int = 1,
+        limit: int = 20,
+        level: Optional[str] = None,
+        module: Optional[str] = None,
+    ) -> List[SystemLogResponse]:
+        query = {}
+        if level:
+            query["level"] = level.upper()
+        if module:
+            query["module"] = module.upper()
+
+        cursor = (
+            self.db.system_logs.find(query)
+            .sort("created_at", -1)
+            .skip((page - 1) * limit)
+            .limit(limit)
+        )
+        logs = await cursor.to_list(length=limit)
+
+        result = []
+        for log_item in logs:
+            log_item.pop("_id", None)
+            result.append(SystemLogResponse(**log_item))
+        return result
+
+    async def get_logs_count(
+        self, level: Optional[str] = None, module: Optional[str] = None
+    ) -> int:
+        query = {}
+        if level:
+            query["level"] = level.upper()
+        if module:
+            query["module"] = module.upper()
+
+        return await self.db.system_logs.count_documents(query)

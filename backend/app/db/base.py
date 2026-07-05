@@ -5,6 +5,7 @@ from app.schemas.article import ArticleCreate, ArticleResponse
 from app.schemas.certificate import CertificateCreate, CertificateResponse
 from app.schemas.experience import ExperienceCreate, ExperienceResponse
 from app.schemas.project import ProjectCreate, ProjectResponse
+from app.schemas.system_log import SystemLogCreate, SystemLogResponse
 
 
 class ProjectRepository(ABC):
@@ -42,4 +43,24 @@ class ProjectRepository(ABC):
     async def create_certificate(
         self, certificate: CertificateCreate
     ) -> CertificateResponse:
+        pass
+
+    @abstractmethod
+    async def create_log(self, log: SystemLogCreate) -> SystemLogResponse:
+        pass
+
+    @abstractmethod
+    async def get_logs(
+        self,
+        page: int = 1,
+        limit: int = 20,
+        level: Optional[str] = None,
+        module: Optional[str] = None,
+    ) -> List[SystemLogResponse]:
+        pass
+
+    @abstractmethod
+    async def get_logs_count(
+        self, level: Optional[str] = None, module: Optional[str] = None
+    ) -> int:
         pass
