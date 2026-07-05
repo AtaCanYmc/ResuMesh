@@ -94,10 +94,30 @@ Before running the project locally, ensure you have the following installed:
    # Add your API keys to the backend environment variables or docker-compose.yml
    ```
 
-3. **Run with Docker Compose:**
+3. **Run with Docker Compose (Profiles Supported):**
+   The project uses Docker profiles to let you choose which database containers to spin up. The backend is agnostic and will connect to whatever you configured, making this setup highly flexible.
+
+   **Run without databases (Backend + Frontend only):**
    ```bash
    docker compose up --build -d
    ```
+
+   **Run with PostgreSQL:**
+   ```bash
+   docker compose --profile postgres up --build -d
+   ```
+
+   **Run with MongoDB:**
+   ```bash
+   docker compose --profile mongo up --build -d
+   ```
+
+   **Run with both databases:**
+   ```bash
+   docker compose --profile postgres --profile mongo up --build -d
+   ```
+
+   Once running:
    - The UI will be available at `http://localhost:3000`
    - The API will be available at `http://localhost:8000` (or `/api` via NGINX)
    - API Docs available at `http://localhost:8000/docs`
