@@ -2,17 +2,20 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
-from app.routers import admin, projects, search
+from app.routers import admin, auth, projects, search
 from app.schedulers.sync_scheduler import scheduler, start_scheduler
+
+limiter = Limiter(key_func=get_remote_address)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Uygulama başlarken: Zamanlayıcıyı çalıştır
     start_scheduler()
     yield
-    # Uygulama kapanırken: Zamanlayıcıyı güvenli kapat
     scheduler.shutdown()
 
 
@@ -23,16 +26,24 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Configure CORS for frontend
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://resumesh.dev",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
 
-# Include routers
+app.include_router(auth.router, prefix="/api/v1")
 app.include_router(projects.router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1")
 app.include_router(search.router, prefix="/api/v1")

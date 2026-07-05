@@ -9,13 +9,16 @@ from httpx import ASGITransport, AsyncClient
 
 from app.db.base import ProjectRepository
 from app.db.factory import get_db_provider, get_log_provider
-from app.main import app
+from app.main import app, limiter
 from app.schemas.article import ArticleCreate, ArticleResponse
 from app.schemas.certificate import CertificateCreate, CertificateResponse
 from app.schemas.experience import ExperienceCreate, ExperienceResponse
 from app.schemas.project import ProjectCreate, ProjectResponse
 from app.schemas.search import SearchResponse
 from app.schemas.system_log import SystemLogCreate, SystemLogResponse
+from app.services.auth_service import get_current_admin
+
+limiter.enabled = False
 
 
 class MockProvider(ProjectRepository):
@@ -197,6 +200,10 @@ def mock_provider():
     return MockProvider()
 
 
+async def override_get_current_admin():
+    return {"username": "admin", "role": "admin"}
+
+
 @pytest_asyncio.fixture
 async def client(mock_provider):
     """FastAPI bağımlılıklarını mock'layarak asenkron bir HTTP istemcisi döner."""
@@ -206,6 +213,7 @@ async def client(mock_provider):
 
     app.dependency_overrides[get_db_provider] = override_get_provider
     app.dependency_overrides[get_log_provider] = override_get_provider
+    app.dependency_overrides[get_current_admin] = override_get_current_admin
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
