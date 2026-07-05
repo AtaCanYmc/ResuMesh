@@ -26,7 +26,11 @@ import asyncio
 import json
 import os
 
+from dotenv import load_dotenv
+
 from app.services.scrapers.medium_scraper import MediumScraperService
+
+load_dotenv()
 
 
 async def fetch_medium_articles(username: str) -> list[dict]:

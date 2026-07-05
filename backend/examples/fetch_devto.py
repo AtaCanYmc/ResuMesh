@@ -30,7 +30,11 @@ import asyncio
 import json
 import os
 
+from dotenv import load_dotenv
+
 from app.services.scrapers.devto_scraper import DevToScraperService
+
+load_dotenv()
 
 
 async def fetch_devto_articles(

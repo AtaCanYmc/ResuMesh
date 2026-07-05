@@ -24,7 +24,11 @@ import asyncio
 import json
 import os
 
+from dotenv import load_dotenv
+
 from app.services.scrapers.github_scraper import GitHubScraperService
+
+load_dotenv()
 
 
 async def fetch_github_repos(username: str, pat: str | None = None) -> list[dict]:
