@@ -13,7 +13,8 @@ export default function SearchBar({ onSearchResults }) {
 
     const delayDebounceFn = setTimeout(async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/v1/search/?q=${query}`);
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const response = await axios.get(`${apiUrl}/api/v1/search/?q=${query}`);
         onSearchResults(response.data);
       } catch (error) {
         console.error("Arama motoru hatası:", error);
