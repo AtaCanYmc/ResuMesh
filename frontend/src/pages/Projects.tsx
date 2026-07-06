@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Project } from '../types';
 import axios from 'axios';
 import { Code, Star, GitFork, Loader2 } from 'lucide-react';
+import Modal from '../components/Modal';
 
 export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -78,13 +80,23 @@ export default function Projects() {
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredProjects.map((project) => (
-          <div key={project.id} className="bg-gray-900 border border-gray-800 rounded-xl p-6 flex flex-col hover:border-gray-600 transition-colors group">
+          <div
+            key={project.id}
+            className="bg-gray-900 border border-gray-800 rounded-xl p-6 flex flex-col hover:border-gray-600 transition-colors group cursor-pointer"
+            onClick={() => setSelectedProject(project)}
+          >
             <div className="flex justify-between items-start mb-4">
               <h3 className="text-xl font-bold text-gray-100 group-hover:text-blue-400 transition-colors line-clamp-1" title={project.title}>
                 {project.title}
               </h3>
               {project.github_url && (
-                <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white">
+                <a
+                  href={project.github_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-gray-500 hover:text-white"
+                >
                   <Code size={20} />
                 </a>
               )}
@@ -112,6 +124,51 @@ export default function Projects() {
           </div>
         )}
       </div>
+
+      <Modal
+        isOpen={!!selectedProject}
+        onClose={() => setSelectedProject(null)}
+        title={selectedProject?.title}
+      >
+        {selectedProject && (
+          <div className="space-y-6">
+            <p className="text-gray-300 whitespace-pre-wrap leading-relaxed text-base">
+              {selectedProject.description || 'Açıklama bulunmuyor.'}
+            </p>
+
+            <div className="flex gap-2 flex-wrap">
+              {selectedProject.languages?.map(lang => (
+                <span key={lang} className="px-3 py-1 bg-gray-800 text-gray-300 rounded-md text-sm border border-gray-700">
+                  {lang}
+                </span>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-6 pt-4 border-t border-gray-800 text-gray-400">
+              <div className="flex items-center gap-2">
+                <Star size={18} />
+                <span>{selectedProject.stars || 0} Stars</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <GitFork size={18} />
+                <span>{selectedProject.forks || 0} Forks</span>
+              </div>
+              {selectedProject.github_url && (
+                <a
+                  href={selectedProject.github_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="ml-auto flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+                >
+                  <Code size={18} />
+                  <span>GitHub'da Görüntüle</span>
+                </a>
+              )}
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }
