@@ -147,7 +147,9 @@ class SupabaseProvider(
         if module:
             query = query.eq("module", module.upper())
 
-        response = await query.order("timestamp", desc=True).range(start, end).execute()
+        response = (
+            await query.order("created_at", desc=True).range(start, end).execute()
+        )
         return [SystemLogResponse(**item) for item in response.data]
 
     async def get_logs_count(
