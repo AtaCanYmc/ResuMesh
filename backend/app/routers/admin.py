@@ -159,6 +159,7 @@ async def import_linkedin_pdf(
             "message": "PDF başarıyla yapay zeka tarafından parse edildi "
             "ve kaydedildi.",
             "data": structured_data.model_dump(),
+            "raw": raw_text,
         }
 
     except Exception as e:

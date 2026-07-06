@@ -6,7 +6,15 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from app.routers import admin, auth, projects, search
+from app.routers import (
+    admin,
+    articles,
+    auth,
+    certificates,
+    experiences,
+    projects,
+    search,
+)
 from app.schedulers.sync_scheduler import scheduler, start_scheduler
 
 limiter = Limiter(key_func=get_remote_address)
@@ -47,6 +55,9 @@ app.include_router(auth.router, prefix="/api/v1")
 app.include_router(projects.router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1")
 app.include_router(search.router, prefix="/api/v1")
+app.include_router(articles.router, prefix="/api/v1")
+app.include_router(experiences.router, prefix="/api/v1")
+app.include_router(certificates.router, prefix="/api/v1")
 
 
 @app.get("/")
