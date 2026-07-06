@@ -1,7 +1,9 @@
 import os
+from typing import Type
 
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
+from pydantic import BaseModel
 
 from app.llm.base import LLMProvider
 from app.services.template_service import TemplateService
@@ -31,3 +33,9 @@ class OpenAIProvider(LLMProvider):
             {"job_description": job_description, "user_context": user_context}
         )
         return response.content
+
+    async def generate_structured_output(
+        self, prompt: str, response_model: Type[BaseModel]
+    ) -> BaseModel:
+        structured_llm = self.llm.with_structured_output(response_model)
+        return await structured_llm.ainvoke(prompt)

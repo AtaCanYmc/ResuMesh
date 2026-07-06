@@ -2,7 +2,7 @@ import asyncio
 import os
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, File, HTTPException, Query, Request, UploadFile
 from pydantic import BaseModel, HttpUrl
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -25,6 +25,7 @@ from app.llm.factory import get_llm_provider
 from app.services.auth_service import get_current_admin
 from app.services.cv_generator_service import CVGeneratorService
 from app.services.ingestion_service import IngestionService
+from app.services.pdf_parser_service import LinkedInPDFParser
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -119,3 +120,44 @@ async def get_system_logs(
     logs = await provider.get_logs(page=page, limit=limit, level=level, module=module)
 
     return {"total": total_count, "page": page, "limit": limit, "data": logs}
+
+
+@router.post("/import/linkedin-pdf")
+@limiter.limit("5/minute")
+async def import_linkedin_pdf(
+    request: Request,
+    file: UploadFile = File(...),
+    current_admin: dict = Depends(get_current_admin),
+    experience_repo: IExperienceRepository = Depends(get_experience_repo),
+    certificate_repo: ICertificateRepository = Depends(get_certificate_repo),
+):
+    """Admin panelinden yüklenen LinkedIn profil PDF'ini akıllıca parçalar
+    ve veritabanına kaydeder."""
+    if not file.filename.endswith(".pdf"):
+        raise HTTPException(
+            status_code=400, detail="Lütfen geçerli bir PDF dosyası yükleyin."
+        )
+
+    try:
+        pdf_bytes = await file.read()
+        raw_text = LinkedInPDFParser.extract_raw_text(pdf_bytes)
+
+        llm_provider = get_llm_provider()
+        structured_data = await LinkedInPDFParser.parse_with_llm(raw_text, llm_provider)
+
+        # Veritabanına kaydet (Upsert / Create)
+        for exp in structured_data.experiences:
+            await experience_repo.create_experience(exp)
+
+        for cert in structured_data.certificates:
+            await certificate_repo.create_certificate(cert)
+
+        return {
+            "status": "success",
+            "message": "PDF başarıyla yapay zeka tarafından parse edildi "
+            "ve kaydedildi.",
+            "data": structured_data.model_dump(),
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"İşlem başarısız: {str(e)}")
