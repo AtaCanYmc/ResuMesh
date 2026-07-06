@@ -1,3 +1,5 @@
+import asyncio
+import os
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -22,6 +24,7 @@ from app.db.dependencies import (
 from app.llm.factory import get_llm_provider
 from app.services.auth_service import get_current_admin
 from app.services.cv_generator_service import CVGeneratorService
+from app.services.ingestion_service import IngestionService
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -52,6 +55,50 @@ async def generate_cv(
         cv_markdown = await cv_service.generate_tailored_cv(str(payload.job_url))
 
         return {"status": "success", "cv_markdown": cv_markdown}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/refresh-data")
+@limiter.limit("2/minute")
+async def refresh_data(
+    request: Request,
+    project_repo: IProjectRepository = Depends(get_project_repo),
+    article_repo: IArticleRepository = Depends(get_article_repo),
+    log_repo: ISystemLogRepository = Depends(get_system_log_repo),
+    admin=Depends(get_current_admin),
+):
+    """Admin endpoint to manually trigger data scraping from platforms."""
+    github_user = os.getenv("GITHUB_USERNAME")
+    medium_user = os.getenv("MEDIUM_USERNAME")
+    devto_user = os.getenv("DEVTO_USERNAME")
+
+    tasks = []
+
+    if github_user:
+        tasks.append(
+            IngestionService.fetch_github_repos(github_user, project_repo, log_repo)
+        )
+    if medium_user:
+        tasks.append(
+            IngestionService.fetch_medium_articles(medium_user, article_repo, log_repo)
+        )
+    if devto_user:
+        tasks.append(
+            IngestionService.fetch_devto_articles(devto_user, article_repo, log_repo)
+        )
+
+    if not tasks:
+        raise HTTPException(
+            status_code=400, detail="No platform usernames configured in environment."
+        )
+
+    try:
+        await asyncio.gather(*tasks)
+        return {
+            "status": "success",
+            "message": "Data successfully refreshed from configured platforms.",
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
