@@ -146,10 +146,12 @@ async def import_linkedin_pdf(
         structured_data = await LinkedInPDFParser.parse_with_llm(raw_text, llm_provider)
 
         # Veritabanına kaydet (Upsert / Create)
-        for exp in structured_data.experiences:
+        experiences = getattr(structured_data, "experiences", []) or []
+        for exp in experiences:
             await experience_repo.create_experience(exp)
 
-        for cert in structured_data.certificates:
+        certificates = getattr(structured_data, "certificates", []) or []
+        for cert in certificates:
             await certificate_repo.create_certificate(cert)
 
         return {
