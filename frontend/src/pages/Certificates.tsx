@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Certificate } from '../types';
 import axios from 'axios';
 import { Loader2, Award, ExternalLink, Calendar } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function Certificates() {
   const [certificates, setCertificates] = useState<Certificate[]>([]);
@@ -30,6 +31,11 @@ export default function Certificates() {
   }
 
   return (
+    <>
+    <SEO
+      title="Sertifikalar | Başarılarım"
+      description="Sahip olduğum lisanslar, sertifikalar ve yetkinlik belgeleri."
+    />
     <div className="py-8">
       <div className="mb-8">
         <h1 className="text-4xl font-extrabold tracking-tight text-white mb-2">Sertifikalar</h1>
@@ -79,5 +85,6 @@ export default function Certificates() {
         )}
       </div>
     </div>
+    </>
   );
 }

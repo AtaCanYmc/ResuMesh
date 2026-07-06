@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Experience } from '../types';
 import axios from 'axios';
 import { Loader2, Briefcase } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function Experiences() {
   const [experiences, setExperiences] = useState<Experience[]>([]);
@@ -30,6 +31,11 @@ export default function Experiences() {
   }
 
   return (
+    <>
+    <SEO
+      title="Deneyimler | İş Geçmişim"
+      description="Kariyer yolculuğum ve profesyonel iş geçmişim."
+    />
     <div className="py-8 max-w-4xl mx-auto">
       <div className="mb-12 text-center">
         <h1 className="text-4xl font-extrabold tracking-tight text-white mb-4">İş Deneyimleri</h1>
@@ -76,5 +82,6 @@ export default function Experiences() {
         ))}
       </div>
     </div>
+    </>
   );
 }

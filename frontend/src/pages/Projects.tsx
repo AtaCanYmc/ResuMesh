@@ -6,6 +6,7 @@ import Modal from '../components/Modal';
 import { useQuery } from '@tanstack/react-query';
 import { ContentCard } from '../components/ui/ContentCard';
 import { ContentCardSkeleton } from '../components/ui/ContentCardSkeleton';
+import SEO from '../components/SEO';
 
 export default function Projects() {
   const [filter, setFilter] = useState('All');
@@ -52,6 +53,11 @@ export default function Projects() {
   });
 
   return (
+    <>
+    <SEO
+      title="Projeler | ResuMesh Portfolyo"
+      description="GitHub üzerinden senkronize edilen aktif açık kaynak projelerim."
+    />
     <div className="py-4 md:py-8">
       <div className="flex justify-between items-end mb-8">
         <div>
@@ -198,5 +204,6 @@ export default function Projects() {
         )}
       </Modal>
     </div>
+    </>
   );
 }

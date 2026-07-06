@@ -3,6 +3,7 @@ import { Article } from '../types';
 import axios from 'axios';
 import { Loader2, ExternalLink, Clock, Calendar } from 'lucide-react';
 import Modal from '../components/Modal';
+import SEO from '../components/SEO';
 
 export default function Articles() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -35,6 +36,11 @@ export default function Articles() {
   }
 
   return (
+    <>
+    <SEO
+      title="Makaleler | Teknik Yazılarım"
+      description="Yapay zeka, backend mimarileri ve React üzerine teknik yazılarım."
+    />
     <div className="py-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
         <div>
@@ -154,5 +160,6 @@ export default function Articles() {
         )}
       </Modal>
     </div>
+    </>
   );
 }

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import HeroSection from '../components/home/HeroSection';
 import QuickMetrics from '../components/home/QuickMetrics';
 import FeaturedProjects from '../components/home/FeaturedProjects';
+import SEO from '../components/SEO';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -20,6 +21,11 @@ const Home: React.FC = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
+    <>
+    <SEO
+      title="Ata Can | AI & FinTech Developer"
+      description="Dokuz Eylül Üniversitesi Bilgisayar Mühendisliği geçmişimle, ölçeklenebilir backend mimarileri ve otomasyon süreçleri üzerine çalışıyorum."
+    />
     <div className="flex flex-col xl:flex-row items-center xl:items-start justify-between h-full py-8 xl:py-12 gap-12">
 
       {/* Left: Bio, CTA & Metrics orchestrated by framer-motion stagger */}
@@ -68,6 +74,7 @@ const Home: React.FC = () => {
         </div>
       </motion.div>
     </div>
+    </>
   );
 };
 

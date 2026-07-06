@@ -7,8 +7,10 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import ErrorBoundary from './components/ui/ErrorBoundary';
+import { HelmetProvider } from 'react-helmet-async';
 
 // Lazy loading pages for Code Splitting
+
 const Home = React.lazy(() => import('./pages/Home'));
 const Experiences = React.lazy(() => import('./pages/Experiences'));
 const Projects = React.lazy(() => import('./pages/Projects'));
@@ -63,8 +65,9 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
+    <HelmetProvider>
+      <ThemeProvider>
+        <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <Toaster
             position="top-right"
@@ -80,7 +83,8 @@ function App() {
           <RouterProvider router={router} />
         </AuthProvider>
       </QueryClientProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </HelmetProvider>
   );
 }
 
