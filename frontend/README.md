@@ -29,6 +29,7 @@ This is the frontend user interface for ResuMesh, designed as a modern dark-them
    ```bash
    cp .env.example .env.local
    ```
+   *(Kopyaladıktan sonra `VITE_API_URL=http://localhost:8000/api/v1` değerini kontrol ederek backend URL'nizle eşleştiğinden emin olun.)*
 
 4. Start the Vite development server:
    ```bash
@@ -40,7 +41,7 @@ Open `http://localhost:5173` in your browser.
 ## 📂 Codebase Architecture
 
 * `/src/components`: Atomic and reusable UI primitives (e.g., `SearchBar.tsx`).
-* `/src/pages`: Higher-level views and route components (e.g., `AdminDashboard.jsx`).
+* `/src/pages`: Higher-level views and route components (e.g., `AdminDashboard.tsx`).
 * `/src/assets`: Static visuals and global design vectors.
 
 ## 🧹 Linting and Formatting
@@ -58,3 +59,5 @@ pip install pre-commit
 pre-commit install
 ```
 This will automatically check linting rules on every commit.
+
+*(Eğer sadece Node tabanlı araçlarla çalışmak isterseniz, ileride `husky` ve `lint-staged` entegre edilerek `npm run lint` süreçleri otomatize edilebilir. Şimdilik root dizinindeki pre-commit zorunludur.)*

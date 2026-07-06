@@ -22,9 +22,10 @@ This is the core asynchronous API engine powering ResuMesh, built with **FastAPI
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
-2. Install dependencies:
+2. Install dependencies and Playwright browsers:
    ```bash
    pip install -r requirements.txt
+   playwright install chromium
    ```
 
 3. Run database migrations using **Alembic**:
@@ -40,6 +41,8 @@ This is the core asynchronous API engine powering ResuMesh, built with **FastAPI
 ## 🔐 Environment Variables (.env)
 
 Create a `.env` file based on `.env.example`:
+
+> 💡 **Kolay Başlangıç (Quick Start):** Projeyi en hızlı şekilde test etmek ve API key ayarlarıyla uğraşmamak için `.env` dosyanızda `DB_PROVIDER=local-postgres` ve `LLM_PROVIDER=mock` kullanabilirsiniz.
 
 * `DATABASE_URL`: Connection string for PostgreSQL/Supabase.
 * `DB_PROVIDER`: `local-postgres`, `mongodb`, `supabase`, or `firebase`.

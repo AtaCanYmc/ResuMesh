@@ -11,9 +11,15 @@
 
 ## 📌 Overview
 
+![Dark Mode UI Placeholder](https://via.placeholder.com/800x400?text=Dark+Mode+UI+Screenshot)
+![Search & Admin Panel Placeholder](https://via.placeholder.com/800x400?text=Search+and+Admin+Panel+Screenshot)
+
 ResuMesh is a self-hosted, dynamic portfolio hub designed for modern developers. Instead of maintaining static personal websites, ResuMesh continuously syncs your digital footprint from **GitHub**, **Medium**, and **Dev.to** into a single, unified database.
 
-It features a lightning-fast **Global Search Bar** for recruiters to filter your skills instantly and an **AI-driven CV Generator** that scrapes job descriptions and generates a tailored, high-impact resume based on your actual career data.
+It features:
+- ⚡ **Global Search Bar**: Lightning-fast filtering of your skills, projects, and articles for recruiters.
+- ✨ **AI CV Tailoring**: Groq/OpenAI integration for real-time, tailored PDF resume generation based on specific job descriptions.
+- 🔄 **Continuous Sync**: Automatically aggregates your digital footprint into a single unified database.
 
 ## 📂 Project Structure & Component READMEs
 
@@ -151,7 +157,8 @@ docker compose run --rm backend alembic upgrade head
 
 ## 🤝 Contributing & Code Quality
 
-Before submitting a pull request, make sure to install the **pre-commit** hooks to ensure consistent code styling:
+Before submitting a pull request, make sure to install the **pre-commit** hooks to ensure consistent code styling.
+*(Not: Bu proje hem Python hem de Node.js standartlarını korumak için pre-commit kullanır. Sadece frontend tarafına katkı yapacak olsanız bile sisteminizde Python kurulu olduğundan emin olun.)*
 ```bash
 pip install pre-commit
 pre-commit install
