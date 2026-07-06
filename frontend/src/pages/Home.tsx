@@ -81,7 +81,13 @@ const Home: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
             {/* Project 1 */}
-            <a href="#" className="group flex flex-col p-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl hover:border-blue-500 dark:hover:border-blue-500 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shadow-sm">
+            <a
+              href="https://github.com/atacan/lumina"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex flex-col p-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl hover:border-blue-500 dark:hover:border-blue-500 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shadow-sm"
+              aria-label="Lumina projesine git"
+            >
               <div className="flex items-start justify-between mb-3">
                 <div className="font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Lumina</div>
                 <ExternalLink size={16} className="text-gray-400 group-hover:text-blue-500 transition-colors" aria-hidden="true" />
@@ -90,7 +96,13 @@ const Home: React.FC = () => {
             </a>
 
             {/* Project 2 */}
-            <a href="#" className="group flex flex-col p-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl hover:border-indigo-500 dark:hover:border-indigo-500 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 shadow-sm">
+            <a
+              href="https://github.com/atacan/cukurvar"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex flex-col p-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl hover:border-indigo-500 dark:hover:border-indigo-500 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 shadow-sm"
+              aria-label="ÇukurVar projesine git"
+            >
               <div className="flex items-start justify-between mb-3">
                 <div className="font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">ÇukurVar</div>
                 <ExternalLink size={16} className="text-gray-400 group-hover:text-indigo-500 transition-colors" aria-hidden="true" />
@@ -99,7 +111,13 @@ const Home: React.FC = () => {
             </a>
 
             {/* Project 3 */}
-            <a href="#" className="group flex flex-col p-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl hover:border-purple-500 dark:hover:border-purple-500 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 shadow-sm">
+            <a
+              href="https://github.com/atacan/sentinelcell"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex flex-col p-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl hover:border-purple-500 dark:hover:border-purple-500 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 shadow-sm"
+              aria-label="SentinelCell projesine git"
+            >
               <div className="flex items-start justify-between mb-3">
                 <div className="font-bold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">SentinelCell</div>
                 <ExternalLink size={16} className="text-gray-400 group-hover:text-purple-500 transition-colors" aria-hidden="true" />

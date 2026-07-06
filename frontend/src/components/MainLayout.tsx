@@ -1,12 +1,26 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink, Link, useLocation } from 'react-router-dom';
-import { User, Briefcase, FolderGit, BookOpen, Award, Settings, Menu, X } from 'lucide-react';
+import { User, Briefcase, FolderGit, BookOpen, Award, Settings, Menu, X, Moon, Sun } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import SearchBar from './SearchBar';
+import { useTheme } from '../context/ThemeContext';
+import FocusTrap from 'focus-trap-react';
 
 const MainLayout: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { theme, setTheme } = useTheme();
+
+  const toggleTheme = () => {
+    // If system, explicitly set based on current appearance or just toggle between dark/light
+    if (theme === 'dark') setTheme('light');
+    else if (theme === 'light') setTheme('dark');
+    else {
+      // It's 'system', so switch to opposite of current system
+      const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setTheme(isSystemDark ? 'light' : 'dark');
+    }
+  };
 
   const navItems = [
     { path: '/', label: 'Hakkımda', icon: <User size={20} aria-hidden="true" /> },
@@ -66,27 +80,29 @@ const MainLayout: React.FC = () => {
       {/* Mobile Sidebar (Drawer) */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <>
-            {/* Overlay */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={closeMobileMenu}
-              className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm"
-              aria-hidden="true"
-            />
-            {/* Drawer */}
-            <motion.aside
-              initial={{ x: '-100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '-100%' }}
-              transition={{ type: 'spring', bounce: 0, duration: 0.3 }}
-              className="fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col z-50 md:hidden shadow-2xl"
-            >
-              <SidebarContent />
-            </motion.aside>
-          </>
+          <FocusTrap focusTrapOptions={{ clickOutsideDeactivates: true, onDeactivate: closeMobileMenu }}>
+            <div className="fixed inset-0 z-50 md:hidden">
+              {/* Overlay */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={closeMobileMenu}
+                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                aria-hidden="true"
+              />
+              {/* Drawer */}
+              <motion.aside
+                initial={{ x: '-100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '-100%' }}
+                transition={{ type: 'spring', bounce: 0, duration: 0.3 }}
+                className="absolute inset-y-0 left-0 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col shadow-2xl"
+              >
+                <SidebarContent />
+              </motion.aside>
+            </div>
+          </FocusTrap>
         )}
       </AnimatePresence>
 
@@ -110,10 +126,25 @@ const MainLayout: React.FC = () => {
             </div>
           </div>
 
-          <div className="ml-4 flex items-center flex-shrink-0">
+          <div className="ml-4 flex items-center flex-shrink-0 space-x-2">
+
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              aria-label="Temayı Değiştir"
+              title="Temayı Değiştir"
+            >
+              {theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches) ? (
+                <Sun size={20} aria-hidden="true" />
+              ) : (
+                <Moon size={20} aria-hidden="true" />
+              )}
+            </button>
+
             <Link
               to="/admin/login"
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 transition-colors text-sm font-medium px-3 py-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 transition-colors text-sm font-medium px-3 py-2 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
               aria-label="Admin Girişi"
               title="Admin Girişi"
             >
