@@ -6,7 +6,7 @@ from pydantic import BaseModel, HttpUrl
 
 class CertificateBase(BaseModel):
     name: str
-    issuing_organization: str
+    issuing_organization: Optional[str] = None
     issue_date: Optional[date] = None
     credential_id: Optional[str] = None
     credential_url: Optional[HttpUrl] = None
