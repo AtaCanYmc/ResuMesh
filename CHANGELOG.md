@@ -1,5 +1,36 @@
 # Changelog
 
+## [1.3.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.2.0...v1.3.0) (2026-07-06)
+
+
+### Features
+
+* add admin endpoint to refresh data from configured platforms ([b2bab30](https://github.com/AtaCanYmc/ResuMesh/commit/b2bab30b1cb6195cdaee9ffb9c42a73e76b71044))
+* add articles, experiences, and certificates endpoints ([98e2476](https://github.com/AtaCanYmc/ResuMesh/commit/98e247631b163fd783fe751165130807b985a720))
+* add GeneratedCV model and database schema for AI CV generation; update README with migration instructions ([baefd09](https://github.com/AtaCanYmc/ResuMesh/commit/baefd096ceb29313697edc79b0ae2d0c38b731ee))
+* add LinkedIn PDF import functionality and sorting options in Projects component ([31ab037](https://github.com/AtaCanYmc/ResuMesh/commit/31ab03789cd02652b69d36184d9991cf3cb16dda))
+* add LinkedIn PDF import functionality to admin panel; implement PDF parsing and structured data storage ([6fcd83a](https://github.com/AtaCanYmc/ResuMesh/commit/6fcd83a751ec31f539ee1549303ce234d4b04ecd))
+* add modal functionality for article and project details in Articles and Projects components ([6b5b360](https://github.com/AtaCanYmc/ResuMesh/commit/6b5b360e195bd1b966e0894531db34039a0c3f5f))
+* add scraping services for GitHub, Medium, and Dev.to; include example scripts and update README ([749e17e](https://github.com/AtaCanYmc/ResuMesh/commit/749e17eeaba27d3fdbbcc3c6a61cd32eff0c3c38))
+* implement form validation and error handling in AdminLogin component ([66c1c62](https://github.com/AtaCanYmc/ResuMesh/commit/66c1c62a5ddcd7b09b7163555faa521cb79ad510))
+* implement lazy loading for pages and add a page loader component ([07ec788](https://github.com/AtaCanYmc/ResuMesh/commit/07ec7889a4c954837c23fe6e0c53cb8681b80301))
+* load environment variables in scraper modules for improved configuration ([a7c23a2](https://github.com/AtaCanYmc/ResuMesh/commit/a7c23a269289a49a8b7ad1919a0b0f11cd831394))
+
+
+### Bug Fixes
+
+* add additional localhost origins for CORS configuration ([692a7be](https://github.com/AtaCanYmc/ResuMesh/commit/692a7be4c937c4f3195d6b24ffd78cf11b7d49b2))
+* add trailing slashes to API endpoint URLs in Articles, Certificates, Experiences, Projects, and SearchBar components ([a6c51c1](https://github.com/AtaCanYmc/ResuMesh/commit/a6c51c12ae07f7c0713b185dd13c834f7793aebb))
+* downgrade bcrypt version to 4.0.1 for compatibility ([3716950](https://github.com/AtaCanYmc/ResuMesh/commit/37169506569698903e4ad0cdf01ca6123d59a9b3))
+* handle missing experiences and certificates in structured data ([0ecb75b](https://github.com/AtaCanYmc/ResuMesh/commit/0ecb75bec146c42072e735a397aab7d8d5ffcf71))
+* make issuing_organization optional in CertificateBase model ([40c2869](https://github.com/AtaCanYmc/ResuMesh/commit/40c28695d327e20ded3bbba85b937ac2af3b4b1f))
+* standardize platform and reading time property names in Articles component ([df9f9d8](https://github.com/AtaCanYmc/ResuMesh/commit/df9f9d833babc8791650201bf081aa7747bb5ed6))
+* update API endpoints to include versioning in Articles, Certificates, and Experiences components ([30b4af1](https://github.com/AtaCanYmc/ResuMesh/commit/30b4af120f8cf504484794ddf31c13e61ede6fd0))
+* update docker-compose to include env_file and remove sensitive environment variables ([7c563d9](https://github.com/AtaCanYmc/ResuMesh/commit/7c563d9eaf7c7e2d517a0beefd0bd673f8921a5f))
+* update import for AsyncClientOptions in supabase_provider.py ([f736acc](https://github.com/AtaCanYmc/ResuMesh/commit/f736acc81499b3a65a52e14ba7bb99ea21fc7953))
+* update import for AsyncClientOptions in supabase_provider.py ([2b357c0](https://github.com/AtaCanYmc/ResuMesh/commit/2b357c03a633318e23a7c2b741b043b64d3beeb2))
+* update query ordering to use created_at instead of timestamp ([bace5db](https://github.com/AtaCanYmc/ResuMesh/commit/bace5db6aeb7d5f9ddd6facba4caf563c4a76bcd))
+
 ## [1.2.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.1.0...v1.2.0) (2026-07-05)
 
 
