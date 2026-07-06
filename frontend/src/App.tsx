@@ -1,12 +1,11 @@
-import React, { Suspense } from 'react';
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import React from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import MainLayout from './components/MainLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
-import PageLoader from './components/PageLoader';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 
 // Lazy loading pages for Code Splitting
@@ -77,9 +76,8 @@ function App() {
               },
             }}
           />
-          <Suspense fallback={<PageLoader />}>
-            <RouterProvider router={router} />
-          </Suspense>
+          {/* Suspense is moved to MainLayout so layout stays intact during page loads */}
+          <RouterProvider router={router} />
         </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>
