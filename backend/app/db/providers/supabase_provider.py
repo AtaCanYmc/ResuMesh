@@ -2,8 +2,8 @@ import asyncio
 import os
 from typing import List, Optional
 
-from supabase import Client, create_client
-from supabase.client import ClientOptions
+from supabase._async.client import AsyncClient
+from supabase.lib.client_options import ClientOptions
 
 from app.db.base import (
     IArticleRepository,
@@ -38,10 +38,10 @@ class SupabaseProvider(
             )
 
         # Configure client for asynchronous HTTP requests
-        self.client: Client = create_client(
+        self.client: AsyncClient = AsyncClient(
             supabase_url=self.url,
             supabase_key=self.key,
-            options=ClientOptions(postgrest_client_timeout=10, async_client=True),
+            options=ClientOptions(postgrest_client_timeout=10),
         )
 
     async def create_project(self, project: ProjectCreate) -> ProjectResponse:
