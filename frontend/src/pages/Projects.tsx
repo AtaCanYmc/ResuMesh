@@ -8,6 +8,7 @@ export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
+  const [sortBy, setSortBy] = useState<'stars' | 'forks' | 'date_desc' | 'date_asc' | 'alphabetical'>('stars');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   useEffect(() => {
@@ -33,6 +34,23 @@ export default function Projects() {
     ? projects
     : projects.filter(p => p.languages?.includes(filter));
 
+  const sortedProjects = [...filteredProjects].sort((a, b) => {
+    switch (sortBy) {
+      case 'stars':
+        return (b.stars || 0) - (a.stars || 0);
+      case 'forks':
+        return (b.forks || 0) - (a.forks || 0);
+      case 'date_desc':
+        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+      case 'date_asc':
+        return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
+      case 'alphabetical':
+        return a.title.localeCompare(b.title);
+      default:
+        return 0;
+    }
+  });
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -50,36 +68,52 @@ export default function Projects() {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        <button
-          onClick={() => setFilter('All')}
-          className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-            filter === 'All'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'
-          }`}
-        >
-          All
-        </button>
-        {allLanguages.map(lang => (
+      {/* Filters & Sorting */}
+      <div className="flex flex-col md:flex-row gap-4 mb-8 justify-between items-start md:items-center">
+        <div className="flex flex-wrap gap-2">
           <button
-            key={lang}
-            onClick={() => setFilter(lang)}
+            onClick={() => setFilter('All')}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              filter === lang
+              filter === 'All'
                 ? 'bg-blue-600 text-white'
                 : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'
             }`}
           >
-            {lang}
+            All
           </button>
-        ))}
+          {allLanguages.map(lang => (
+            <button
+              key={lang}
+              onClick={() => setFilter(lang)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                filter === lang
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'
+              }`}
+            >
+              {lang}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-lg p-1 px-3">
+          <span className="text-sm font-medium text-gray-400">Sırala:</span>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+            className="bg-transparent text-white text-sm focus:ring-0 focus:outline-none border-none py-2 cursor-pointer"
+          >
+            <option value="stars" className="bg-gray-900">Yıldız Sayısına Göre</option>
+            <option value="forks" className="bg-gray-900">Fork Sayısına Göre</option>
+            <option value="date_desc" className="bg-gray-900">Eklenme Tarihi (En Yeni)</option>
+            <option value="date_asc" className="bg-gray-900">Eklenme Tarihi (En Eski)</option>
+            <option value="alphabetical" className="bg-gray-900">Alfabetik (A-Z)</option>
+          </select>
+        </div>
       </div>
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProjects.map((project) => (
+        {sortedProjects.map((project) => (
           <div
             key={project.id}
             className="bg-gray-900 border border-gray-800 rounded-xl p-6 flex flex-col hover:border-gray-600 transition-colors group cursor-pointer"
@@ -118,7 +152,7 @@ export default function Projects() {
             </div>
           </div>
         ))}
-        {filteredProjects.length === 0 && (
+        {sortedProjects.length === 0 && (
           <div className="col-span-full py-12 text-center text-gray-500">
              Bu filtreye uygun proje bulunamadı.
           </div>

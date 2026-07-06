@@ -7,6 +7,7 @@ export interface Project {
   tags: string[];
   stars: number;
   forks: number;
+  created_at?: string;
 }
 
 export interface Article {
