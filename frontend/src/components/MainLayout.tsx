@@ -39,19 +39,22 @@ const MainLayout: React.FC = () => {
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
-  const SidebarContent = () => (
+  // Extracted Sidebar content allowing unique layoutId suffix to prevent framer-motion collisions
+  const SidebarContent = ({ isMobile = false }: { isMobile?: boolean }) => (
     <>
       <div className="p-6 flex items-center justify-between">
         <h1 className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 bg-clip-text text-transparent">
           ResuMesh
         </h1>
-        <button
-          onClick={closeMobileMenu}
-          className="md:hidden text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-md p-1"
-          aria-label="Menüyü Kapat"
-        >
-          <X size={24} aria-hidden="true" />
-        </button>
+        {isMobile && (
+          <button
+            onClick={closeMobileMenu}
+            className="md:hidden text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-md p-2 -mr-2"
+            aria-label="Menüyü Kapat"
+          >
+            <X size={24} aria-hidden="true" />
+          </button>
+        )}
       </div>
       <nav className="flex-1 px-4 space-y-2 mt-4 relative">
         {navItems.map((item) => {
@@ -70,7 +73,7 @@ const MainLayout: React.FC = () => {
             >
               {isActive && (
                 <motion.div
-                  layoutId="activeTab"
+                  layoutId={`activeTab-${isMobile ? 'mobile' : 'desktop'}`}
                   className="absolute inset-0 bg-blue-100 border border-blue-200 dark:bg-blue-600/20 dark:border-blue-600/30 rounded-lg -z-10"
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 />
@@ -88,7 +91,7 @@ const MainLayout: React.FC = () => {
     <div className="flex h-screen bg-gray-50 text-gray-900 dark:bg-black dark:text-white overflow-hidden transition-colors duration-300">
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col z-20">
-        <SidebarContent />
+        <SidebarContent isMobile={false} />
       </aside>
 
       {/* Mobile Sidebar (Drawer) */}
@@ -111,7 +114,7 @@ const MainLayout: React.FC = () => {
                 transition={{ type: 'spring', bounce: 0, duration: 0.3 }}
                 className="absolute inset-y-0 left-0 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col shadow-2xl"
               >
-                <SidebarContent />
+                <SidebarContent isMobile={true} />
               </motion.aside>
             </div>
           </FocusTrap>
@@ -125,7 +128,7 @@ const MainLayout: React.FC = () => {
           <div className="flex items-center flex-1 min-w-0">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="md:hidden mr-4 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-md p-1"
+              className="md:hidden mr-2 sm:mr-4 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-md p-3"
               aria-label="Menüyü Aç"
             >
               <Menu size={24} aria-hidden="true" />
@@ -134,10 +137,10 @@ const MainLayout: React.FC = () => {
               <SearchBar />
             </div>
           </div>
-          <div className="ml-4 flex items-center flex-shrink-0 space-x-2">
+          <div className="ml-4 flex items-center flex-shrink-0 space-x-1 sm:space-x-2">
             <button
               onClick={toggleTheme}
-              className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              className="p-3 text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
               aria-label="Temayı Değiştir"
               title="Temayı Değiştir"
             >
@@ -149,7 +152,7 @@ const MainLayout: React.FC = () => {
             </button>
             <Link
               to="/admin/login"
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 transition-colors text-sm font-medium px-3 py-2 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 transition-colors text-sm font-medium p-3 sm:px-3 sm:py-2 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
               aria-label="Admin Girişi"
               title="Admin Girişi"
             >

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Project } from '../types';
 import axios from 'axios';
-import { Star, GitFork, Loader2, Code } from 'lucide-react';
+import { Star, GitFork, Loader2, Code, FolderSearch, ChevronDown } from 'lucide-react';
 import Modal from '../components/Modal';
 import { useQuery } from '@tanstack/react-query';
 import { ContentCard } from '../components/ui/ContentCard';
+import { ContentCardSkeleton } from '../components/ui/ContentCardSkeleton';
 
 export default function Projects() {
   const [filter, setFilter] = useState('All');
@@ -50,14 +51,6 @@ export default function Projects() {
     }
   });
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-[50vh]">
-        <Loader2 className="w-10 h-10 animate-spin text-blue-500" aria-hidden="true" />
-      </div>
-    );
-  }
-
   return (
     <div className="py-4 md:py-8">
       <div className="flex justify-between items-end mb-8">
@@ -69,10 +62,11 @@ export default function Projects() {
 
       {/* Filters & Sorting */}
       <div className="flex flex-col md:flex-row gap-4 mb-8 justify-between items-start md:items-center">
-        <div className="flex flex-wrap gap-2">
+        {/* Horizontal Scrollable Filters */}
+        <div className="flex gap-2 overflow-x-auto whitespace-nowrap pb-2 scrollbar-hide w-full md:w-auto -mx-4 px-4 md:mx-0 md:px-0">
           <button
             onClick={() => setFilter('All')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shrink-0 ${
               filter === 'All'
                 ? 'bg-blue-600 text-white'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
@@ -84,7 +78,7 @@ export default function Projects() {
             <button
               key={lang}
               onClick={() => setFilter(lang)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shrink-0 ${
                 filter === lang
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
@@ -94,44 +88,67 @@ export default function Projects() {
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-3 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-800 rounded-lg p-1 px-3 shadow-sm">
-          <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Sırala:</span>
+
+        {/* Custom Headless Select */}
+        <div className="relative shrink-0 w-full md:w-auto">
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="bg-transparent text-gray-900 dark:text-white text-sm focus:ring-0 focus:outline-none border-none py-2 cursor-pointer"
+            className="w-full appearance-none bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 text-sm rounded-lg pl-4 pr-10 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm"
           >
-            <option value="stars" className="dark:bg-gray-900">Yıldız Sayısına Göre</option>
-            <option value="forks" className="dark:bg-gray-900">Fork Sayısına Göre</option>
-            <option value="date_desc" className="dark:bg-gray-900">Eklenme Tarihi (En Yeni)</option>
-            <option value="date_asc" className="dark:bg-gray-900">Eklenme Tarihi (En Eski)</option>
-            <option value="alphabetical" className="dark:bg-gray-900">Alfabetik (A-Z)</option>
+            <option value="stars">Yıldız Sayısına Göre</option>
+            <option value="forks">Fork Sayısına Göre</option>
+            <option value="date_desc">Eklenme Tarihi (En Yeni)</option>
+            <option value="date_asc">Eklenme Tarihi (En Eski)</option>
+            <option value="alphabetical">Alfabetik (A-Z)</option>
           </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-gray-400">
+            <ChevronDown size={16} aria-hidden="true" />
+          </div>
         </div>
       </div>
 
       {/* Grid using ContentCard */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sortedProjects.map((project) => (
-          <ContentCard
-            key={project.id}
-            title={project.title}
-            description={project.description || ''}
-            tags={project.languages || []}
-            externalLink={project.github_url || undefined}
-            icon={<Code size={20} />}
-            onClick={() => setSelectedProject(project)}
-            footerContent={
-              <>
-                <span className="flex items-center gap-1"><Star size={14} aria-hidden="true" /> {project.stars || 0}</span>
-                <span className="flex items-center gap-1"><GitFork size={14} aria-hidden="true" /> {project.forks || 0}</span>
-              </>
-            }
-          />
-        ))}
-        {sortedProjects.length === 0 && (
-          <div className="col-span-full py-12 text-center text-gray-500 dark:text-gray-400">
-             Bu filtreye uygun proje bulunamadı.
+        {isLoading ? (
+          // Skeleton Loaders
+          Array.from({ length: 6 }).map((_, idx) => (
+            <ContentCardSkeleton key={idx} />
+          ))
+        ) : sortedProjects.length > 0 ? (
+          sortedProjects.map((project) => (
+            <ContentCard
+              key={project.id}
+              title={project.title}
+              description={project.description || ''}
+              tags={project.languages || []}
+              externalLink={project.github_url || undefined}
+              icon={<Code size={20} />}
+              onClick={() => setSelectedProject(project)}
+              footerContent={
+                <>
+                  <span className="flex items-center gap-1"><Star size={14} aria-hidden="true" /> {project.stars || 0}</span>
+                  <span className="flex items-center gap-1"><GitFork size={14} aria-hidden="true" /> {project.forks || 0}</span>
+                </>
+              }
+            />
+          ))
+        ) : (
+          // Empty State
+          <div className="col-span-full py-16 flex flex-col items-center justify-center text-center">
+            <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-full flex items-center justify-center mb-4">
+              <FolderSearch size={32} aria-hidden="true" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Proje Bulunamadı</h3>
+            <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-6">
+              Seçtiğiniz <span className="font-semibold text-gray-700 dark:text-gray-300">"{filter}"</span> filtresine uygun bir açık kaynak projesi henüz eklenmemiş.
+            </p>
+            <button
+              onClick={() => setFilter('All')}
+              className="px-6 py-2.5 bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 font-medium rounded-lg hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            >
+              Filtreleri Temizle
+            </button>
           </div>
         )}
       </div>

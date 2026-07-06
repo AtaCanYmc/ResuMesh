@@ -17,6 +17,7 @@ const containerVariants = {
 
 const Home: React.FC = () => {
   const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
     <div className="flex flex-col xl:flex-row items-center xl:items-start justify-between h-full py-8 xl:py-12 gap-12">
@@ -44,16 +45,17 @@ const Home: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/30 to-indigo-500/30 dark:from-blue-500/20 dark:to-indigo-500/20 rounded-full blur-3xl animate-pulse" aria-hidden="true" />
         <div className="w-full h-full rounded-full border-4 border-white dark:border-gray-800 bg-gray-100 dark:bg-gray-900 flex items-center justify-center relative z-10 overflow-hidden shadow-2xl">
 
-           {/* Image Fallback Logic with CLS optimizations */}
+           {/* Image Fallback Logic with CLS optimizations and Fade-in */}
            {!imageError ? (
              <img
                src="/images/profile.jpg"
                alt="Ata Can Avatar"
-               className="w-full h-full object-cover"
+               className={`w-full h-full object-cover transition-opacity duration-1000 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
                width={384}
                height={384}
                // @ts-ignore - React 19 supports fetchPriority but some TS definitions might lag
                fetchPriority="high"
+               onLoad={() => setImageLoaded(true)}
                onError={() => setImageError(true)}
              />
            ) : (
