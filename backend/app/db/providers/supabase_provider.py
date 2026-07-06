@@ -3,7 +3,7 @@ import os
 from typing import List, Optional
 
 from supabase._async.client import AsyncClient
-from supabase.lib.client_options import ClientOptions
+from supabase.client_options import AsyncClientOptions
 
 from app.db.base import (
     IArticleRepository,
@@ -41,7 +41,7 @@ class SupabaseProvider(
         self.client: AsyncClient = AsyncClient(
             supabase_url=self.url,
             supabase_key=self.key,
-            options=ClientOptions(postgrest_client_timeout=10),
+            options=AsyncClientOptions(postgrest_client_timeout=10),
         )
 
     async def create_project(self, project: ProjectCreate) -> ProjectResponse:
