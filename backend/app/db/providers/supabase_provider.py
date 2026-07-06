@@ -2,8 +2,8 @@ import asyncio
 import os
 from typing import List, Optional
 
+from supabase import AsyncClientOptions
 from supabase._async.client import AsyncClient
-from supabase.client_options import AsyncClientOptions
 
 from app.db.base import (
     IArticleRepository,
