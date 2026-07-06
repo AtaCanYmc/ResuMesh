@@ -1,29 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Project } from '../types';
 import axios from 'axios';
-import { Code, Star, GitFork, Loader2 } from 'lucide-react';
+import { Star, GitFork, Loader2, Code } from 'lucide-react';
 import Modal from '../components/Modal';
+import { useQuery } from '@tanstack/react-query';
+import { ContentCard } from '../components/ui/ContentCard';
 
 export default function Projects() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
   const [sortBy, setSortBy] = useState<'stars' | 'forks' | 'date_desc' | 'date_asc' | 'alphabetical'>('stars');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const res = await axios.get<Project[]>(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/projects/`);
-        setProjects(res.data);
-      } catch (error) {
-        console.error('Failed to fetch projects', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProjects();
-  }, []);
+  // TanStack Query for data fetching
+  const { data: projects = [], isLoading, isError, error } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      const res = await axios.get<Project[]>(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/projects/`);
+      return res.data;
+    }
+  });
+
+  if (isError) {
+    throw error; // Let ErrorBoundary handle it
+  }
 
   // Extract unique languages
   const allLanguages = Array.from(
@@ -51,20 +50,20 @@ export default function Projects() {
     }
   });
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
+      <div className="flex items-center justify-center h-[50vh]">
+        <Loader2 className="w-10 h-10 animate-spin text-blue-500" aria-hidden="true" />
       </div>
     );
   }
 
   return (
-    <div className="py-8">
+    <div className="py-4 md:py-8">
       <div className="flex justify-between items-end mb-8">
         <div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-white mb-2">Açık Kaynak Projeler</h1>
-          <p className="text-gray-400">GitHub üzerinden senkronize edilen aktif çalışmalarım.</p>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-2">Açık Kaynak Projeler</h1>
+          <p className="text-gray-600 dark:text-gray-400">GitHub üzerinden senkronize edilen aktif çalışmalarım.</p>
         </div>
       </div>
 
@@ -73,10 +72,10 @@ export default function Projects() {
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setFilter('All')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
               filter === 'All'
                 ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
             }`}
           >
             All
@@ -85,75 +84,53 @@ export default function Projects() {
             <button
               key={lang}
               onClick={() => setFilter(lang)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                 filter === lang
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
               }`}
             >
               {lang}
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-lg p-1 px-3">
-          <span className="text-sm font-medium text-gray-400">Sırala:</span>
+        <div className="flex items-center gap-3 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-800 rounded-lg p-1 px-3 shadow-sm">
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Sırala:</span>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="bg-transparent text-white text-sm focus:ring-0 focus:outline-none border-none py-2 cursor-pointer"
+            className="bg-transparent text-gray-900 dark:text-white text-sm focus:ring-0 focus:outline-none border-none py-2 cursor-pointer"
           >
-            <option value="stars" className="bg-gray-900">Yıldız Sayısına Göre</option>
-            <option value="forks" className="bg-gray-900">Fork Sayısına Göre</option>
-            <option value="date_desc" className="bg-gray-900">Eklenme Tarihi (En Yeni)</option>
-            <option value="date_asc" className="bg-gray-900">Eklenme Tarihi (En Eski)</option>
-            <option value="alphabetical" className="bg-gray-900">Alfabetik (A-Z)</option>
+            <option value="stars" className="dark:bg-gray-900">Yıldız Sayısına Göre</option>
+            <option value="forks" className="dark:bg-gray-900">Fork Sayısına Göre</option>
+            <option value="date_desc" className="dark:bg-gray-900">Eklenme Tarihi (En Yeni)</option>
+            <option value="date_asc" className="dark:bg-gray-900">Eklenme Tarihi (En Eski)</option>
+            <option value="alphabetical" className="dark:bg-gray-900">Alfabetik (A-Z)</option>
           </select>
         </div>
       </div>
 
-      {/* Grid */}
+      {/* Grid using ContentCard */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {sortedProjects.map((project) => (
-          <div
+          <ContentCard
             key={project.id}
-            className="bg-gray-900 border border-gray-800 rounded-xl p-6 flex flex-col hover:border-gray-600 transition-colors group cursor-pointer"
+            title={project.title}
+            description={project.description || ''}
+            tags={project.languages || []}
+            externalLink={project.github_url || undefined}
+            icon={<Code size={20} />}
             onClick={() => setSelectedProject(project)}
-          >
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="text-xl font-bold text-gray-100 group-hover:text-blue-400 transition-colors line-clamp-1" title={project.title}>
-                {project.title}
-              </h3>
-              {project.github_url && (
-                <a
-                  href={project.github_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-gray-500 hover:text-white"
-                >
-                  <Code size={20} />
-                </a>
-              )}
-            </div>
-            <p className="text-gray-400 text-sm flex-1 mb-6 line-clamp-3">
-              {project.description || 'Açıklama bulunmuyor.'}
-            </p>
-            <div className="flex items-center justify-between mt-auto">
-              <div className="flex gap-2 flex-wrap max-w-[60%]">
-                {project.languages?.slice(0, 2).map(lang => (
-                  <span key={lang} className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block mr-1" title={lang}></span>
-                ))}
-                <span className="text-xs text-gray-500">{project.languages?.[0]}</span>
-              </div>
-              <div className="flex items-center space-x-3 text-xs font-medium text-gray-400">
-                <span className="flex items-center gap-1"><Star size={14} /> {project.stars || 0}</span>
-                <span className="flex items-center gap-1"><GitFork size={14} /> {project.forks || 0}</span>
-              </div>
-            </div>
-          </div>
+            footerContent={
+              <>
+                <span className="flex items-center gap-1"><Star size={14} aria-hidden="true" /> {project.stars || 0}</span>
+                <span className="flex items-center gap-1"><GitFork size={14} aria-hidden="true" /> {project.forks || 0}</span>
+              </>
+            }
+          />
         ))}
         {sortedProjects.length === 0 && (
-          <div className="col-span-full py-12 text-center text-gray-500">
+          <div className="col-span-full py-12 text-center text-gray-500 dark:text-gray-400">
              Bu filtreye uygun proje bulunamadı.
           </div>
         )}
@@ -166,25 +143,25 @@ export default function Projects() {
       >
         {selectedProject && (
           <div className="space-y-6">
-            <p className="text-gray-300 whitespace-pre-wrap leading-relaxed text-base">
+            <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed text-base">
               {selectedProject.description || 'Açıklama bulunmuyor.'}
             </p>
 
             <div className="flex gap-2 flex-wrap">
               {selectedProject.languages?.map(lang => (
-                <span key={lang} className="px-3 py-1 bg-gray-800 text-gray-300 rounded-md text-sm border border-gray-700">
+                <span key={lang} className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 rounded-md text-sm border border-gray-200 dark:border-gray-700">
                   {lang}
                 </span>
               ))}
             </div>
 
-            <div className="flex items-center gap-6 pt-4 border-t border-gray-800 text-gray-400">
+            <div className="flex items-center gap-6 pt-4 border-t border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400">
               <div className="flex items-center gap-2">
-                <Star size={18} />
+                <Star size={18} aria-hidden="true" />
                 <span>{selectedProject.stars || 0} Stars</span>
               </div>
               <div className="flex items-center gap-2">
-                <GitFork size={18} />
+                <GitFork size={18} aria-hidden="true" />
                 <span>{selectedProject.forks || 0} Forks</span>
               </div>
               {selectedProject.github_url && (
@@ -193,9 +170,9 @@ export default function Projects() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="ml-auto flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+                  className="ml-auto flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                 >
-                  <Code size={18} />
+                  <Code size={18} aria-hidden="true" />
                   <span>GitHub'da Görüntüle</span>
                 </a>
               )}
