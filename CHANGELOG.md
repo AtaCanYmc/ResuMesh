@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.3.0...v1.4.0) (2026-07-06)
+
+
+### Features
+
+* add SEO component and integrate it into multiple pages for improved metadata handling ([4c0ff5c](https://github.com/AtaCanYmc/ResuMesh/commit/4c0ff5cc803705975e3231fb24257d7769362823))
+* add theme toggle functionality and implement focus trap for mobile menu ([fc1cce7](https://github.com/AtaCanYmc/ResuMesh/commit/fc1cce70d589f754e204977ca6d74e45ccd90a86))
+* enhance ContentCard with skeleton loading and improve UI interactions ([58fd671](https://github.com/AtaCanYmc/ResuMesh/commit/58fd6719564f0b66c676a326bb06808c477014ca))
+* restructure Home component and add FeaturedProjects and QuickMetrics components ([64b0609](https://github.com/AtaCanYmc/ResuMesh/commit/64b0609df33d24e8d057d3b67681fae3257d460a))
+
 ## [1.3.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.2.0...v1.3.0) (2026-07-06)
 
 
