@@ -11,7 +11,7 @@ export default function Articles() {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const res = await axios.get<Article[]>(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/articles`);
+        const res = await axios.get<Article[]>(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/articles/`);
         setArticles(res.data);
       } catch (error) {
         console.error('Failed to fetch articles', error);

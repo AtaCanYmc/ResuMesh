@@ -24,7 +24,7 @@ export default function SearchBar() {
       setLoading(true);
       try {
         const response = await axios.get<GlobalSearchResponse>(
-          `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/search`,
+          `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/search/`,
           { params: { query: debouncedQuery } }
         );
         setResults(response.data);
