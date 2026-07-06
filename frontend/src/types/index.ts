@@ -13,10 +13,10 @@ export interface Article {
   id: string;
   title: string;
   url: string;
-  platform: 'medium' | 'devto';
+  platform: 'MEDIUM' | 'DEV_TO';
   summary?: string;
   published_at?: string;
-  read_time_minutes?: number;
+  reading_time_minutes?: number;
 }
 
 export interface Experience {

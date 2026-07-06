@@ -6,7 +6,7 @@ import { Loader2, ExternalLink, Clock, Calendar } from 'lucide-react';
 export default function Articles() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'medium' | 'devto'>('medium');
+  const [activeTab, setActiveTab] = useState<'MEDIUM' | 'DEV_TO'>('MEDIUM');
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -43,9 +43,9 @@ export default function Articles() {
         {/* Tabs */}
         <div className="flex bg-gray-900 rounded-lg p-1 border border-gray-800">
           <button
-            onClick={() => setActiveTab('medium')}
+            onClick={() => setActiveTab('MEDIUM')}
             className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
-              activeTab === 'medium'
+              activeTab === 'MEDIUM'
                 ? 'bg-black text-white shadow-sm border border-gray-700'
                 : 'text-gray-400 hover:text-white'
             }`}
@@ -53,9 +53,9 @@ export default function Articles() {
             Medium
           </button>
           <button
-            onClick={() => setActiveTab('devto')}
+            onClick={() => setActiveTab('DEV_TO')}
             className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
-              activeTab === 'devto'
+              activeTab === 'DEV_TO'
                 ? 'bg-black text-white shadow-sm border border-gray-700'
                 : 'text-gray-400 hover:text-white'
             }`}
@@ -92,10 +92,10 @@ export default function Articles() {
                   <span>{new Date(article.published_at).toLocaleDateString()}</span>
                 </div>
               )}
-              {article.read_time_minutes && (
+              {article.reading_time_minutes && (
                 <div className="flex items-center space-x-1">
                   <Clock size={14} />
-                  <span>{article.read_time_minutes} min read</span>
+                  <span>{article.reading_time_minutes} min read</span>
                 </div>
               )}
             </div>
