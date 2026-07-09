@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 const MainLayout: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDesktopMenuCollapsed, setIsDesktopMenuCollapsed] = useState(false);
   const location = useLocation();
   const { theme, setTheme } = useTheme();
   const mainRef = useRef<HTMLElement>(null);
@@ -44,12 +45,19 @@ const MainLayout: React.FC = () => {
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   // Extracted Sidebar content allowing unique layoutId suffix to prevent framer-motion collisions
-  const SidebarContent = ({ isMobile = false }: { isMobile?: boolean }) => (
+  const SidebarContent = ({ isMobile = false, isCollapsed = false }: { isMobile?: boolean, isCollapsed?: boolean }) => (
     <>
-      <div className="p-6 flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 bg-clip-text text-transparent">
-          ResuMesh
-        </h1>
+      <div className={`p-6 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+        {!isCollapsed && (
+          <h1 className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 bg-clip-text text-transparent truncate">
+            ResuMesh
+          </h1>
+        )}
+        {isCollapsed && (
+          <h1 className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 bg-clip-text text-transparent">
+            R
+          </h1>
+        )}
         {isMobile && (
           <button
             onClick={closeMobileMenu}
@@ -60,7 +68,7 @@ const MainLayout: React.FC = () => {
           </button>
         )}
       </div>
-      <nav className="flex-1 px-4 space-y-2 mt-4 relative">
+      <nav className={`flex-1 space-y-2 mt-4 relative ${isCollapsed ? 'px-2' : 'px-4'}`}>
         {navItems.map((item) => {
           const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
 
@@ -69,11 +77,12 @@ const MainLayout: React.FC = () => {
               key={item.path}
               to={item.path}
               onClick={closeMobileMenu}
-              className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 relative z-10 ${
+              className={`flex items-center ${isCollapsed ? 'justify-center p-3' : 'space-x-3 px-4 py-3'} rounded-lg transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 relative z-10 ${
                 isActive
                   ? 'text-blue-700 dark:text-blue-400'
                   : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
               }`}
+              title={isCollapsed ? item.label : undefined}
             >
               {isActive && (
                 <motion.div
@@ -83,20 +92,38 @@ const MainLayout: React.FC = () => {
                 />
               )}
               {item.icon}
-              <span className="font-medium">{item.label}</span>
+              {!isCollapsed && <span className="font-medium truncate">{item.label}</span>}
             </NavLink>
           );
         })}
       </nav>
+
+      {/* Desktop Collapse Toggle */}
+      {!isMobile && (
+        <div className="p-4 border-t border-gray-200 dark:border-gray-800 flex justify-center">
+          <button
+            onClick={() => setIsDesktopMenuCollapsed(!isCollapsed)}
+            className="p-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            aria-label={isCollapsed ? "Menüyü Genişlet" : "Menüyü Daralt"}
+            title={isCollapsed ? "Menüyü Genişlet" : "Menüyü Daralt"}
+          >
+            <Menu size={20} aria-hidden="true" />
+          </button>
+        </div>
+      )}
     </>
   );
 
   return (
     <div className="flex h-screen bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-white overflow-hidden transition-colors duration-300">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col z-20">
-        <SidebarContent isMobile={false} />
-      </aside>
+      <motion.aside
+        animate={{ width: isDesktopMenuCollapsed ? 80 : 256 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="hidden md:flex bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col z-20 overflow-hidden"
+      >
+        <SidebarContent isMobile={false} isCollapsed={isDesktopMenuCollapsed} />
+      </motion.aside>
 
       {/* Mobile Sidebar (Drawer) */}
       <AnimatePresence>
