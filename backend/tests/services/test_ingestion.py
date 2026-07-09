@@ -3,6 +3,7 @@ import respx
 from httpx import Response
 
 from app.services.ingestion_service import IngestionService
+from app.services.scrapers.github import GitHubScraperService
 
 
 @pytest.mark.asyncio
@@ -25,7 +26,9 @@ async def test_fetch_github_repos_success(mock_provider):
         return_value=Response(200, json=mock_response)
     )
 
-    await IngestionService.fetch_github_repos("test_user", mock_provider)
+    scraper = GitHubScraperService()
+    service = IngestionService()
+    await service.fetch_github_repos(scraper, "test_user", mock_provider)
 
     projects = await mock_provider.get_projects()
     assert len(projects) == 1
