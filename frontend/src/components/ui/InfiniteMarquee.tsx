@@ -23,17 +23,19 @@ export default function InfiniteMarquee({
   const directionClass = direction === 'left' ? 'animate-marquee' : 'animate-marquee-reverse';
 
   return (
-    <div className={`relative flex overflow-hidden ${className}`}>
-      <div className={`whitespace-nowrap flex min-w-full shrink-0 items-center justify-around gap-8 ${directionClass} ${speedClass[speed]}`}>
+    <div className={`flex overflow-hidden ${className}`}>
+      {/* Group 1 */}
+      <div className={`flex min-w-full shrink-0 items-center justify-around gap-8 px-4 ${directionClass} ${speedClass[speed]}`}>
         {items.map((item, i) => (
-          <div key={i} className="flex-shrink-0">
+          <div key={`group1-${i}`} className="flex-shrink-0">
             {item}
           </div>
         ))}
       </div>
-      <div className={`whitespace-nowrap flex min-w-full shrink-0 items-center justify-around gap-8 ${directionClass} ${speedClass[speed]} absolute top-0 left-full`}>
+      {/* Group 2 (Duplicate for seamless loop) */}
+      <div className={`flex min-w-full shrink-0 items-center justify-around gap-8 px-4 ${directionClass} ${speedClass[speed]}`} aria-hidden="true">
         {items.map((item, i) => (
-          <div key={`dup-${i}`} className="flex-shrink-0">
+          <div key={`group2-${i}`} className="flex-shrink-0">
             {item}
           </div>
         ))}
