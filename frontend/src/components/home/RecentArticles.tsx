@@ -21,7 +21,7 @@ const itemVariants = {
 };
 
 export default function RecentArticles() {
-  const { data: articles, isLoading } = useArticles();
+  const { data: articles, isLoading } = useArticles(3);
 
   if (isLoading) return <ArticlesSkeleton />;
   if (!articles || articles.length === 0) return null;

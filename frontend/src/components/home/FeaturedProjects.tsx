@@ -21,7 +21,7 @@ const itemVariants = {
 };
 
 const FeaturedProjects: React.FC = () => {
-  const { data: projects, isLoading } = useProjects();
+  const { data: projects, isLoading } = useProjects(3);
 
   if (isLoading) return <ProjectsSkeleton />;
   if (!projects || projects.length === 0) return null;

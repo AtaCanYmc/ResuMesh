@@ -48,22 +48,28 @@ export const useExperiences = () => {
   });
 };
 
-export const useProjects = () => {
+export const useProjects = (limit?: number) => {
   return useQuery({
-    queryKey: ['projects'],
+    queryKey: ['projects', limit],
     queryFn: async () => {
-      const response = await axios.get(`${API_URL}/api/v1/projects/`);
-      return response.data;
+      const response = await axios.get(`${API_URL}/api/v1/projects/`, {
+        params: limit ? { limit } : undefined
+      });
+      const data = Array.isArray(response.data) ? response.data : [];
+      return limit ? data.slice(0, limit) : data;
     },
   });
 };
 
-export const useArticles = () => {
+export const useArticles = (limit?: number) => {
   return useQuery({
-    queryKey: ['articles'],
+    queryKey: ['articles', limit],
     queryFn: async () => {
-      const response = await axios.get(`${API_URL}/api/v1/articles/`);
-      return response.data;
+      const response = await axios.get(`${API_URL}/api/v1/articles/`, {
+        params: limit ? { limit } : undefined
+      });
+      const data = Array.isArray(response.data) ? response.data : [];
+      return limit ? data.slice(0, limit) : data;
     },
   });
 };
