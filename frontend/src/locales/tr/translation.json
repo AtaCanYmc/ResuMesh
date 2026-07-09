@@ -1,0 +1,59 @@
+{
+  "nav": {
+    "about": "Hakkımda",
+    "experiences": "Deneyimler",
+    "projects": "Projeler",
+    "articles": "Makaleler",
+    "certificates": "Sertifikalar",
+    "admin": "Admin"
+  },
+  "search": {
+    "placeholder": "Yetenek, proje, sertifika veya makale ara...",
+    "open": "Aramayı Aç",
+    "close": "Aramayı Kapat",
+    "clear": "Aramayı Temizle",
+    "noResultsTitle": "Sonuç bulunamadı",
+    "noResultsDesc": "Lütfen farklı bir terim ile tekrar deneyin.",
+    "projects": "Projeler",
+    "experiences": "Deneyimler",
+    "articles": "Makaleler",
+    "certificates": "Sertifikalar"
+  },
+  "hero": {
+    "downloadResume": "Özgeçmişimi İndir",
+    "viewProjects": "Projelerimi İncele"
+  },
+  "common": {
+    "noDescription": "Açıklama bulunmuyor.",
+    "readMore": "Devamını Oku",
+    "viewOnGithub": "GitHub'da Görüntüle"
+  },
+  "projects": {
+    "title": "Projeler",
+    "subtitle": "Açık kaynaklı ve kişisel projelerim.",
+    "filter": "Platform: {{platform}}",
+    "emptyTitle": "Henüz Proje Bulunamadı",
+    "emptyDesc": "Sistemde henüz yayınlanmış bir proje bulunmuyor. Lütfen daha sonra tekrar kontrol edin."
+  },
+  "articles": {
+    "title": "Makaleler",
+    "subtitle": "Teknik yazılarım ve paylaşımlarım.",
+    "emptyTitle": "Makale Bulunamadı",
+    "emptyDesc": "Bu platformda ({{platform}}) henüz yayınlanmış bir makale bulunmuyor."
+  },
+  "certificates": {
+    "title": "Sertifikalar",
+    "subtitle": "Sahip olduğum lisanslar ve yetkinlik belgeleri.",
+    "emptyTitle": "Sertifika Bulunamadı",
+    "emptyDesc": "Sistemde henüz yayınlanmış bir sertifika bulunmuyor."
+  },
+  "experiences": {
+    "title": "İş Deneyimleri",
+    "subtitle": "Kariyer yolculuğum ve profesyonel geçmişim.",
+    "emptyTitle": "Deneyim Bulunamadı",
+    "emptyDesc": "Henüz deneyim eklenmemiş."
+  },
+  "logs": {
+    "empty": "Gösterilecek log bulunamadı."
+  }
+}

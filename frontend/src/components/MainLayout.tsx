@@ -6,6 +6,8 @@ import SearchBar from './SearchBar';
 import { useTheme } from '../context/ThemeContext';
 import FocusTrap from 'focus-trap-react';
 import PageLoader from './PageLoader';
+import LanguageSwitcher from './LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 const MainLayout: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -29,12 +31,14 @@ const MainLayout: React.FC = () => {
     }
   };
 
+  const { t } = useTranslation();
+
   const navItems = [
-    { path: '/', label: 'Hakkımda', icon: <User size={20} aria-hidden="true" /> },
-    { path: '/experiences', label: 'Deneyimler', icon: <Briefcase size={20} aria-hidden="true" /> },
-    { path: '/projects', label: 'Projeler', icon: <FolderGit size={20} aria-hidden="true" /> },
-    { path: '/articles', label: 'Makaleler', icon: <BookOpen size={20} aria-hidden="true" /> },
-    { path: '/certificates', label: 'Sertifikalar', icon: <Award size={20} aria-hidden="true" /> },
+    { path: '/', label: t('nav.about'), icon: <User size={20} aria-hidden="true" /> },
+    { path: '/experiences', label: t('nav.experiences'), icon: <Briefcase size={20} aria-hidden="true" /> },
+    { path: '/projects', label: t('nav.projects'), icon: <FolderGit size={20} aria-hidden="true" /> },
+    { path: '/articles', label: t('nav.articles'), icon: <BookOpen size={20} aria-hidden="true" /> },
+    { path: '/certificates', label: t('nav.certificates'), icon: <Award size={20} aria-hidden="true" /> },
   ];
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
@@ -138,6 +142,7 @@ const MainLayout: React.FC = () => {
             </div>
           </div>
           <div className="ml-4 flex items-center flex-shrink-0 space-x-1 sm:space-x-2">
+            <LanguageSwitcher />
             <button
               onClick={toggleTheme}
               className="p-3 text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
@@ -153,11 +158,11 @@ const MainLayout: React.FC = () => {
             <Link
               to="/admin/login"
               className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 transition-colors text-sm font-medium p-3 sm:px-3 sm:py-2 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-              aria-label="Admin Girişi"
-              title="Admin Girişi"
+              aria-label={t('nav.admin')}
+              title={t('nav.admin')}
             >
               <Settings size={18} aria-hidden="true" />
-              <span className="hidden sm:inline">Admin</span>
+              <span className="hidden sm:inline">{t('nav.admin')}</span>
             </Link>
           </div>
         </header>

@@ -1,0 +1,59 @@
+{
+  "nav": {
+    "about": "About",
+    "experiences": "Experiences",
+    "projects": "Projects",
+    "articles": "Articles",
+    "certificates": "Certificates",
+    "admin": "Admin"
+  },
+  "search": {
+    "placeholder": "Search skills, projects, certificates or articles...",
+    "open": "Open Search",
+    "close": "Close Search",
+    "clear": "Clear Search",
+    "noResultsTitle": "No results found",
+    "noResultsDesc": "Please try again with a different term.",
+    "projects": "Projects",
+    "experiences": "Experiences",
+    "articles": "Articles",
+    "certificates": "Certificates"
+  },
+  "hero": {
+    "downloadResume": "Download Resume",
+    "viewProjects": "View Projects"
+  },
+  "common": {
+    "noDescription": "No description available.",
+    "readMore": "Read More",
+    "viewOnGithub": "View on GitHub"
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "My open source and personal projects.",
+    "filter": "Platform: {{platform}}",
+    "emptyTitle": "No Projects Found",
+    "emptyDesc": "There are no published projects in the system yet. Please check back later."
+  },
+  "articles": {
+    "title": "Articles",
+    "subtitle": "My technical writings and posts.",
+    "emptyTitle": "No Articles Found",
+    "emptyDesc": "There are no published articles on this platform ({{platform}}) yet."
+  },
+  "certificates": {
+    "title": "Certificates",
+    "subtitle": "My licenses and competency certificates.",
+    "emptyTitle": "No Certificates Found",
+    "emptyDesc": "There are no published certificates in the system yet."
+  },
+  "experiences": {
+    "title": "Work Experience",
+    "subtitle": "My career journey and professional background.",
+    "emptyTitle": "No Experience Found",
+    "emptyDesc": "No experience has been added yet."
+  },
+  "logs": {
+    "empty": "No logs to display."
+  }
+}

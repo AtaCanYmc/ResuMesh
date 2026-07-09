@@ -8,8 +8,10 @@ import { ContentCard } from '../components/ui/ContentCard';
 import { ContentCardSkeleton } from '../components/ui/ContentCardSkeleton';
 import SEO from '../components/SEO';
 import EmptyState from '../components/ui/EmptyState';
+import { useTranslation } from 'react-i18next';
 
 export default function Projects() {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState('All');
   const [sortBy, setSortBy] = useState<'stars' | 'forks' | 'date_desc' | 'date_asc' | 'alphabetical'>('stars');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -56,14 +58,14 @@ export default function Projects() {
   return (
     <>
     <SEO
-      title="Projeler | ResuMesh Portfolyo"
-      description="GitHub üzerinden senkronize edilen aktif açık kaynak projelerim."
+      title={`${t('projects.title')} | ResuMesh`}
+      description={t('projects.subtitle')}
     />
-    <div className="py-4 md:py-8">
-      <div className="flex justify-between items-end mb-8">
+    <div className="py-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
         <div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-2">Açık Kaynak Projeler</h1>
-          <p className="text-gray-600 dark:text-gray-400">GitHub üzerinden senkronize edilen aktif çalışmalarım.</p>
+          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-2">{t('projects.title')}</h1>
+          <p className="text-gray-600 dark:text-gray-400">{t('projects.subtitle')}</p>
         </div>
       </div>
 
@@ -125,18 +127,18 @@ export default function Projects() {
         ) : projects.length === 0 ? (
           <EmptyState
             icon={FolderGit}
-            title="Henüz Proje Bulunamadı"
-            message="Sistemde henüz yayınlanmış bir proje bulunmuyor. Lütfen daha sonra tekrar kontrol edin."
+            title={t('projects.emptyTitle')}
+            message={t('projects.emptyDesc')}
           />
         ) : sortedProjects.length > 0 ? (
           sortedProjects.map((project) => (
             <ContentCard
               key={project.id}
               title={project.title}
-              description={project.description || ''}
               tags={project.languages || []}
-              externalLink={project.github_url || undefined}
+              description={project.description || t('common.noDescription')}
               icon={<Code size={20} />}
+              externalLink={project.github_url || undefined}
               onClick={() => setSelectedProject(project)}
               footerContent={
                 <>
@@ -174,7 +176,7 @@ export default function Projects() {
         {selectedProject && (
           <div className="space-y-6">
             <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed text-base">
-              {selectedProject.description || 'Açıklama bulunmuyor.'}
+              {selectedProject.description || t('common.noDescription')}
             </p>
 
             <div className="flex gap-2 flex-wrap">
@@ -203,7 +205,7 @@ export default function Projects() {
                   className="ml-auto flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                 >
                   <Code size={18} aria-hidden="true" />
-                  <span>GitHub'da Görüntüle</span>
+                  <span>{t('common.viewOnGithub')}</span>
                 </a>
               )}
             </div>

@@ -5,8 +5,10 @@ import { Loader2, ExternalLink, Clock, Calendar, BookOpen } from 'lucide-react';
 import Modal from '../components/Modal';
 import SEO from '../components/SEO';
 import EmptyState from '../components/ui/EmptyState';
+import { useTranslation } from 'react-i18next';
 
 export default function Articles() {
+  const { t } = useTranslation();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'MEDIUM' | 'DEV_TO'>('MEDIUM');
@@ -39,14 +41,14 @@ export default function Articles() {
   return (
     <>
     <SEO
-      title="Makaleler | Teknik Yazılarım"
-      description="Yapay zeka, backend mimarileri ve React üzerine teknik yazılarım."
+      title={`${t('articles.title')} | ResuMesh`}
+      description={t('articles.subtitle')}
     />
     <div className="py-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
         <div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-white mb-2">Makaleler</h1>
-          <p className="text-gray-400">Teknik yazılarım ve paylaşımlarım.</p>
+          <h1 className="text-4xl font-extrabold tracking-tight text-white mb-2">{t('articles.title')}</h1>
+          <p className="text-gray-400">{t('articles.subtitle')}</p>
         </div>
 
         {/* Tabs */}
@@ -119,8 +121,8 @@ export default function Articles() {
         {filteredArticles.length === 0 && (
           <EmptyState
             icon={BookOpen}
-            title="Makale Bulunamadı"
-            message={`Bu platformda (${activeTab}) henüz yayınlanmış bir makale bulunmuyor.`}
+            title={t('articles.emptyTitle')}
+            message={t('articles.emptyDesc', { platform: activeTab })}
           />
         )}
       </div>
@@ -133,7 +135,7 @@ export default function Articles() {
         {selectedArticle && (
           <div className="space-y-6">
             <p className="text-gray-300 whitespace-pre-wrap leading-relaxed text-base">
-              {selectedArticle.summary || 'Açıklama bulunmuyor.'}
+              {selectedArticle.summary || t('common.noDescription')}
             </p>
 
             <div className="flex items-center gap-6 pt-4 border-t border-gray-800 text-gray-400">
@@ -156,7 +158,7 @@ export default function Articles() {
                 className="ml-auto flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
               >
                 <ExternalLink size={18} />
-                <span>Devamını Oku</span>
+                <span>{t('common.readMore')}</span>
               </a>
             </div>
           </div>

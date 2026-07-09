@@ -3,8 +3,10 @@ import { Certificate } from '../types';
 import axios from 'axios';
 import { Loader2, Award, ExternalLink, Calendar } from 'lucide-react';
 import SEO from '../components/SEO';
+import { useTranslation } from 'react-i18next';
 
 export default function Certificates() {
+  const { t } = useTranslation();
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,13 +35,13 @@ export default function Certificates() {
   return (
     <>
     <SEO
-      title="Sertifikalar | Başarılarım"
-      description="Sahip olduğum lisanslar, sertifikalar ve yetkinlik belgeleri."
+      title={`${t('certificates.title')} | ResuMesh`}
+      description={t('certificates.subtitle')}
     />
     <div className="py-8">
       <div className="mb-8">
-        <h1 className="text-4xl font-extrabold tracking-tight text-white mb-2">Sertifikalar</h1>
-        <p className="text-gray-400">Sahip olduğum lisanslar ve yetkinlik belgeleri.</p>
+        <h1 className="text-4xl font-extrabold tracking-tight text-white mb-2">{t('certificates.title')}</h1>
+        <p className="text-gray-400">{t('certificates.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

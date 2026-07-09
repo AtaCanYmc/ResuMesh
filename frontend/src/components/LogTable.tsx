@@ -1,12 +1,14 @@
 import React, { useRef } from 'react';
 import { SystemLog } from '../types';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { useTranslation } from 'react-i18next';
 
 interface LogTableProps {
   logs: SystemLog[];
 }
 
 const LogTable: React.FC<LogTableProps> = ({ logs }) => {
+  const { t } = useTranslation();
   const parentRef = useRef<HTMLDivElement>(null);
 
   const virtualizer = useVirtualizer({
@@ -42,7 +44,7 @@ const LogTable: React.FC<LogTableProps> = ({ logs }) => {
             {logs.length === 0 ? (
               <tr>
                 <td colSpan={4} className="py-12 text-center text-neutral-500 font-medium">
-                  Gösterilecek log bulunamadı.
+                  {t('logs.empty')}
                 </td>
               </tr>
             ) : (

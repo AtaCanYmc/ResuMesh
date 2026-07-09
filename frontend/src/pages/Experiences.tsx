@@ -3,8 +3,10 @@ import { Experience } from '../types';
 import axios from 'axios';
 import { Loader2, Briefcase } from 'lucide-react';
 import SEO from '../components/SEO';
+import { useTranslation } from 'react-i18next';
 
 export default function Experiences() {
+  const { t } = useTranslation();
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,18 +35,18 @@ export default function Experiences() {
   return (
     <>
     <SEO
-      title="Deneyimler | İş Geçmişim"
-      description="Kariyer yolculuğum ve profesyonel iş geçmişim."
+      title={`${t('experiences.title')} | ResuMesh`}
+      description={t('experiences.subtitle')}
     />
     <div className="py-8 max-w-4xl mx-auto">
       <div className="mb-12 text-center">
-        <h1 className="text-4xl font-extrabold tracking-tight text-white mb-4">İş Deneyimleri</h1>
-        <p className="text-gray-400">Kariyer yolculuğum ve profesyonel geçmişim.</p>
+        <h1 className="text-4xl font-extrabold tracking-tight text-white mb-4">{t('experiences.title')}</h1>
+        <p className="text-gray-400">{t('experiences.subtitle')}</p>
       </div>
 
       <div className="relative border-l border-gray-800 ml-3 md:ml-6 space-y-12">
         {experiences.length === 0 && (
-          <div className="text-gray-500 pl-8">Henüz deneyim eklenmemiş.</div>
+          <div className="text-gray-500 pl-8">{t('experiences.emptyDesc')}</div>
         )}
         {experiences.map((exp) => (
           <div key={exp.id} className="relative pl-8 md:pl-12 group">

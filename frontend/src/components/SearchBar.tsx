@@ -5,8 +5,10 @@ import { GlobalSearchResponse, SearchResultItem } from '../types';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 export default function SearchBar() {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 300);
   const [results, setResults] = useState<GlobalSearchResponse | null>(null);
@@ -118,7 +120,7 @@ export default function SearchBar() {
         <button
           className="md:hidden p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           onClick={handleMobileExpand}
-          aria-label="Arama Aç"
+          aria-label={t('search.open')}
         >
           <Search size={20} aria-hidden="true" />
         </button>
@@ -140,9 +142,9 @@ export default function SearchBar() {
                if (e.target.value.trim() && results) setIsOpen(true);
             }}
             onFocus={() => { if (query.trim() && results) setIsOpen(true); }}
-            placeholder="Yetenek, proje, sertifika veya makale ara..."
+            placeholder={t('search.placeholder')}
             className="w-full bg-transparent pl-12 pr-16 py-2.5 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none text-sm rounded-xl"
-            aria-label="Site içinde ara"
+            aria-label={t('search.placeholder')}
           />
 
           <div className="absolute right-3 flex items-center space-x-2">
@@ -154,7 +156,7 @@ export default function SearchBar() {
                  type="button"
                  className="text-gray-400 hover:text-gray-900 dark:hover:text-white focus:outline-none rounded-full p-1 focus-visible:ring-2 focus-visible:ring-blue-500"
                  onClick={() => { setQuery(''); setIsOpen(false); inputRef.current?.focus(); }}
-                 aria-label="Aramayı Temizle"
+                 aria-label={t('search.clear')}
                >
                  <X size={16} aria-hidden="true" />
                </button>
@@ -163,7 +165,7 @@ export default function SearchBar() {
                <button
                  className="md:hidden text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white p-1"
                  onClick={() => { setIsMobileExpanded(false); setIsOpen(false); }}
-                 aria-label="Aramayı Kapat"
+                 aria-label={t('search.close')}
                >
                  <X size={16} aria-hidden="true" />
                </button>
@@ -185,17 +187,17 @@ export default function SearchBar() {
               {!loading && !hasResults && (
                  <div className="p-8 flex flex-col items-center justify-center text-center">
                    <Search size={32} className="text-gray-300 dark:text-gray-700 mb-3" aria-hidden="true" />
-                   <p className="text-sm font-medium text-gray-900 dark:text-white">Sonuç bulunamadı</p>
-                   <p className="text-xs text-gray-500 mt-1">Lütfen farklı bir terim ile tekrar deneyin.</p>
+                   <p className="text-sm font-medium text-gray-900 dark:text-white">{t('search.noResultsTitle')}</p>
+                   <p className="text-xs text-gray-500 mt-1">{t('search.noResultsDesc')}</p>
                  </div>
               )}
 
               {results && hasResults && (
                 <>
-                  {renderSection("Projeler", results.projects, <FolderGit size={14} aria-hidden="true" />, "/projects")}
-                  {renderSection("Deneyimler", results.experiences, <Briefcase size={14} aria-hidden="true" />, "/experiences")}
-                  {renderSection("Makaleler", results.articles, <BookOpen size={14} aria-hidden="true" />, "/articles")}
-                  {renderSection("Sertifikalar", results.certificates, <Award size={14} aria-hidden="true" />, "/certificates")}
+                  {renderSection(t('search.projects'), results.projects, <FolderGit size={14} aria-hidden="true" />, "/projects")}
+                  {renderSection(t('search.experiences'), results.experiences, <Briefcase size={14} aria-hidden="true" />, "/experiences")}
+                  {renderSection(t('search.articles'), results.articles, <BookOpen size={14} aria-hidden="true" />, "/articles")}
+                  {renderSection(t('search.certificates'), results.certificates, <Award size={14} aria-hidden="true" />, "/certificates")}
                 </>
               )}
             </div>
