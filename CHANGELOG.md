@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.7.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.6.0...v1.7.0) (2026-07-09)
+
+
+### Features
+
+* add search and date filtering options to system logs and update related methods ([2ec3cfc](https://github.com/AtaCanYmc/ResuMesh/commit/2ec3cfc424773e7f8b3c4cd6d28609410f0d0582))
+* add twitterHandle prop to SEO component for enhanced social media integration ([4b5da37](https://github.com/AtaCanYmc/ResuMesh/commit/4b5da37395ec9552e53b47d4bf30f8061f98155d))
+* enhance system log functionality with search and filter options ([4505c02](https://github.com/AtaCanYmc/ResuMesh/commit/4505c02bee0258d2f2f2d6f13d6df17c4c7038a3))
+* remove admin link from MainLayout and clean up imports ([10c939d](https://github.com/AtaCanYmc/ResuMesh/commit/10c939d8a23aea20099bb2da6b1dfeb75804b29d))
+
 ## [1.6.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.5.0...v1.6.0) (2026-07-09)
 
 
