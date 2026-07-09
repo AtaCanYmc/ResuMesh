@@ -34,9 +34,14 @@ const FeaturedProjects: React.FC = () => {
       viewport={{ once: true, margin: "-100px" }}
       className="pt-8"
     >
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center justify-center xl:justify-start">
-        Öne Çıkan Çalışmalar
-      </h2>
+      <div className="flex items-center gap-3 mb-6 justify-center xl:justify-start">
+        <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
+          <BookOpen size={24} />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Son Projeler
+        </h2>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((project: any) => {
 
