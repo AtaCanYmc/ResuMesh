@@ -5,10 +5,11 @@ interface AdminPageHeaderProps {
   title: string;
   description?: string;
   actionLabel?: string;
+  actionIcon?: React.ReactNode;
   onAction?: () => void;
 }
 
-export default function AdminPageHeader({ title, description, actionLabel, onAction }: AdminPageHeaderProps) {
+export default function AdminPageHeader({ title, description, actionLabel, actionIcon = <Plus size={18} />, onAction }: AdminPageHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
       <div>
@@ -20,7 +21,7 @@ export default function AdminPageHeader({ title, description, actionLabel, onAct
           onClick={onAction}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shadow-sm"
         >
-          <Plus size={18} />
+          {actionIcon}
           {actionLabel}
         </button>
       )}
