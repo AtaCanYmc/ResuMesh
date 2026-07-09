@@ -3,7 +3,7 @@ import respx
 from httpx import Response
 
 from app.services.ingestion_service import IngestionService
-from app.services.scrapers.github import GitHubScraperService
+from app.services.scrapers.github_scraper import GitHubScraperService
 
 
 @pytest.mark.asyncio
