@@ -17,7 +17,9 @@ Not:
     Medium, RSS içeriklerinde HTML gömebilir; özet alanı ham HTML içerebilir.
 """
 
+import html
 import logging
+import re
 from datetime import datetime, timezone
 
 import feedparser
@@ -63,9 +65,13 @@ class MediumScraperService(IScraperService):
 
         tags = [t.term for t in entry.tags] if entry.get("tags") else []
 
+        raw_summary = entry.get("summary", "") or ""
+        clean_summary = re.sub(r"<[^>]+>", "", raw_summary).strip()
+        clean_summary = html.unescape(clean_summary)
+
         return ArticleCreate(
             title=entry.title,
-            summary=entry.get("summary", "") or "",
+            summary=clean_summary,
             url=clean_url,
             platform=ArticlePlatform.MEDIUM,
             reading_time_minutes=0,  # Medium RSS bu bilgiyi sağlamaz
