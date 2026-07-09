@@ -1,5 +1,41 @@
 # Changelog
 
+## [1.5.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.4.0...v1.5.0) (2026-07-09)
+
+
+### Features
+
+* add admin layout and pages for managing projects, articles, experiences, and system logs ([e78e0d6](https://github.com/AtaCanYmc/ResuMesh/commit/e78e0d61b840eddc9e87b2f49449e3fe50bc6210))
+* add admin pages for managing CVs, articles, certificates, and experiences with LinkedIn import functionality ([7ba032b](https://github.com/AtaCanYmc/ResuMesh/commit/7ba032b40aac5e0762bd5a79c1e1003fcf90b354))
+* add CareerTimeline and RecentArticles components, enhance Home layout with new sections ([00a11a2](https://github.com/AtaCanYmc/ResuMesh/commit/00a11a23b9d42c8abedd885dedc0e868a6a2a981))
+* add data refresh functionality to AdminOverview; enhance AdminPageHeader with customizable action icon and improve Modal styling ([0102daf](https://github.com/AtaCanYmc/ResuMesh/commit/0102daf0c66188fac949728f617fd63374978373))
+* add Footer component and update MainLayout to include it; enhance content configuration with footer details ([d43111d](https://github.com/AtaCanYmc/ResuMesh/commit/d43111d3d79df8065ba9c43625c19a85dedab87a))
+* add form modals for managing articles, certificates, experiences, and projects; implement edit and add functionality with validation ([ae9547b](https://github.com/AtaCanYmc/ResuMesh/commit/ae9547b97df4cefbac3c13eea0a31a5f00495f64))
+* add HERO_DATA, SOCIAL_LINKS, METRICS_DATA, FEATURED_PROJECTS, and EXPERIENCES_DATA; enhance MainLayout with collapsible sidebar ([dae3605](https://github.com/AtaCanYmc/ResuMesh/commit/dae3605db43ff307a15149ddec2a5eee0f0bf263))
+* add multilingual support for content configuration; update HeroSection and Home components to use dynamic language loading ([1fdabd2](https://github.com/AtaCanYmc/ResuMesh/commit/1fdabd28d90f3bbce0cac60c4ff707a80e084976))
+* add multilingual support to various components; update text to use translation hooks for dynamic language rendering ([c952143](https://github.com/AtaCanYmc/ResuMesh/commit/c952143c73d7c26ef8f99ddcdc942626ad71c506))
+* add resumes directory to .gitignore to prevent tracking of resume files ([e0ab779](https://github.com/AtaCanYmc/ResuMesh/commit/e0ab77977d78900906c5c2e4ebe6e3bd26ad369f))
+* enhance AdminAiCv and HeroSection components with dynamic content from configuration; update localization and add avatar support ([b83248a](https://github.com/AtaCanYmc/ResuMesh/commit/b83248a025d20ae440d55c243647ad1b73199272))
+* enhance authentication flow with rate limiting and role-based access control ([3f82a9b](https://github.com/AtaCanYmc/ResuMesh/commit/3f82a9b5f2770ac1bda08542af49c9be8809097e))
+* enhance Footer component with expandable About section and transition animations ([e82d0da](https://github.com/AtaCanYmc/ResuMesh/commit/e82d0da57dff39e4f8b1a6b8845e6506fb8fc00a))
+* enhance InfiniteMarquee component with improved structure and accessibility ([d7e0f78](https://github.com/AtaCanYmc/ResuMesh/commit/d7e0f78e78da456c589b78c8d231cac56c2b6137))
+* enhance UI with EmptyState component and improve layout responsiveness ([4a6fa66](https://github.com/AtaCanYmc/ResuMesh/commit/4a6fa6679069578228a13345ce968926c26a0a07))
+* enhance UI with SpotlightCard and MagneticButton components, add InfiniteMarquee for tech stack display ([e10575b](https://github.com/AtaCanYmc/ResuMesh/commit/e10575b8681e6a17ad9c26466cccd292e6ebbbe5))
+* implement code-splitting for home components; enhance performance with lazy loading and improve accessibility for reduced motion preferences ([82e7e74](https://github.com/AtaCanYmc/ResuMesh/commit/82e7e74c52525d180163cec26cf92c75ce7e225a))
+* implement internationalization with i18next and update UI text for localization ([fb77636](https://github.com/AtaCanYmc/ResuMesh/commit/fb776369b51df9e2ba6c657231f4021d3608bdb8))
+* implement scraper service interface and exception handling ([626303d](https://github.com/AtaCanYmc/ResuMesh/commit/626303d5bcc7964024a59d15b0c5782f2ebcdbcd))
+* refactor components to use hooks for data fetching; add skeleton loaders for improved UX ([a5d535c](https://github.com/AtaCanYmc/ResuMesh/commit/a5d535c32da65c9156cfc76205a8baf758d4bf71))
+* refactor GitHub repository fetching to use GitHubScraperService ([2830cc7](https://github.com/AtaCanYmc/ResuMesh/commit/2830cc7950780da3120e9814b2f63d82b4bede4a))
+* update default admin password in seed_admin.py and modify greeting text in translation.json for improved localization ([0c7c0c0](https://github.com/AtaCanYmc/ResuMesh/commit/0c7c0c0fefa17700fd833097c73e96b8bbbba775))
+* update footer email address and enhance FeaturedProjects section with improved layout ([f91a7f2](https://github.com/AtaCanYmc/ResuMesh/commit/f91a7f2a1193c5a00cab0eeb7a5202d4458c28d3))
+* update README with installation instructions and project overview enhancements ([ddc1d7b](https://github.com/AtaCanYmc/ResuMesh/commit/ddc1d7b74027de0dc46457edeff330f2e71400b3))
+* update useProjects and useArticles hooks to accept a limit parameter; modify FeaturedProjects and RecentArticles components to fetch a limited number of items ([634da74](https://github.com/AtaCanYmc/ResuMesh/commit/634da74144348edf1ca99588f11a4f7a7a6749e1))
+
+
+### Bug Fixes
+
+* update import path for GitHubScraperService in test_ingestion.py ([bd24aa9](https://github.com/AtaCanYmc/ResuMesh/commit/bd24aa97e8815652f571edb862bfef89c10af46c))
+
 ## [1.4.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.3.0...v1.4.0) (2026-07-06)
 
 
