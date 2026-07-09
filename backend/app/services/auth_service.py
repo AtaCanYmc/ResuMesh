@@ -1,27 +1,60 @@
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
 
 from app.config.security import ALGORITHM, SECRET_KEY
+from app.db.dependencies import get_db
+from app.models.user import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
 
 
-async def get_current_admin(token: str = Depends(oauth2_scheme)):
+async def get_current_admin(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+):
     """İsteğin geçerli bir admin token'ına sahip olup olmadığını denetler."""
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Geçersiz veya süresi dolmuş kimlik bilgisi.",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
-        role: str = payload.get("role")
 
-        if username is None or role != "admin":
-            raise credentials_exception
+        if username is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Geçersiz token bilgisi.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
-        return {"username": username, "role": role}
-    except jwt.PyJWTError:
-        raise credentials_exception
+        user = db.query(User).filter(User.username == username).first()
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Kullanıcı bulunamadı.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Kullanıcı hesabı pasif durumda.",
+            )
+
+        if user.role != "admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Bu işlem için admin yetkisi gerekiyor.",
+            )
+
+        return user
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token süresi dolmuş.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Geçersiz kimlik bilgisi.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
