@@ -141,24 +141,34 @@ export default function SearchBar() {
             }}
             onFocus={() => { if (query.trim() && results) setIsOpen(true); }}
             placeholder="Yetenek, proje, sertifika veya makale ara..."
-            className="w-full bg-transparent pl-12 pr-12 py-2.5 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none text-sm rounded-xl"
+            className="w-full bg-transparent pl-12 pr-16 py-2.5 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none text-sm rounded-xl"
             aria-label="Site içinde ara"
           />
-          {loading && (
-            <div className="absolute right-10 md:right-4">
-              <Loader2 className="w-5 h-5 text-blue-500 animate-spin" aria-hidden="true" />
-            </div>
-          )}
-          {/* Mobile Close Icon inside input */}
-          {isMobileExpanded && (
-             <button
-               className="md:hidden absolute right-3 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-               onClick={() => { setIsMobileExpanded(false); setIsOpen(false); setQuery(''); }}
-               aria-label="Aramayı Kapat"
-             >
-               <X size={18} aria-hidden="true" />
-             </button>
-          )}
+
+          <div className="absolute right-3 flex items-center space-x-2">
+            {loading && (
+              <Loader2 className="w-4 h-4 text-blue-500 animate-spin" aria-hidden="true" />
+            )}
+            {query && (
+               <button
+                 type="button"
+                 className="text-gray-400 hover:text-gray-900 dark:hover:text-white focus:outline-none rounded-full p-1 focus-visible:ring-2 focus-visible:ring-blue-500"
+                 onClick={() => { setQuery(''); setIsOpen(false); inputRef.current?.focus(); }}
+                 aria-label="Aramayı Temizle"
+               >
+                 <X size={16} aria-hidden="true" />
+               </button>
+            )}
+            {isMobileExpanded && !query && (
+               <button
+                 className="md:hidden text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white p-1"
+                 onClick={() => { setIsMobileExpanded(false); setIsOpen(false); }}
+                 aria-label="Aramayı Kapat"
+               >
+                 <X size={16} aria-hidden="true" />
+               </button>
+            )}
+          </div>
         </div>
       </div>
 

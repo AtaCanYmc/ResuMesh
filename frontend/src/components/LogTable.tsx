@@ -23,7 +23,7 @@ const LogTable: React.FC<LogTableProps> = ({ logs }) => {
         ref={parentRef}
         className="w-full h-[600px] overflow-auto border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-inner bg-white dark:bg-neutral-900"
       >
-        <table className="w-full text-left border-collapse relative">
+        <table className="w-full min-w-[800px] text-left border-collapse relative">
           <thead className="sticky top-0 bg-neutral-100 dark:bg-neutral-800 z-10 shadow-sm">
             <tr className="text-neutral-600 dark:text-neutral-400 text-sm border-b border-neutral-200 dark:border-neutral-700">
               <th className="py-3 px-4 font-semibold">Zaman</th>

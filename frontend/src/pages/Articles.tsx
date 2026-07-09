@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Article } from '../types';
 import axios from 'axios';
-import { Loader2, ExternalLink, Clock, Calendar } from 'lucide-react';
+import { Loader2, ExternalLink, Clock, Calendar, BookOpen } from 'lucide-react';
 import Modal from '../components/Modal';
 import SEO from '../components/SEO';
+import EmptyState from '../components/ui/EmptyState';
 
 export default function Articles() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -116,9 +117,11 @@ export default function Articles() {
           </div>
         ))}
         {filteredArticles.length === 0 && (
-          <div className="col-span-full py-12 text-center text-gray-500">
-             Bu platformda henüz makale bulunmuyor.
-          </div>
+          <EmptyState
+            icon={BookOpen}
+            title="Makale Bulunamadı"
+            message={`Bu platformda (${activeTab}) henüz yayınlanmış bir makale bulunmuyor.`}
+          />
         )}
       </div>
 

@@ -12,11 +12,11 @@ const itemVariants = {
 const HeroSection: React.FC = () => {
   return (
     <motion.div variants={itemVariants} className="space-y-6 text-center xl:text-left">
-      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight text-gray-900 dark:text-white">
+      <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tighter leading-tight text-gray-900 dark:text-white">
         Hi, I'm <span className="bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 bg-clip-text text-transparent">{HERO_DATA.name}</span>.<br />
         {HERO_DATA.title}
       </h1>
-      <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mx-auto xl:mx-0">
+      <p className="text-lg sm:text-xl font-medium text-gray-700 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto xl:mx-0">
         {HERO_DATA.description}
       </p>
 

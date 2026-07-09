@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Project } from '../types';
 import axios from 'axios';
-import { Star, GitFork, Loader2, Code, FolderSearch, ChevronDown } from 'lucide-react';
+import { Star, GitFork, Loader2, Code, FolderSearch, ChevronDown, FolderGit } from 'lucide-react';
 import Modal from '../components/Modal';
 import { useQuery } from '@tanstack/react-query';
 import { ContentCard } from '../components/ui/ContentCard';
 import { ContentCardSkeleton } from '../components/ui/ContentCardSkeleton';
 import SEO from '../components/SEO';
+import EmptyState from '../components/ui/EmptyState';
 
 export default function Projects() {
   const [filter, setFilter] = useState('All');
@@ -121,6 +122,12 @@ export default function Projects() {
           Array.from({ length: 6 }).map((_, idx) => (
             <ContentCardSkeleton key={idx} />
           ))
+        ) : projects.length === 0 ? (
+          <EmptyState
+            icon={FolderGit}
+            title="Henüz Proje Bulunamadı"
+            message="Sistemde henüz yayınlanmış bir proje bulunmuyor. Lütfen daha sonra tekrar kontrol edin."
+          />
         ) : sortedProjects.length > 0 ? (
           sortedProjects.map((project) => (
             <ContentCard

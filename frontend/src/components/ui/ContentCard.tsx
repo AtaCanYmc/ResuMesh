@@ -31,7 +31,7 @@ export const ContentCard = React.forwardRef<HTMLDivElement, ContentCardProps>(
       <div
         ref={ref}
         className={cn(
-          "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 flex flex-col transition-all duration-300 group shadow-sm outline-none",
+          "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 flex flex-col transition-all duration-300 ease-out group shadow-sm outline-none h-full min-h-[220px]",
           onClick ? "cursor-pointer hover:border-gray-400 dark:hover:border-gray-600 hover:-translate-y-1 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-blue-500" : "",
           className
         )}
