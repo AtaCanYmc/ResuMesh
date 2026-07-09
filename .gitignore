@@ -26,6 +26,7 @@ build/
 frontend/.env
 frontend/.env.local
 frontend/public/images/*
+frontend/public/resumes/*
 
 # OS Files
 .DS_Store
