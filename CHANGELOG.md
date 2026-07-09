@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.6.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.5.0...v1.6.0) (2026-07-09)
+
+
+### Features
+
+* add SEO routes for sitemap and robots.txt; implement proxy configuration in Vite ([2978b93](https://github.com/AtaCanYmc/ResuMesh/commit/2978b931b3007d8fdec6d933939f492bf42263ab))
+* add Storybook configuration and components; include mock data seeding and update requirements ([d563d3e](https://github.com/AtaCanYmc/ResuMesh/commit/d563d3ecacb310584a2accfa7e3e1d767f3f5713))
+* add Storybook configuration and components; include mock data seeding and update requirements ([b93a358](https://github.com/AtaCanYmc/ResuMesh/commit/b93a35843ff9dfb15ea1e789a13e244f0ded2659))
+* enhance security by sanitizing CV markdown input and validating username formats; update Docker configuration for unprivileged user ([9429f50](https://github.com/AtaCanYmc/ResuMesh/commit/9429f50febda302c674691ef935613b0446e33f2))
+* enhance SEO metadata and structured data for improved search visibility; update title and description ([4255e27](https://github.com/AtaCanYmc/ResuMesh/commit/4255e27c0d94ab3a8f630e68eb58908c448c0753))
+* implement update and delete functionality for articles, certificates, experiences, and projects; add corresponding update schemas ([db707dc](https://github.com/AtaCanYmc/ResuMesh/commit/db707dc6d5685675d92daeee15fae21d7355dd8a))
+
 ## [1.5.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.4.0...v1.5.0) (2026-07-09)
 
 
