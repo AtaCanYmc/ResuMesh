@@ -6,12 +6,15 @@ import { useAuth } from '../../context/AuthContext';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
+import ProjectFormModal from '../../components/admin/forms/ProjectFormModal';
 import { Project } from '../../types';
 
 export default function AdminProjects() {
   const { token } = useAuth();
   const queryClient = useQueryClient();
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
 
   // Read
   const { data: projects = [], isLoading } = useQuery<Project[]>({
@@ -48,7 +51,13 @@ export default function AdminProjects() {
   ];
 
   const handleEdit = (project: Project) => {
-    toast('Edit functionality will be opened in a Drawer/Modal soon.', { icon: '🚧' });
+    setProjectToEdit(project);
+    setIsFormOpen(true);
+  };
+
+  const handleAdd = () => {
+    setProjectToEdit(null);
+    setIsFormOpen(true);
   };
 
   const confirmDelete = () => {
@@ -63,7 +72,7 @@ export default function AdminProjects() {
         title="Projects"
         description="Manage your open source and personal projects."
         actionLabel="Add Project"
-        onAction={() => toast('Create form will be opened in a Drawer/Modal soon.', { icon: '🚧' })}
+        onAction={handleAdd}
       />
 
       {isLoading ? (
@@ -85,6 +94,12 @@ export default function AdminProjects() {
         title="Delete Project"
         message={`Are you sure you want to delete "${projectToDelete?.title}"? This action cannot be undone.`}
         isDeleting={deleteMutation.isPending}
+      />
+
+      <ProjectFormModal
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        project={projectToEdit}
       />
     </div>
   );

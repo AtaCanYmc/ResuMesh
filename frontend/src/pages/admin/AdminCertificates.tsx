@@ -6,12 +6,15 @@ import { useAuth } from '../../context/AuthContext';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
+import CertificateFormModal from '../../components/admin/forms/CertificateFormModal';
 import { Certificate } from '../../types';
 
 export default function AdminCertificates() {
   const { token } = useAuth();
   const queryClient = useQueryClient();
   const [certificateToDelete, setCertificateToDelete] = useState<Certificate | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [certificateToEdit, setCertificateToEdit] = useState<Certificate | null>(null);
 
   const { data: certificates = [], isLoading } = useQuery<Certificate[]>({
     queryKey: ['admin-certificates'],
@@ -40,12 +43,18 @@ export default function AdminCertificates() {
 
   const columns = [
     { header: 'Name', accessorKey: 'name', cell: (c: Certificate) => <span className="font-medium text-gray-900 dark:text-white">{c.name}</span> },
-    { header: 'Issuer', accessorKey: 'issuer' },
-    { header: 'Issue Date', accessorKey: 'issue_date', cell: (c: Certificate) => new Date(c.issue_date).toLocaleDateString() },
+    { header: 'Issuer', accessorKey: 'issuing_organization' },
+    { header: 'Issue Date', accessorKey: 'issue_date', cell: (c: Certificate) => c.issue_date ? new Date(c.issue_date).toLocaleDateString() : '-' },
   ];
 
   const handleEdit = (certificate: Certificate) => {
-    toast('Edit functionality will be opened in a Drawer/Modal soon.', { icon: '🚧' });
+    setCertificateToEdit(certificate);
+    setIsFormOpen(true);
+  };
+
+  const handleAdd = () => {
+    setCertificateToEdit(null);
+    setIsFormOpen(true);
   };
 
   const confirmDelete = () => {
@@ -60,7 +69,7 @@ export default function AdminCertificates() {
         title="Certificates"
         description="Manage your professional certificates and licenses."
         actionLabel="Add Certificate"
-        onAction={() => toast('Create form will be opened in a Drawer/Modal soon.', { icon: '🚧' })}
+        onAction={handleAdd}
       />
 
       {isLoading ? (
@@ -82,6 +91,12 @@ export default function AdminCertificates() {
         title="Delete Certificate"
         message={`Are you sure you want to delete "${certificateToDelete?.name}"? This action cannot be undone.`}
         isDeleting={deleteMutation.isPending}
+      />
+
+      <CertificateFormModal
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        certificate={certificateToEdit}
       />
     </div>
   );

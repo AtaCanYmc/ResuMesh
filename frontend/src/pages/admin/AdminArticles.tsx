@@ -6,12 +6,15 @@ import { useAuth } from '../../context/AuthContext';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
+import ArticleFormModal from '../../components/admin/forms/ArticleFormModal';
 import { Article } from '../../types';
 
 export default function AdminArticles() {
   const { token } = useAuth();
   const queryClient = useQueryClient();
   const [articleToDelete, setArticleToDelete] = useState<Article | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [articleToEdit, setArticleToEdit] = useState<Article | null>(null);
 
   const { data: articles = [], isLoading } = useQuery<Article[]>({
     queryKey: ['admin-articles'],
@@ -45,7 +48,13 @@ export default function AdminArticles() {
   ];
 
   const handleEdit = (article: Article) => {
-    toast('Edit functionality will be opened in a Drawer/Modal soon.', { icon: '🚧' });
+    setArticleToEdit(article);
+    setIsFormOpen(true);
+  };
+
+  const handleAdd = () => {
+    setArticleToEdit(null);
+    setIsFormOpen(true);
   };
 
   const confirmDelete = () => {
@@ -60,7 +69,7 @@ export default function AdminArticles() {
         title="Articles"
         description="Manage your published articles and blog posts."
         actionLabel="Add Article"
-        onAction={() => toast('Create form will be opened in a Drawer/Modal soon.', { icon: '🚧' })}
+        onAction={handleAdd}
       />
 
       {isLoading ? (
@@ -82,6 +91,12 @@ export default function AdminArticles() {
         title="Delete Article"
         message={`Are you sure you want to delete "${articleToDelete?.title}"? This action cannot be undone.`}
         isDeleting={deleteMutation.isPending}
+      />
+
+      <ArticleFormModal
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        article={articleToEdit}
       />
     </div>
   );

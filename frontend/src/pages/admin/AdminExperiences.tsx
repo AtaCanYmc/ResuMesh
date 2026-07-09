@@ -6,12 +6,15 @@ import { useAuth } from '../../context/AuthContext';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
+import ExperienceFormModal from '../../components/admin/forms/ExperienceFormModal';
 import { Experience } from '../../types';
 
 export default function AdminExperiences() {
   const { token } = useAuth();
   const queryClient = useQueryClient();
   const [experienceToDelete, setExperienceToDelete] = useState<Experience | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [experienceToEdit, setExperienceToEdit] = useState<Experience | null>(null);
 
   const { data: experiences = [], isLoading } = useQuery<Experience[]>({
     queryKey: ['admin-experiences'],
@@ -46,7 +49,13 @@ export default function AdminExperiences() {
   ];
 
   const handleEdit = (experience: Experience) => {
-    toast('Edit functionality will be opened in a Drawer/Modal soon.', { icon: '🚧' });
+    setExperienceToEdit(experience);
+    setIsFormOpen(true);
+  };
+
+  const handleAdd = () => {
+    setExperienceToEdit(null);
+    setIsFormOpen(true);
   };
 
   const confirmDelete = () => {
@@ -61,7 +70,7 @@ export default function AdminExperiences() {
         title="Experiences"
         description="Manage your work experience and career history."
         actionLabel="Add Experience"
-        onAction={() => toast('Create form will be opened in a Drawer/Modal soon.', { icon: '🚧' })}
+        onAction={handleAdd}
       />
 
       {isLoading ? (
@@ -83,6 +92,12 @@ export default function AdminExperiences() {
         title="Delete Experience"
         message={`Are you sure you want to delete "${experienceToDelete?.title} at ${experienceToDelete?.company_name}"? This action cannot be undone.`}
         isDeleting={deleteMutation.isPending}
+      />
+
+      <ExperienceFormModal
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        experience={experienceToEdit}
       />
     </div>
   );
