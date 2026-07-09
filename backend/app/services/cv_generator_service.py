@@ -60,9 +60,14 @@ class CVGeneratorService:
 
         user_context = "\n".join(context_lines)
 
+        # Security: Truncate inputs to prevent buffer overflow/context attacks
+        MAX_INPUT_LENGTH = 20000
+        safe_job_description = job_description[:MAX_INPUT_LENGTH]
+        safe_user_context = user_context[:MAX_INPUT_LENGTH]
+
         # 3. Call LLM
         cv_markdown = await self.llm.generate_cv(
-            job_description=job_description, user_context=user_context
+            job_description=safe_job_description, user_context=safe_user_context
         )
 
         return cv_markdown

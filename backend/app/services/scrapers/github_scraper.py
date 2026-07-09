@@ -18,6 +18,7 @@ API Referansı:
 """
 
 import logging
+import re
 from typing import Any
 
 import httpx
@@ -101,8 +102,12 @@ class GitHubScraperService(IScraperService):
 
         Raises:
             GitHubScraperError: API isteği başarısız olursa
-                                (4xx / 5xx veya ağ hatası).
+                                (4xx / 5xx veya ağ hatası)
+                                veya kullanıcı adı geçersizse.
         """
+        if not re.match(r"^[a-zA-Z0-9\-]+$", username):
+            raise GitHubScraperError("Invalid GitHub username format.")
+
         url = (
             f"{_GITHUB_API_BASE}/users/{username}/repos"
             f"?per_page={_DEFAULT_PER_PAGE}&sort=updated"

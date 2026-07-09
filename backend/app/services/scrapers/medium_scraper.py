@@ -91,8 +91,11 @@ class MediumScraperService(IScraperService):
 
         Raises:
             MediumScraperError: RSS beslemesi çekilemezse veya
-                                HTTP hatası oluşursa.
+                                HTTP hatası oluşursa veya kullanıcı adı geçersizse.
         """
+        if not re.match(r"^[a-zA-Z0-9\-]+$", username):
+            raise MediumScraperError("Invalid Medium username format.")
+
         url = _MEDIUM_FEED_BASE.format(username=username)
         logger.info("[MEDIUM] Fetching RSS feed for user=%s", username)
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Wand2, Loader2, FileText, Download } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import DOMPurify from 'dompurify';
 import { useContentConfig } from '../../hooks/useHomeData';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 
@@ -81,7 +82,7 @@ export default function AdminAiCv() {
           {/* Simulated Paper */}
           <div className="flex-1 bg-gray-100 dark:bg-gray-950 p-8 overflow-y-auto flex justify-center">
             <div className="w-full max-w-[210mm] min-h-[297mm] bg-white text-black p-8 shadow-md border border-gray-200">
-                <div dangerouslySetInnerHTML={{ __html: cvMarkdown.replace(/\n/g, '<br/>').replace(/## (.*?)<br\/>/g, '<h2 class="text-xl font-bold mt-4 mb-2">$1</h2>').replace(/# (.*?)<br\/>/g, '<h1 class="text-3xl font-extrabold mb-4">$1</h1>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(cvMarkdown.replace(/\n/g, '<br/>').replace(/## (.*?)<br\/>/g, '<h2 class="text-xl font-bold mt-4 mb-2">$1</h2>').replace(/# (.*?)<br\/>/g, '<h1 class="text-3xl font-extrabold mb-4">$1</h1>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')) }} />
             </div>
           </div>
         </div>

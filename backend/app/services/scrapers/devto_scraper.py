@@ -21,6 +21,7 @@ API anahtarı almak için:
 """
 
 import logging
+import re
 from datetime import datetime, timezone
 
 import httpx
@@ -109,8 +110,11 @@ class DevToScraperService(IScraperService):
 
         Raises:
             DevToScraperError: API isteği başarısız olursa
-                               (4xx / 5xx veya ağ hatası).
+                               (4xx / 5xx veya ağ hatası) veya kullanıcı adı geçersizse.
         """
+        if not re.match(r"^[a-zA-Z0-9\-]+$", username):
+            raise DevToScraperError("Invalid DevTo username format.")
+
         url = (
             f"{_DEVTO_API_BASE}/articles"
             f"?username={username}&per_page={_DEFAULT_PER_PAGE}"
