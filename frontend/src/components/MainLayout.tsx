@@ -128,7 +128,7 @@ const MainLayout: React.FC = () => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         {/* Topbar */}
-        <header className="h-20 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-10">
+        <header className="h-20 bg-glass flex items-center justify-between px-4 sm:px-8 sticky top-0 z-10">
           <div className="flex items-center flex-1 min-w-0">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
