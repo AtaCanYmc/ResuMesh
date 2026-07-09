@@ -18,6 +18,10 @@ class ExperienceCreate(ExperienceBase):
     pass
 
 
+class ExperienceUpdate(ExperienceBase):
+    pass
+
+
 class ExperienceResponse(ExperienceBase):
     id: str
     created_at: datetime

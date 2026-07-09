@@ -1,10 +1,18 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from app.schemas.article import ArticleCreate, ArticleResponse
-from app.schemas.certificate import CertificateCreate, CertificateResponse
-from app.schemas.experience import ExperienceCreate, ExperienceResponse
-from app.schemas.project import ProjectCreate, ProjectResponse
+from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate
+from app.schemas.certificate import (
+    CertificateCreate,
+    CertificateResponse,
+    CertificateUpdate,
+)
+from app.schemas.experience import (
+    ExperienceCreate,
+    ExperienceResponse,
+    ExperienceUpdate,
+)
+from app.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
 from app.schemas.search import GlobalSearchResponse
 from app.schemas.system_log import SystemLogCreate, SystemLogResponse
 
@@ -29,6 +37,16 @@ class IProjectRepository(ABC):
         """Insert or update a project based on github_url"""
         pass
 
+    @abstractmethod
+    async def update_project(
+        self, project_id: str, project: ProjectUpdate
+    ) -> Optional[ProjectResponse]:
+        pass
+
+    @abstractmethod
+    async def delete_project(self, project_id: str) -> bool:
+        pass
+
 
 class IArticleRepository(ABC):
     @abstractmethod
@@ -38,6 +56,16 @@ class IArticleRepository(ABC):
 
     @abstractmethod
     async def get_all_articles(self) -> List[ArticleResponse]:
+        pass
+
+    @abstractmethod
+    async def update_article(
+        self, article_id: str, article: ArticleUpdate
+    ) -> Optional[ArticleResponse]:
+        pass
+
+    @abstractmethod
+    async def delete_article(self, article_id: str) -> bool:
         pass
 
 
@@ -52,6 +80,16 @@ class IExperienceRepository(ABC):
     async def get_all_experiences(self) -> List[ExperienceResponse]:
         pass
 
+    @abstractmethod
+    async def update_experience(
+        self, experience_id: str, experience: ExperienceUpdate
+    ) -> Optional[ExperienceResponse]:
+        pass
+
+    @abstractmethod
+    async def delete_experience(self, experience_id: str) -> bool:
+        pass
+
 
 class ICertificateRepository(ABC):
     @abstractmethod
@@ -62,6 +100,16 @@ class ICertificateRepository(ABC):
 
     @abstractmethod
     async def get_all_certificates(self) -> List[CertificateResponse]:
+        pass
+
+    @abstractmethod
+    async def update_certificate(
+        self, certificate_id: str, certificate: CertificateUpdate
+    ) -> Optional[CertificateResponse]:
+        pass
+
+    @abstractmethod
+    async def delete_certificate(self, certificate_id: str) -> bool:
         pass
 
 

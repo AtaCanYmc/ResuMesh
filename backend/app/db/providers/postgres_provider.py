@@ -17,10 +17,18 @@ from app.models.certificate import Certificate
 from app.models.experience import Experience
 from app.models.project import Project
 from app.models.system_log import SystemLog
-from app.schemas.article import ArticleCreate, ArticleResponse
-from app.schemas.certificate import CertificateCreate, CertificateResponse
-from app.schemas.experience import ExperienceCreate, ExperienceResponse
-from app.schemas.project import ProjectCreate, ProjectResponse
+from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate
+from app.schemas.certificate import (
+    CertificateCreate,
+    CertificateResponse,
+    CertificateUpdate,
+)
+from app.schemas.experience import (
+    ExperienceCreate,
+    ExperienceResponse,
+    ExperienceUpdate,
+)
+from app.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
 from app.schemas.search import GlobalSearchResponse, SearchResultItem
 from app.schemas.system_log import SystemLogCreate, SystemLogResponse
 
@@ -82,6 +90,34 @@ class PostgresProjectRepository(BasePostgresRepository, IProjectRepository):
             db.refresh(db_project)
             return ProjectResponse.model_validate(db_project)
 
+    async def update_project(
+        self, project_id: str, project: ProjectUpdate
+    ) -> Optional[ProjectResponse]:
+        with self._get_session() as db:
+            db_project = db.query(Project).filter(Project.id == project_id).first()
+            if not db_project:
+                return None
+
+            project_data = project.model_dump(exclude_unset=True)
+            if project_data.get("github_url"):
+                project_data["github_url"] = str(project_data["github_url"])
+
+            for key, value in project_data.items():
+                setattr(db_project, key, value)
+
+            db.commit()
+            db.refresh(db_project)
+            return ProjectResponse.model_validate(db_project)
+
+    async def delete_project(self, project_id: str) -> bool:
+        with self._get_session() as db:
+            db_project = db.query(Project).filter(Project.id == project_id).first()
+            if not db_project:
+                return False
+            db.delete(db_project)
+            db.commit()
+            return True
+
 
 class PostgresArticleRepository(BasePostgresRepository, IArticleRepository):
     async def upsert_article(self, article: ArticleCreate) -> ArticleResponse:
@@ -108,6 +144,34 @@ class PostgresArticleRepository(BasePostgresRepository, IArticleRepository):
             articles = db.query(Article).order_by(Article.published_at.desc()).all()
             return [ArticleResponse.model_validate(a) for a in articles]
 
+    async def update_article(
+        self, article_id: str, article: ArticleUpdate
+    ) -> Optional[ArticleResponse]:
+        with self._get_session() as db:
+            db_article = db.query(Article).filter(Article.id == article_id).first()
+            if not db_article:
+                return None
+
+            article_data = article.model_dump(exclude_unset=True)
+            if article_data.get("url"):
+                article_data["url"] = str(article_data["url"])
+
+            for key, value in article_data.items():
+                setattr(db_article, key, value)
+
+            db.commit()
+            db.refresh(db_article)
+            return ArticleResponse.model_validate(db_article)
+
+    async def delete_article(self, article_id: str) -> bool:
+        with self._get_session() as db:
+            db_article = db.query(Article).filter(Article.id == article_id).first()
+            if not db_article:
+                return False
+            db.delete(db_article)
+            db.commit()
+            return True
+
 
 class PostgresExperienceRepository(BasePostgresRepository, IExperienceRepository):
     async def create_experience(
@@ -126,6 +190,31 @@ class PostgresExperienceRepository(BasePostgresRepository, IExperienceRepository
                 db.query(Experience).order_by(Experience.start_date.desc()).all()
             )
             return [ExperienceResponse.model_validate(e) for e in experiences]
+
+    async def update_experience(
+        self, experience_id: str, experience: ExperienceUpdate
+    ) -> Optional[ExperienceResponse]:
+        with self._get_session() as db:
+            db_exp = db.query(Experience).filter(Experience.id == experience_id).first()
+            if not db_exp:
+                return None
+
+            exp_data = experience.model_dump(exclude_unset=True)
+            for key, value in exp_data.items():
+                setattr(db_exp, key, value)
+
+            db.commit()
+            db.refresh(db_exp)
+            return ExperienceResponse.model_validate(db_exp)
+
+    async def delete_experience(self, experience_id: str) -> bool:
+        with self._get_session() as db:
+            db_exp = db.query(Experience).filter(Experience.id == experience_id).first()
+            if not db_exp:
+                return False
+            db.delete(db_exp)
+            db.commit()
+            return True
 
 
 class PostgresCertificateRepository(BasePostgresRepository, ICertificateRepository):
@@ -148,6 +237,38 @@ class PostgresCertificateRepository(BasePostgresRepository, ICertificateReposito
                 db.query(Certificate).order_by(Certificate.issue_date.desc()).all()
             )
             return [CertificateResponse.model_validate(c) for c in certificates]
+
+    async def update_certificate(
+        self, certificate_id: str, certificate: CertificateUpdate
+    ) -> Optional[CertificateResponse]:
+        with self._get_session() as db:
+            db_cert = (
+                db.query(Certificate).filter(Certificate.id == certificate_id).first()
+            )
+            if not db_cert:
+                return None
+
+            cert_data = certificate.model_dump(exclude_unset=True)
+            if cert_data.get("credential_url"):
+                cert_data["credential_url"] = str(cert_data["credential_url"])
+
+            for key, value in cert_data.items():
+                setattr(db_cert, key, value)
+
+            db.commit()
+            db.refresh(db_cert)
+            return CertificateResponse.model_validate(db_cert)
+
+    async def delete_certificate(self, certificate_id: str) -> bool:
+        with self._get_session() as db:
+            db_cert = (
+                db.query(Certificate).filter(Certificate.id == certificate_id).first()
+            )
+            if not db_cert:
+                return False
+            db.delete(db_cert)
+            db.commit()
+            return True
 
 
 class PostgresSystemLogRepository(BasePostgresRepository, ISystemLogRepository):

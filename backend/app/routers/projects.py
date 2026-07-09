@@ -1,11 +1,11 @@
 from typing import List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.exceptions import ProjectNotFoundError
 from app.db.base import IProjectRepository
 from app.db.dependencies import get_project_repo
-from app.schemas.project import ProjectCreate, ProjectResponse
+from app.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
@@ -34,3 +34,25 @@ async def get_project(
     if not project:
         raise ProjectNotFoundError(project_id)
     return project
+
+
+@router.put("/{project_id}", response_model=ProjectResponse)
+async def update_project(
+    project_id: str,
+    project: ProjectUpdate,
+    provider: IProjectRepository = Depends(get_project_repo),
+):
+    updated = await provider.update_project(project_id, project)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return updated
+
+
+@router.delete("/{project_id}")
+async def delete_project(
+    project_id: str, provider: IProjectRepository = Depends(get_project_repo)
+):
+    deleted = await provider.delete_project(project_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return {"status": "success"}

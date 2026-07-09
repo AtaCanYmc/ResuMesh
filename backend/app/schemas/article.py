@@ -24,6 +24,10 @@ class ArticleCreate(ArticleBase):
     pass
 
 
+class ArticleUpdate(ArticleBase):
+    pass
+
+
 class ArticleResponse(ArticleBase):
     id: str
     created_at: datetime

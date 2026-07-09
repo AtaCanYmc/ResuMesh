@@ -16,6 +16,10 @@ class CertificateCreate(CertificateBase):
     pass
 
 
+class CertificateUpdate(CertificateBase):
+    pass
+
+
 class CertificateResponse(CertificateBase):
     id: str
     created_at: datetime

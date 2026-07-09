@@ -20,6 +20,10 @@ class ProjectCreate(ProjectBase):
     pass
 
 
+class ProjectUpdate(ProjectBase):
+    pass
+
+
 class ProjectResponse(ProjectBase):
     id: str
     created_at: datetime
