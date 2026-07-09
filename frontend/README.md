@@ -44,6 +44,23 @@ Open `http://localhost:5173` in your browser.
 * `/src/pages`: Higher-level views and route components (e.g., `AdminDashboard.tsx`).
 * `/src/assets`: Static visuals and global design vectors.
 
+## 📚 Storybook (Component Driven Development)
+
+We use **Storybook** to build, test, and document UI components in isolation, independent of the main application logic.
+
+### Running Storybook
+To start the Storybook development server:
+```bash
+npm run storybook
+```
+This will open the Storybook dashboard at `http://localhost:6006`.
+
+### Building Storybook
+To build Storybook as a static web application (e.g., for deployment):
+```bash
+npm run build-storybook
+```
+
 ## 🧹 Linting and Formatting
 
 To maintain optimal code quality and lightning-fast static analysis, we use **Oxlint**. You can audit the codebase by running:

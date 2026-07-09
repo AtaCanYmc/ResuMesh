@@ -6,6 +6,7 @@
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/Frontend-React_18-61DAFB.svg?style=flat&logo=react&logoColor=black)](https://reactjs.org/)
 [![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL_15-336791.svg?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Storybook](https://img.shields.io/badge/UI-Storybook-FF4785.svg?style=flat&logo=storybook&logoColor=white)](https://storybook.js.org/)
 
 ---
 
@@ -24,7 +25,7 @@ It features:
 ## 📂 Project Structure & Component READMEs
 
 - [/backend](./backend): FastAPI architecture, Database providers, Alembic migrations, AI CV Generator, and Pytest suite.
-- [/frontend](./frontend): React + TypeScript client, Vite configuration, Tailwind CSS design system, and Oxlint rules.
+- [/frontend](./frontend): React + TypeScript client, Vite configuration, Tailwind CSS design system, Storybook component documentation, and Oxlint rules.
 
 ---
 
