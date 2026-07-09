@@ -286,6 +286,9 @@ class PostgresSystemLogRepository(BasePostgresRepository, ISystemLogRepository):
         limit: int = 20,
         level: Optional[str] = None,
         module: Optional[str] = None,
+        search_query: Optional[str] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
     ) -> List[SystemLogResponse]:
         with self._get_session() as db:
             query = db.query(SystemLog)
@@ -293,6 +296,12 @@ class PostgresSystemLogRepository(BasePostgresRepository, ISystemLogRepository):
                 query = query.filter(SystemLog.level == level.upper())
             if module:
                 query = query.filter(SystemLog.module == module.upper())
+            if search_query:
+                query = query.filter(SystemLog.message.ilike(f"%{search_query}%"))
+            if start_date:
+                query = query.filter(SystemLog.created_at >= start_date)
+            if end_date:
+                query = query.filter(SystemLog.created_at <= end_date)
 
             logs = (
                 query.order_by(SystemLog.created_at.desc())
@@ -303,7 +312,12 @@ class PostgresSystemLogRepository(BasePostgresRepository, ISystemLogRepository):
             return [SystemLogResponse.model_validate(log_item) for log_item in logs]
 
     async def get_logs_count(
-        self, level: Optional[str] = None, module: Optional[str] = None
+        self,
+        level: Optional[str] = None,
+        module: Optional[str] = None,
+        search_query: Optional[str] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
     ) -> int:
         with self._get_session() as db:
             query = db.query(SystemLog)
@@ -311,6 +325,12 @@ class PostgresSystemLogRepository(BasePostgresRepository, ISystemLogRepository):
                 query = query.filter(SystemLog.level == level.upper())
             if module:
                 query = query.filter(SystemLog.module == module.upper())
+            if search_query:
+                query = query.filter(SystemLog.message.ilike(f"%{search_query}%"))
+            if start_date:
+                query = query.filter(SystemLog.created_at >= start_date)
+            if end_date:
+                query = query.filter(SystemLog.created_at <= end_date)
             return query.count()
 
 

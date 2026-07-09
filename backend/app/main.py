@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -8,6 +9,18 @@ from slowapi.util import get_remote_address
 
 from app.config.settings import settings
 from app.core.handlers import setup_exception_handlers
+
+try:
+    import sentry_sdk
+
+    sentry_dsn = os.getenv("SENTRY_DSN")
+    if sentry_dsn:
+        sentry_sdk.init(
+            dsn=sentry_dsn,
+            traces_sample_rate=1.0,
+        )
+except ImportError:
+    pass
 from app.routers import (
     admin,
     articles,

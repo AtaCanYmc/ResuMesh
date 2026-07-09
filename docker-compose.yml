@@ -20,6 +20,11 @@ services:
         required: false
     networks:
       - resumesh-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   frontend:
     build:
@@ -31,6 +36,11 @@ services:
       - backend
     networks:
       - resumesh-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   db:
     image: postgres:15-alpine

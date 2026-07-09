@@ -18,6 +18,11 @@ class SystemLog(Base):
     )  # GITHUB, MEDIUM, DEV_TO, AI_CV, SYSTEM
     message = Column(Text, nullable=False)
 
+    user_id = Column(String(50), nullable=True, index=True)
+    request_id = Column(String(50), nullable=True, index=True)
+    ip_address = Column(String(50), nullable=True)
+    endpoint = Column(String(255), nullable=True)
+
     details = Column(JSONB, nullable=True)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())

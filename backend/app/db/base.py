@@ -125,12 +125,20 @@ class ISystemLogRepository(ABC):
         limit: int = 20,
         level: Optional[str] = None,
         module: Optional[str] = None,
+        search_query: Optional[str] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
     ) -> List[SystemLogResponse]:
         pass
 
     @abstractmethod
     async def get_logs_count(
-        self, level: Optional[str] = None, module: Optional[str] = None
+        self,
+        level: Optional[str] = None,
+        module: Optional[str] = None,
+        search_query: Optional[str] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
     ) -> int:
         pass
 

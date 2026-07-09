@@ -112,12 +112,29 @@ async def get_system_logs(
     limit: int = Query(20, le=100),
     level: Optional[str] = None,
     module: Optional[str] = None,
+    search_query: Optional[str] = None,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
     provider: ISystemLogRepository = Depends(get_system_log_repo),
     current_admin: dict = Depends(get_current_admin),
 ):
     """Veritabanındaki log havuzunu sayfalı ve filtreli olarak getirir."""
-    total_count = await provider.get_logs_count(level=level, module=module)
-    logs = await provider.get_logs(page=page, limit=limit, level=level, module=module)
+    total_count = await provider.get_logs_count(
+        level=level,
+        module=module,
+        search_query=search_query,
+        start_date=start_date,
+        end_date=end_date,
+    )
+    logs = await provider.get_logs(
+        page=page,
+        limit=limit,
+        level=level,
+        module=module,
+        search_query=search_query,
+        start_date=start_date,
+        end_date=end_date,
+    )
 
     return {"total": total_count, "page": page, "limit": limit, "data": logs}
 

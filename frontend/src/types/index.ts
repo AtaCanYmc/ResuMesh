@@ -55,3 +55,16 @@ export interface GlobalSearchResponse {
   experiences: SearchResultItem[];
   certificates: SearchResultItem[];
 }
+
+export interface SystemLog {
+  id: string;
+  level: 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
+  module: string;
+  message: string;
+  user_id?: string;
+  request_id?: string;
+  ip_address?: string;
+  endpoint?: string;
+  details?: Record<string, any>;
+  created_at: string;
+}

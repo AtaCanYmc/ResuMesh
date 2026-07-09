@@ -131,6 +131,14 @@ Before running the project locally, ensure you have the following installed:
 
 ---
 
+## 🌍 Cloud Deployment (Free Tier)
+
+Looking to deploy ResuMesh for free using the "Golden Trio" architecture (Vercel, Render, and Neon/Supabase)?
+
+Read our comprehensive guide here: **[DEPLOYMENT.md](docs/DEPLOYMENT.md)**
+
+---
+
 ## 🗄️ Database Migrations (Alembic)
 
 This project uses [Alembic](https://alembic.sqlalchemy.org/) to handle PostgreSQL database migrations (Infrastructure as Code).

@@ -14,6 +14,10 @@ class LogService:
         level: str,
         module: str,
         message: str,
+        user_id: Optional[str] = None,
+        request_id: Optional[str] = None,
+        ip_address: Optional[str] = None,
+        endpoint: Optional[str] = None,
         details: Optional[Dict[str, Any]] = None,
     ):
         """Havuz sistemine yeni bir log satırı ekler."""
@@ -30,6 +34,10 @@ class LogService:
                 level=level.upper(),
                 module=module.upper(),
                 message=message,
+                user_id=user_id,
+                request_id=request_id,
+                ip_address=ip_address,
+                endpoint=endpoint,
                 details=details,
             )
             await log_provider.create_log(log_entry)
@@ -41,24 +49,66 @@ class LogService:
         log_provider: ISystemLogRepository,
         module: str,
         message: str,
+        user_id: Optional[str] = None,
+        request_id: Optional[str] = None,
+        ip_address: Optional[str] = None,
+        endpoint: Optional[str] = None,
         details: Optional[Dict[str, Any]] = None,
     ):
-        await LogService.log(log_provider, "INFO", module, message, details)
+        await LogService.log(
+            log_provider,
+            "INFO",
+            module,
+            message,
+            user_id,
+            request_id,
+            ip_address,
+            endpoint,
+            details,
+        )
 
     @staticmethod
     async def error(
         log_provider: ISystemLogRepository,
         module: str,
         message: str,
+        user_id: Optional[str] = None,
+        request_id: Optional[str] = None,
+        ip_address: Optional[str] = None,
+        endpoint: Optional[str] = None,
         details: Optional[Dict[str, Any]] = None,
     ):
-        await LogService.log(log_provider, "ERROR", module, message, details)
+        await LogService.log(
+            log_provider,
+            "ERROR",
+            module,
+            message,
+            user_id,
+            request_id,
+            ip_address,
+            endpoint,
+            details,
+        )
 
     @staticmethod
     async def warning(
         log_provider: ISystemLogRepository,
         module: str,
         message: str,
+        user_id: Optional[str] = None,
+        request_id: Optional[str] = None,
+        ip_address: Optional[str] = None,
+        endpoint: Optional[str] = None,
         details: Optional[Dict[str, Any]] = None,
     ):
-        await LogService.log(log_provider, "WARNING", module, message, details)
+        await LogService.log(
+            log_provider,
+            "WARNING",
+            module,
+            message,
+            user_id,
+            request_id,
+            ip_address,
+            endpoint,
+            details,
+        )

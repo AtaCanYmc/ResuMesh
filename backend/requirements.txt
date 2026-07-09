@@ -18,6 +18,7 @@ passlib[bcrypt]>=1.7.4
 bcrypt==4.0.1
 pyjwt>=2.8.0
 slowapi>=0.1.10
+sentry-sdk>=1.39.0
 
 # Scraping & AI
 beautifulsoup4>=4.12.3
