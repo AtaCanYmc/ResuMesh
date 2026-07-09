@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { Outlet, NavLink, Link, useLocation } from 'react-router-dom';
-import { User, Briefcase, FolderGit, BookOpen, Award, Settings, Menu, X, Moon, Sun } from 'lucide-react';
+import { User, Briefcase, FolderGit, BookOpen, Award, Menu, X, Moon, Sun } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import SearchBar from './SearchBar';
 import { useTheme } from '../context/ThemeContext';
@@ -183,15 +183,7 @@ const MainLayout: React.FC = () => {
                 <Moon size={20} aria-hidden="true" />
               )}
             </button>
-            <Link
-              to="/admin/login"
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 transition-colors text-sm font-medium p-3 sm:px-3 sm:py-2 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-              aria-label={t('nav.admin')}
-              title={t('nav.admin')}
-            >
-              <Settings size={18} aria-hidden="true" />
-              <span className="hidden sm:inline">{t('nav.admin')}</span>
-            </Link>
+
           </div>
         </header>
 
