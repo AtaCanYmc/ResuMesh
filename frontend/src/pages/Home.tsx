@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import HeroSection from '../components/home/HeroSection';
-import QuickMetrics from '../components/home/QuickMetrics';
-import FeaturedProjects from '../components/home/FeaturedProjects';
-import CareerTimeline from '../components/home/CareerTimeline';
-import RecentArticles from '../components/home/RecentArticles';
 import SEO from '../components/SEO';
 import InfiniteMarquee from '../components/ui/InfiniteMarquee';
 import { useContentConfig } from '../hooks/useHomeData';
+
+const QuickMetrics = lazy(() => import('../components/home/QuickMetrics'));
+const FeaturedProjects = lazy(() => import('../components/home/FeaturedProjects'));
+const CareerTimeline = lazy(() => import('../components/home/CareerTimeline'));
+const RecentArticles = lazy(() => import('../components/home/RecentArticles'));
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -30,7 +31,7 @@ const Home: React.FC = () => {
         description={config?.hero.description || "Portfolio"}
       />
       <motion.div
-        className="flex flex-col gap-12 pb-16"
+        className="flex flex-col gap-24 md:gap-32 pb-24"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -50,10 +51,12 @@ const Home: React.FC = () => {
           </div>
         )}
 
-        <QuickMetrics />
-        <CareerTimeline />
-        <FeaturedProjects />
-        <RecentArticles />
+        <Suspense fallback={<div className="h-40 flex items-center justify-center opacity-50">Yükleniyor...</div>}>
+          <QuickMetrics />
+          <CareerTimeline />
+          <FeaturedProjects />
+          <RecentArticles />
+        </Suspense>
       </motion.div>
     </>
   );

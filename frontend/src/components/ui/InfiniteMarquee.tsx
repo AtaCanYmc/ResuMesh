@@ -20,10 +20,10 @@ export default function InfiniteMarquee({
     fast: 'duration-[15s]'
   };
 
-  const directionClass = direction === 'left' ? 'animate-marquee' : 'animate-marquee-reverse';
+  const directionClass = direction === 'left' ? 'motion-safe:animate-marquee' : 'motion-safe:animate-marquee-reverse';
 
   return (
-    <div className={`flex overflow-hidden ${className}`}>
+    <div className={`flex overflow-hidden touch-pan-y motion-reduce:overflow-x-auto ${className}`}>
       {/* Group 1 */}
       <div className={`flex min-w-full shrink-0 items-center justify-around gap-8 px-4 ${directionClass} ${speedClass[speed]}`}>
         {items.map((item, i) => (
@@ -33,7 +33,7 @@ export default function InfiniteMarquee({
         ))}
       </div>
       {/* Group 2 (Duplicate for seamless loop) */}
-      <div className={`flex min-w-full shrink-0 items-center justify-around gap-8 px-4 ${directionClass} ${speedClass[speed]}`} aria-hidden="true">
+      <div className={`hidden motion-safe:flex min-w-full shrink-0 items-center justify-around gap-8 px-4 ${directionClass} ${speedClass[speed]}`} aria-hidden="true">
         {items.map((item, i) => (
           <div key={`group2-${i}`} className="flex-shrink-0">
             {item}
