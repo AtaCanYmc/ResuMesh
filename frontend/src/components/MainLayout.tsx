@@ -8,6 +8,7 @@ import FocusTrap from 'focus-trap-react';
 import PageLoader from './PageLoader';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
+import Footer from './Footer';
 
 const MainLayout: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -195,23 +196,26 @@ const MainLayout: React.FC = () => {
         </header>
 
         {/* Dynamic Page Content with Animations */}
-        <main ref={mainRef} className="flex-1 overflow-y-auto p-4 sm:p-8 relative">
-          <div className="max-w-6xl mx-auto h-full">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={location.pathname}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-                className="h-full"
-              >
-                <Suspense fallback={<PageLoader />}>
-                  <Outlet />
-                </Suspense>
-              </motion.div>
-            </AnimatePresence>
+        <main ref={mainRef} className="flex-1 overflow-y-auto relative flex flex-col">
+          <div className="flex-1 p-4 sm:p-8">
+            <div className="max-w-6xl mx-auto h-full">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={location.pathname}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="h-full"
+                >
+                  <Suspense fallback={<PageLoader />}>
+                    <Outlet />
+                  </Suspense>
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
+          <Footer />
         </main>
       </div>
     </div>

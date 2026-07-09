@@ -25,6 +25,11 @@ export interface ContentConfig {
     color: string;
   }[];
   marquee: string[];
+  footer: {
+    email: string;
+    aboutTitle: string;
+    aboutText: string;
+  };
 }
 
 export const useContentConfig = (lang: string = 'tr') => {
