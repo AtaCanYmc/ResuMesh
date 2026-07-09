@@ -2,6 +2,9 @@
   "en": {
     "hero": {
       "name": "Ata Can",
+      "fullName": "Ata Can Yaymacı",
+      "avatarSubtitle": "Crafting digital experiences",
+      "avatarImage": "/images/profile_pic.jpeg",
       "title": "I bridge the gap between AI Workflows and Financial Technologies.",
       "description": "With a Computer Engineering background from Dokuz Eylul University, I specialize in scalable backend architectures and automation processes. I transform complex data into meaningful insights using modern web technologies.",
       "resumeLink": "/resume.pdf"
@@ -29,6 +32,9 @@
   "tr": {
     "hero": {
       "name": "Ata Can",
+      "fullName": "Ata Can Yaymacı",
+      "avatarSubtitle": "Dijital deneyimler tasarlıyorum",
+      "avatarImage": "/images/profile_pic.jpeg",
       "title": "Yapay Zeka İş Akışları ve Finansal Teknolojiler arasında köprü kuruyorum.",
       "description": "Dokuz Eylül Üniversitesi Bilgisayar Mühendisliği geçmişimle, ölçeklenebilir backend mimarileri ve otomasyon süreçleri üzerine çalışıyorum. Modern web teknolojileriyle karmaşık verileri anlamlı içgörülere dönüştürüyorum.",
       "resumeLink": "/resume.pdf"

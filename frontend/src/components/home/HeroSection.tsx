@@ -144,11 +144,17 @@ const HeroSection: React.FC = () => {
               style={{ transform: "translateZ(50px)" }}
               className="text-center p-8 bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-2xl border border-white/20 dark:border-white/10"
             >
-              <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg">
-                AY
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">Ata Can Yücel</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">Crafting digital experiences</p>
+              {config.hero.avatarImage ? (
+                <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-white/20 shadow-lg">
+                  <img src={config.hero.avatarImage} alt={config.hero.fullName} className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg">
+                  AY
+                </div>
+              )}
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">{config.hero.fullName || config.hero.name}</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">{config.hero.avatarSubtitle}</p>
             </motion.div>
           </motion.div>
         </motion.div>

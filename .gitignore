@@ -25,6 +25,7 @@ build/
 .eslintcache
 frontend/.env
 frontend/.env.local
+frontend/public/images/*
 
 # OS Files
 .DS_Store

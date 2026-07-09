@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { Wand2, Loader2, FileText, Download } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { useContentConfig } from '../../hooks/useHomeData';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 
 export default function AdminAiCv() {
+  const { i18n } = useTranslation();
+  const { data: config } = useContentConfig(i18n.language);
   const [jobUrl, setJobUrl] = useState('');
   const [cvMarkdown, setCvMarkdown] = useState('# Generated CV\n\nWaiting for analysis...');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -12,7 +16,8 @@ export default function AdminAiCv() {
     setIsGenerating(true);
     // Mock API call
     setTimeout(() => {
-      setCvMarkdown(`# Ata Can Yücel\n## Senior Software Engineer\n\n**Tailored for:** ${jobUrl}\n\n- Expert in React, Python, and AI Workflows\n- Proven track record of scalable architecture`);
+      const name = config?.hero?.fullName || config?.hero?.name || 'Developer Name';
+      setCvMarkdown(`# ${name}\n## Senior Software Engineer\n\n**Tailored for:** ${jobUrl}\n\n- Expert in React, Python, and AI Workflows\n- Proven track record of scalable architecture`);
       setIsGenerating(false);
     }, 2000);
   };
