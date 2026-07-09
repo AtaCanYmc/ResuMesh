@@ -1,5 +1,6 @@
-import React from 'react';
-import { Mail, Github, Linkedin, Twitter, Heart } from 'lucide-react';
+import React, { useState } from 'react';
+import { Mail, Heart, ChevronUp, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useContentConfig } from '../hooks/useHomeData';
 import { getIcon } from '../utils/iconResolver';
@@ -7,13 +8,23 @@ import { getIcon } from '../utils/iconResolver';
 const Footer: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { data: config } = useContentConfig(i18n.language);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   if (!config) return null;
 
   return (
-    <footer className="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-black/40 pt-16 pb-8 mt-24">
+    <footer className="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-black/40 pt-8 pb-8 mt-24">
       <div className="container mx-auto px-4 max-w-6xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
+        <AnimatePresence initial={false}>
+          {isExpanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="overflow-hidden"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12 pt-4">
           {/* About Section */}
           <div className="space-y-4">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -60,12 +71,25 @@ const Footer: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+                </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Bottom Bar */}
-        <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-gray-200 dark:border-gray-800 text-sm text-gray-500 dark:text-gray-500">
-          <p>© {new Date().getFullYear()} {config.hero.name}. {t('footer.allRightsReserved')}</p>
-          <p className="flex items-center gap-1.5 mt-2 md:mt-0">
+        <div className={`flex flex-col md:flex-row items-center justify-between transition-all duration-300 ${isExpanded ? 'pt-8 border-t border-gray-200 dark:border-gray-800' : ''} text-sm text-gray-500 dark:text-gray-500`}>
+          <div className="flex items-center gap-4">
+            <p>© {new Date().getFullYear()} {config.hero.name}. {t('footer.allRightsReserved')}</p>
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 text-gray-600 dark:text-gray-400"
+              aria-label={isExpanded ? "Daralt" : "Genişlet"}
+              title={isExpanded ? "Daralt" : "Genişlet"}
+            >
+              {isExpanded ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+            </button>
+          </div>
+          <p className="flex items-center gap-1.5 mt-4 md:mt-0">
             {t('footer.builtWith')} <Heart size={14} className="text-red-500 fill-red-500" /> {t('footer.by')} {config.hero.name}
           </p>
         </div>
