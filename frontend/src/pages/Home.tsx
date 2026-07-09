@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import HeroSection from '../components/home/HeroSection';
 import QuickMetrics from '../components/home/QuickMetrics';
 import FeaturedProjects from '../components/home/FeaturedProjects';
+import CareerTimeline from '../components/home/CareerTimeline';
+import RecentArticles from '../components/home/RecentArticles';
 import SEO from '../components/SEO';
 import InfiniteMarquee from '../components/ui/InfiniteMarquee';
 
@@ -49,7 +51,9 @@ const Home: React.FC = () => {
         </div>
 
         <QuickMetrics />
+        <CareerTimeline />
         <FeaturedProjects />
+        <RecentArticles />
       </motion.div>
     </>
   );

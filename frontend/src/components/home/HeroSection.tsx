@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Download, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { HERO_DATA } from '../../data/home';
+import { HERO_DATA, SOCIAL_LINKS } from '../../data/home';
 import { useTranslation } from 'react-i18next';
 import MagneticButton from '../ui/MagneticButton';
 
@@ -76,7 +76,6 @@ const HeroSection: React.FC = () => {
             {HERO_DATA.description}
           </motion.p>
 
-          {/* CTA Buttons */}
           <motion.div variants={textVariants} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-6">
             <MagneticButton>
               <div className="relative group rounded-xl">
@@ -104,6 +103,19 @@ const HeroSection: React.FC = () => {
                 <ArrowRight size={20} aria-hidden="true" />
               </Link>
             </MagneticButton>
+
+            <div className="flex items-center gap-2 ml-0 sm:ml-4 mt-4 sm:mt-0">
+              {SOCIAL_LINKS.map((social) => {
+                const Icon = social.icon;
+                return (
+                  <MagneticButton key={social.id} as="a" href={social.url}>
+                    <div className="p-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-xl text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white dark:hover:bg-gray-700 transition-colors shadow-sm cursor-pointer">
+                      <Icon size={20} />
+                    </div>
+                  </MagneticButton>
+                );
+              })}
+            </div>
           </motion.div>
         </motion.div>
 

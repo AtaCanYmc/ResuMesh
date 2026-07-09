@@ -1,0 +1,105 @@
+import React from 'react';
+import { ExternalLink, BookOpen } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ARTICLES_DATA } from '../../data/home';
+import SpotlightCard from '../ui/SpotlightCard';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+};
+
+export default function RecentArticles() {
+  return (
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-100px" }}
+      className="pt-12"
+    >
+      <div className="flex items-center gap-3 mb-6 justify-center xl:justify-start">
+        <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
+          <BookOpen size={24} />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Son Yazılar
+        </h2>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {ARTICLES_DATA.map((article) => {
+          const getSpotlightColor = (color: string) => {
+            switch(color) {
+              case 'blue': return 'rgba(59, 130, 246, 0.15)';
+              case 'indigo': return 'rgba(99, 102, 241, 0.15)';
+              case 'purple': return 'rgba(168, 85, 247, 0.15)';
+              default: return 'rgba(156, 163, 175, 0.15)';
+            }
+          };
+
+          const PlatformLogo = () => {
+            if (article.platform === 'Medium') {
+              return (
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-black text-white text-xs font-bold rounded-md">
+                  Medium
+                </div>
+              );
+            }
+            if (article.platform === 'Dev.to') {
+              return (
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gray-900 text-white text-xs font-bold rounded-md">
+                  DEV
+                </div>
+              );
+            }
+            return null;
+          };
+
+          return (
+            <motion.div variants={itemVariants} key={article.id} className="h-full">
+              <SpotlightCard spotlightColor={getSpotlightColor(article.color)} className="h-full">
+                <a
+                  href={article.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex flex-col h-full p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl transition-all hover:-translate-y-1 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <PlatformLogo />
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      {article.date}
+                    </span>
+                  </div>
+
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
+                    {article.title}
+                  </h3>
+
+                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-3 mb-6 flex-grow">
+                    {article.description}
+                  </p>
+
+                  <div className="flex items-center gap-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 mt-auto">
+                    Makaleyi Oku
+                    <ExternalLink size={14} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  </div>
+                </a>
+              </SpotlightCard>
+            </motion.div>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+}
