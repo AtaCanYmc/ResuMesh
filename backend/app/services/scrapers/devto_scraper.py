@@ -26,6 +26,7 @@ from datetime import datetime, timezone
 import httpx
 
 from app.schemas.article import ArticleCreate, ArticlePlatform
+from app.services.scrapers.base import IScraperService
 from app.services.scrapers.exceptions import DevToScraperError
 
 logger = logging.getLogger(__name__)
@@ -35,15 +36,11 @@ _DEFAULT_TIMEOUT = 15.0
 _DEFAULT_PER_PAGE = 1000
 
 
-class DevToScraperService:
+class DevToScraperService(IScraperService):
     """
     Dev.to REST API'sini kullanarak makale verilerini çeken servis.
-
-    Tüm metodlar `@staticmethod` olarak tanımlanmıştır; sınıfı
-    örneklemeye gerek yoktur: `DevToScraperService.fetch_articles(...)`.
     """
 
-    @staticmethod
     def _build_headers(api_key: str | None = None) -> dict[str, str]:
         """
         Dev.to API için HTTP header'larını oluşturur.
@@ -98,11 +95,8 @@ class DevToScraperService:
             raw_platform_data=raw,
         )
 
-    @staticmethod
-    async def fetch_articles(
-        username: str,
-        api_key: str | None = None,
-    ) -> list[ArticleCreate]:
+    async def fetch_data(self, username: str, **kwargs) -> list[ArticleCreate]:
+        api_key = kwargs.get("api_key")
         """
         Dev.to REST API'den kullanıcının makalelerini çeker.
 

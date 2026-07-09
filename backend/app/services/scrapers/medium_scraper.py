@@ -24,6 +24,7 @@ import feedparser
 import httpx
 
 from app.schemas.article import ArticleCreate, ArticlePlatform
+from app.services.scrapers.base import IScraperService
 from app.services.scrapers.exceptions import MediumScraperError
 
 logger = logging.getLogger(__name__)
@@ -32,15 +33,11 @@ _MEDIUM_FEED_BASE = "https://medium.com/feed/@{username}"
 _DEFAULT_TIMEOUT = 20.0
 
 
-class MediumScraperService:
+class MediumScraperService(IScraperService):
     """
     Medium RSS beslemesini çekip parse eden servis.
-
-    Tüm metodlar `@staticmethod` olarak tanımlanmıştır; sınıfı
-    örneklemeye gerek yoktur: `MediumScraperService.fetch_articles(...)`.
     """
 
-    @staticmethod
     def _parse_entry(entry: feedparser.FeedParserDict) -> ArticleCreate:
         """
         feedparser'ın tek bir RSS girdisini `ArticleCreate` şemasına dönüştürür.
@@ -76,8 +73,7 @@ class MediumScraperService:
             raw_platform_data={"tags": tags},
         )
 
-    @staticmethod
-    async def fetch_articles(username: str) -> list[ArticleCreate]:
+    async def fetch_data(self, username: str, **kwargs) -> list[ArticleCreate]:
         """
         Medium RSS beslemesinden kullanıcının makalelerini çeker.
 

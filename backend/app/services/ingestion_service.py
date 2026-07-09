@@ -3,15 +3,8 @@ Ingestion Service
 ==================
 Platform scraper servislerini orkestre eder ve çekilen verileri
 repository katmanı aracılığıyla veritabanına kaydeder.
-
-Scraping mantığı bu serviste bulunmaz; her platform için ayrı
-servis sınıfları kullanılır:
-    - GitHubScraperService  → app/services/scrapers/github_scraper.py
-    - MediumScraperService  → app/services/scrapers/medium_scraper.py
-    - DevToScraperService   → app/services/scrapers/devto_scraper.py
 """
 
-from datetime import datetime
 from typing import Any, Dict
 
 from app.db.base import (
@@ -21,120 +14,90 @@ from app.db.base import (
     IProjectRepository,
     ISystemLogRepository,
 )
-from app.schemas.certificate import CertificateCreate
-from app.schemas.experience import ExperienceCreate
 from app.services.log_service import LogService
-from app.services.scrapers.devto_scraper import DevToScraperService
+from app.services.mappers.linkedin_mapper import LinkedInDataMapper
+from app.services.scrapers.base import IScraperService
 from app.services.scrapers.exceptions import ScraperError
-from app.services.scrapers.github_scraper import GitHubScraperService
-from app.services.scrapers.medium_scraper import MediumScraperService
 
 
 class IngestionService:
-    @staticmethod
+    def __init__(self, log_provider: ISystemLogRepository = None):
+        self.log_provider = log_provider
+
+    async def _execute_scraper(
+        self,
+        scraper: IScraperService,
+        provider,
+        platform_name: str,
+        username: str,
+        **kwargs,
+    ):
+        try:
+            items = await scraper.fetch_data(username, **kwargs)
+            for item in items:
+                if hasattr(provider, "upsert_project"):
+                    await provider.upsert_project(item)
+                elif hasattr(provider, "upsert_article"):
+                    await provider.upsert_article(item)
+                else:
+                    raise ValueError(f"Unknown provider type for {platform_name}")
+        except ScraperError as exc:
+            log_repo = self.log_provider or provider
+            await LogService.warning(
+                log_repo,
+                platform_name,
+                f"{platform_name} scraper error: {exc}",
+                {
+                    "username": username,
+                    "status_code": getattr(exc, "status_code", None),
+                },
+            )
+
     async def fetch_github_repos(
+        self,
+        scraper: IScraperService,
         username: str,
         provider: IProjectRepository,
-        log_provider: ISystemLogRepository = None,
+        pat: str | None = None,
+        include_forks: bool = False,
     ):
         """GitHub repolarını çeker ve provider üzerinden kaydeder."""
-        if not log_provider:
-            log_provider = provider
+        await self._execute_scraper(
+            scraper, provider, "GITHUB", username, pat=pat, include_forks=include_forks
+        )
 
-        try:
-            projects = await GitHubScraperService.fetch_repos(username)
-            for project in projects:
-                await provider.upsert_project(project)
-        except ScraperError as exc:
-            await LogService.warning(
-                log_provider,
-                "GITHUB",
-                f"GitHub scraper error: {exc}",
-                {"username": username, "status_code": exc.status_code},
-            )
-
-    @staticmethod
     async def fetch_devto_articles(
+        self,
+        scraper: IScraperService,
         username: str,
         provider: IArticleRepository,
-        log_provider: ISystemLogRepository = None,
+        api_key: str | None = None,
     ):
         """Dev.to makalelerini çeker ve provider üzerinden kaydeder."""
-        if not log_provider:
-            log_provider = provider
+        await self._execute_scraper(
+            scraper, provider, "DEV_TO", username, api_key=api_key
+        )
 
-        try:
-            articles = await DevToScraperService.fetch_articles(username)
-            for article in articles:
-                await provider.upsert_article(article)
-        except ScraperError as exc:
-            await LogService.warning(
-                log_provider,
-                "DEV_TO",
-                f"Dev.to scraper error: {exc}",
-                {"username": username, "status_code": exc.status_code},
-            )
-
-    @staticmethod
     async def fetch_medium_articles(
+        self,
+        scraper: IScraperService,
         username: str,
         provider: IArticleRepository,
-        log_provider: ISystemLogRepository = None,
     ):
         """Medium RSS makalelerini çeker ve provider üzerinden kaydeder."""
-        if not log_provider:
-            log_provider = provider
+        await self._execute_scraper(scraper, provider, "MEDIUM", username)
 
-        try:
-            articles = await MediumScraperService.fetch_articles(username)
-            for article in articles:
-                await provider.upsert_article(article)
-        except ScraperError as exc:
-            await LogService.warning(
-                log_provider,
-                "MEDIUM",
-                f"Medium scraper error: {exc}",
-                {"username": username, "status_code": exc.status_code},
-            )
-
-    @staticmethod
     async def import_linkedin_data(
+        self,
         data: Dict[str, Any],
         exp_provider: IExperienceRepository,
         cert_provider: ICertificateRepository,
     ):
         """LinkedIn veri paketini (deneyimler ve sertifikalar) işler."""
-        if "experiences" in data:
-            for exp in data["experiences"]:
-                start_date = None
-                end_date = None
-                if exp.get("start_date"):
-                    start_date = datetime.strptime(exp["start_date"], "%Y-%m").date()
-                if exp.get("end_date"):
-                    end_date = datetime.strptime(exp["end_date"], "%Y-%m").date()
+        experiences = LinkedInDataMapper.parse_experiences(data)
+        for exp in experiences:
+            await exp_provider.create_experience(exp)
 
-                experience = ExperienceCreate(
-                    company_name=exp["company"],
-                    title=exp["title"],
-                    location=exp.get("location"),
-                    start_date=start_date,
-                    end_date=end_date,
-                    is_current=exp.get("is_current", False),
-                    description=exp.get("description"),
-                )
-                await exp_provider.create_experience(experience)
-
-        if "certificates" in data:
-            for cert in data["certificates"]:
-                issue_date = None
-                if cert.get("issue_date"):
-                    issue_date = datetime.strptime(cert["issue_date"], "%Y-%m").date()
-
-                certificate = CertificateCreate(
-                    name=cert["name"],
-                    issuing_organization=cert["authority"],
-                    issue_date=issue_date,
-                    credential_id=cert.get("license_number"),
-                    credential_url=cert.get("url"),
-                )
-                await cert_provider.create_certificate(certificate)
+        certificates = LinkedInDataMapper.parse_certificates(data)
+        for cert in certificates:
+            await cert_provider.create_certificate(cert)

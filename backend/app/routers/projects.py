@@ -1,7 +1,8 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
+from app.core.exceptions import ProjectNotFoundError
 from app.db.base import IProjectRepository
 from app.db.dependencies import get_project_repo
 from app.schemas.project import ProjectCreate, ProjectResponse
@@ -13,11 +14,7 @@ router = APIRouter(prefix="/projects", tags=["projects"])
 async def create_project(
     project: ProjectCreate, provider: IProjectRepository = Depends(get_project_repo)
 ):
-    try:
-        result = await provider.create_project(project)
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return await provider.create_project(project)
 
 
 @router.get("/", response_model=List[ProjectResponse])
@@ -26,11 +23,7 @@ async def get_projects(
     limit: int = 100,
     provider: IProjectRepository = Depends(get_project_repo),
 ):
-    try:
-        projects = await provider.get_projects(skip=skip, limit=limit)
-        return projects
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return await provider.get_projects(skip=skip, limit=limit)
 
 
 @router.get("/{project_id}", response_model=ProjectResponse)
@@ -39,5 +32,5 @@ async def get_project(
 ):
     project = await provider.get_project_by_id(project_id)
     if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+        raise ProjectNotFoundError(project_id)
     return project

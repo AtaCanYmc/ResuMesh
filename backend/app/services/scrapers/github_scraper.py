@@ -23,6 +23,7 @@ from typing import Any
 import httpx
 
 from app.schemas.project import ProjectCreate
+from app.services.scrapers.base import IScraperService
 from app.services.scrapers.exceptions import GitHubScraperError
 
 logger = logging.getLogger(__name__)
@@ -32,15 +33,11 @@ _DEFAULT_TIMEOUT = 15.0
 _DEFAULT_PER_PAGE = 100
 
 
-class GitHubScraperService:
+class GitHubScraperService(IScraperService):
     """
     GitHub REST API'yi kullanarak repo verilerini çeken servis.
-
-    Tüm metodlar `@staticmethod` olarak tanımlanmıştır; sınıfı
-    örneklemeye gerek yoktur: `GitHubScraperService.fetch_repos(...)`.
     """
 
-    @staticmethod
     def _build_headers(pat: str | None = None) -> dict[str, str]:
         """
         GitHub API için HTTP header'larını oluşturur.
@@ -87,12 +84,9 @@ class GitHubScraperService:
             raw_github_data=raw,
         )
 
-    @staticmethod
-    async def fetch_repos(
-        username: str,
-        pat: str | None = None,
-        include_forks: bool = False,
-    ) -> list[ProjectCreate]:
+    async def fetch_data(self, username: str, **kwargs) -> list[ProjectCreate]:
+        pat = kwargs.get("pat")
+        include_forks = kwargs.get("include_forks", False)
         """
         Kullanıcının GitHub repolarını çeker ve `ProjectCreate` listesi döndürür.
 
