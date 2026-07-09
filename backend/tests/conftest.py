@@ -1,3 +1,8 @@
+# flake8: noqa: E402
+import os
+
+os.environ["JWT_SECRET_KEY"] = "test-secret-key"
+
 import asyncio
 import uuid
 from datetime import datetime, timezone
