@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import HeroSection from '../components/home/HeroSection';
 import QuickMetrics from '../components/home/QuickMetrics';
 import FeaturedProjects from '../components/home/FeaturedProjects';
@@ -19,7 +20,8 @@ const containerVariants = {
 };
 
 const Home: React.FC = () => {
-  const { data: config } = useContentConfig();
+  const { i18n } = useTranslation();
+  const { data: config } = useContentConfig(i18n.language);
 
   return (
     <>

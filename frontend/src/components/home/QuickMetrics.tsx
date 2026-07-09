@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useContentConfig } from '../../hooks/useHomeData';
 import { MetricsSkeleton } from '../ui/Skeletons';
 import { getIcon } from '../../utils/iconResolver';
@@ -20,7 +21,8 @@ const itemVariants = {
 };
 
 const QuickMetrics: React.FC = () => {
-  const { data: config, isLoading } = useContentConfig();
+  const { i18n } = useTranslation();
+  const { data: config, isLoading } = useContentConfig(i18n.language);
 
   if (isLoading || !config) {
     return <MetricsSkeleton />;

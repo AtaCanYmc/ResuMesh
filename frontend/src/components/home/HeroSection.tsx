@@ -25,8 +25,8 @@ const textVariants = {
 };
 
 const HeroSection: React.FC = () => {
-  const { t } = useTranslation();
-  const { data: config, isLoading } = useContentConfig();
+  const { t, i18n } = useTranslation();
+  const { data: config, isLoading } = useContentConfig(i18n.language);
 
   // 3D Tilt Effect State
   const x = useMotionValue(0);

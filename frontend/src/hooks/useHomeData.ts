@@ -27,12 +27,12 @@ export interface ContentConfig {
   marquee: string[];
 }
 
-export const useContentConfig = () => {
+export const useContentConfig = (lang: string = 'tr') => {
   return useQuery<ContentConfig>({
-    queryKey: ['contentConfig'],
+    queryKey: ['contentConfig', lang],
     queryFn: async () => {
       const response = await axios.get('/content.json');
-      return response.data;
+      return response.data[lang] || response.data['en'];
     },
     staleTime: Infinity,
   });
