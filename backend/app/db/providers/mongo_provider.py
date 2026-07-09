@@ -13,10 +13,18 @@ from app.db.base import (
     ISearchRepository,
     ISystemLogRepository,
 )
-from app.schemas.article import ArticleCreate, ArticleResponse
-from app.schemas.certificate import CertificateCreate, CertificateResponse
-from app.schemas.experience import ExperienceCreate, ExperienceResponse
-from app.schemas.project import ProjectCreate, ProjectResponse
+from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate
+from app.schemas.certificate import (
+    CertificateCreate,
+    CertificateResponse,
+    CertificateUpdate,
+)
+from app.schemas.experience import (
+    ExperienceCreate,
+    ExperienceResponse,
+    ExperienceUpdate,
+)
+from app.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
 from app.schemas.search import GlobalSearchResponse, SearchResultItem
 from app.schemas.system_log import SystemLogCreate, SystemLogResponse
 
@@ -110,6 +118,26 @@ class MongoProvider(
         project_dict.pop("_id", None)
         return ProjectResponse(**project_dict)
 
+    async def update_project(
+        self, project_id: str, project: ProjectUpdate
+    ) -> Optional[ProjectResponse]:
+        update_data = project.model_dump(exclude_unset=True)
+        if "github_url" in update_data and update_data["github_url"] is not None:
+            update_data["github_url"] = str(update_data["github_url"])
+        update_data["updated_at"] = datetime.now(timezone.utc)
+
+        result = await self.db.projects.find_one_and_update(
+            {"id": project_id}, {"$set": update_data}, return_document=True
+        )
+        if not result:
+            return None
+        result.pop("_id", None)
+        return ProjectResponse(**result)
+
+    async def delete_project(self, project_id: str) -> bool:
+        result = await self.db.projects.delete_one({"id": project_id})
+        return result.deleted_count > 0
+
     async def upsert_article(self, article: ArticleCreate) -> ArticleResponse:
         article_dict = article.model_dump()
         article_dict["url"] = str(article_dict["url"])
@@ -133,6 +161,26 @@ class MongoProvider(
 
         article_dict.pop("_id", None)
         return ArticleResponse(**article_dict)
+
+    async def update_article(
+        self, article_id: str, article: ArticleUpdate
+    ) -> Optional[ArticleResponse]:
+        update_data = article.model_dump(exclude_unset=True)
+        if "url" in update_data and update_data["url"] is not None:
+            update_data["url"] = str(update_data["url"])
+        update_data["updated_at"] = datetime.now(timezone.utc)
+
+        result = await self.db.articles.find_one_and_update(
+            {"id": article_id}, {"$set": update_data}, return_document=True
+        )
+        if not result:
+            return None
+        result.pop("_id", None)
+        return ArticleResponse(**result)
+
+    async def delete_article(self, article_id: str) -> bool:
+        result = await self.db.articles.delete_one({"id": article_id})
+        return result.deleted_count > 0
 
     async def create_experience(
         self, experience: ExperienceCreate
@@ -160,6 +208,32 @@ class MongoProvider(
         exp_dict.pop("_id", None)
         return ExperienceResponse(**exp_dict)
 
+    async def update_experience(
+        self, experience_id: str, experience: ExperienceUpdate
+    ) -> Optional[ExperienceResponse]:
+        update_data = experience.model_dump(exclude_unset=True)
+        if "start_date" in update_data and update_data["start_date"] is not None:
+            update_data["start_date"] = datetime.combine(
+                update_data["start_date"], datetime.min.time()
+            )
+        if "end_date" in update_data and update_data["end_date"] is not None:
+            update_data["end_date"] = datetime.combine(
+                update_data["end_date"], datetime.min.time()
+            )
+        update_data["updated_at"] = datetime.now(timezone.utc)
+
+        result = await self.db.experiences.find_one_and_update(
+            {"id": experience_id}, {"$set": update_data}, return_document=True
+        )
+        if not result:
+            return None
+        result.pop("_id", None)
+        return ExperienceResponse(**result)
+
+    async def delete_experience(self, experience_id: str) -> bool:
+        result = await self.db.experiences.delete_one({"id": experience_id})
+        return result.deleted_count > 0
+
     async def create_certificate(
         self, certificate: CertificateCreate
     ) -> CertificateResponse:
@@ -184,6 +258,33 @@ class MongoProvider(
         cert_dict.pop("_id", None)
         return CertificateResponse(**cert_dict)
 
+    async def update_certificate(
+        self, certificate_id: str, certificate: CertificateUpdate
+    ) -> Optional[CertificateResponse]:
+        update_data = certificate.model_dump(exclude_unset=True)
+        if (
+            "credential_url" in update_data
+            and update_data["credential_url"] is not None
+        ):
+            update_data["credential_url"] = str(update_data["credential_url"])
+        if "issue_date" in update_data and update_data["issue_date"] is not None:
+            update_data["issue_date"] = datetime.combine(
+                update_data["issue_date"], datetime.min.time()
+            )
+        update_data["updated_at"] = datetime.now(timezone.utc)
+
+        result = await self.db.certificates.find_one_and_update(
+            {"id": certificate_id}, {"$set": update_data}, return_document=True
+        )
+        if not result:
+            return None
+        result.pop("_id", None)
+        return CertificateResponse(**result)
+
+    async def delete_certificate(self, certificate_id: str) -> bool:
+        result = await self.db.certificates.delete_one({"id": certificate_id})
+        return result.deleted_count > 0
+
     async def create_log(self, log: SystemLogCreate) -> SystemLogResponse:
         log_dict = log.model_dump()
         log_id = str(uuid.uuid4())
@@ -203,12 +304,34 @@ class MongoProvider(
         limit: int = 20,
         level: Optional[str] = None,
         module: Optional[str] = None,
+        search_query: Optional[str] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
     ) -> List[SystemLogResponse]:
         query = {}
         if level:
             query["level"] = level.upper()
         if module:
             query["module"] = module.upper()
+        if search_query:
+            query["message"] = {"$regex": search_query, "$options": "i"}
+
+        date_query = {}
+        if start_date:
+            date_query["$gte"] = (
+                datetime.fromisoformat(start_date)
+                if isinstance(start_date, str)
+                else start_date
+            )
+        if end_date:
+            date_query["$lte"] = (
+                datetime.fromisoformat(end_date)
+                if isinstance(end_date, str)
+                else end_date
+            )
+
+        if date_query:
+            query["created_at"] = date_query
 
         cursor = (
             self.db.system_logs.find(query)
@@ -225,13 +348,37 @@ class MongoProvider(
         return result
 
     async def get_logs_count(
-        self, level: Optional[str] = None, module: Optional[str] = None
+        self,
+        level: Optional[str] = None,
+        module: Optional[str] = None,
+        search_query: Optional[str] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
     ) -> int:
         query = {}
         if level:
             query["level"] = level.upper()
         if module:
             query["module"] = module.upper()
+        if search_query:
+            query["message"] = {"$regex": search_query, "$options": "i"}
+
+        date_query = {}
+        if start_date:
+            date_query["$gte"] = (
+                datetime.fromisoformat(start_date)
+                if isinstance(start_date, str)
+                else start_date
+            )
+        if end_date:
+            date_query["$lte"] = (
+                datetime.fromisoformat(end_date)
+                if isinstance(end_date, str)
+                else end_date
+            )
+
+        if date_query:
+            query["created_at"] = date_query
 
         return await self.db.system_logs.count_documents(query)
 

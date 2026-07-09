@@ -248,12 +248,23 @@ class MockSystemLogRepository(ISystemLogRepository):
         limit: int = 20,
         level: Optional[str] = None,
         module: Optional[str] = None,
+        search_query: Optional[str] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
     ) -> List[SystemLogResponse]:
         filtered = MOCK_DB_STATE["logs"]
         if level:
             filtered = [log for log in filtered if log.level == level.upper()]
         if module:
             filtered = [log for log in filtered if log.module == module.upper()]
+        if search_query:
+            filtered = [
+                log for log in filtered if search_query.lower() in log.message.lower()
+            ]
+        if start_date:
+            filtered = [log for log in filtered if log.created_at >= start_date]
+        if end_date:
+            filtered = [log for log in filtered if log.created_at <= end_date]
 
         filtered.sort(key=lambda x: x.created_at, reverse=True)
         start = (page - 1) * limit
@@ -261,13 +272,26 @@ class MockSystemLogRepository(ISystemLogRepository):
         return filtered[start:end]
 
     async def get_logs_count(
-        self, level: Optional[str] = None, module: Optional[str] = None
+        self,
+        level: Optional[str] = None,
+        module: Optional[str] = None,
+        search_query: Optional[str] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
     ) -> int:
         filtered = MOCK_DB_STATE["logs"]
         if level:
             filtered = [log for log in filtered if log.level == level.upper()]
         if module:
             filtered = [log for log in filtered if log.module == module.upper()]
+        if search_query:
+            filtered = [
+                log for log in filtered if search_query.lower() in log.message.lower()
+            ]
+        if start_date:
+            filtered = [log for log in filtered if log.created_at >= start_date]
+        if end_date:
+            filtered = [log for log in filtered if log.created_at <= end_date]
         return len(filtered)
 
 
