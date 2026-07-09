@@ -7,13 +7,7 @@ import CareerTimeline from '../components/home/CareerTimeline';
 import RecentArticles from '../components/home/RecentArticles';
 import SEO from '../components/SEO';
 import InfiniteMarquee from '../components/ui/InfiniteMarquee';
-
-const TECH_STACK = [
-  'React', 'TypeScript', 'Tailwind CSS', 'Framer Motion',
-  'Python', 'FastAPI', 'PostgreSQL', 'Docker', 'AWS',
-  'Node.js', 'Next.js', 'GraphQL'
-];
-
+import { useContentConfig } from '../hooks/useHomeData';
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -25,11 +19,13 @@ const containerVariants = {
 };
 
 const Home: React.FC = () => {
+  const { data: config } = useContentConfig();
+
   return (
     <>
       <SEO
-        title="Ata Can | AI & FinTech Developer"
-        description="Dokuz Eylül Üniversitesi Bilgisayar Mühendisliği geçmişimle, ölçeklenebilir backend mimarileri ve otomasyon süreçleri üzerine çalışıyorum."
+        title={config?.hero.name ? `${config.hero.name} | Portfolio` : "Portfolio"}
+        description={config?.hero.description || "Portfolio"}
       />
       <motion.div
         className="flex flex-col gap-12 pb-16"
@@ -39,16 +35,18 @@ const Home: React.FC = () => {
       >
         <HeroSection />
 
-        <div className="py-12 border-y border-gray-200 dark:border-gray-800 bg-white/30 dark:bg-black/20 backdrop-blur-sm -mx-4 sm:-mx-8 px-4 sm:px-8 overflow-hidden">
-          <InfiniteMarquee
-            items={TECH_STACK.map(tech => (
-              <span className="text-xl md:text-2xl font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
-                {tech}
-              </span>
-            ))}
-            speed="normal"
-          />
-        </div>
+        {config && (
+          <div className="py-12 border-y border-gray-200 dark:border-gray-800 bg-white/30 dark:bg-black/20 backdrop-blur-sm -mx-4 sm:-mx-8 px-4 sm:px-8 overflow-hidden">
+            <InfiniteMarquee
+              items={config.marquee.map((tech: string) => (
+                <span key={tech} className="text-xl md:text-2xl font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
+                  {tech}
+                </span>
+              ))}
+              speed="normal"
+            />
+          </div>
+        )}
 
         <QuickMetrics />
         <CareerTimeline />

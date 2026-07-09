@@ -1,0 +1,65 @@
+{
+  "hero": {
+    "name": "Ata Can",
+    "title": "I bridge the gap between AI Workflows and Financial Technologies.",
+    "description": "Dokuz Eylül Üniversitesi Bilgisayar Mühendisliği geçmişimle, ölçeklenebilir backend mimarileri ve otomasyon süreçleri üzerine çalışıyorum. Modern web teknolojileriyle karmaşık verileri anlamlı içgörülere dönüştürüyorum.",
+    "resumeLink": "/resume.pdf"
+  },
+  "socials": [
+    {
+      "id": "github",
+      "platform": "github",
+      "url": "https://github.com/atacan",
+      "label": "GitHub"
+    },
+    {
+      "id": "linkedin",
+      "platform": "linkedin",
+      "url": "https://linkedin.com/in/atacanyucel",
+      "label": "LinkedIn"
+    },
+    {
+      "id": "twitter",
+      "platform": "twitter",
+      "url": "https://twitter.com/atacanyucel",
+      "label": "Twitter"
+    }
+  ],
+  "metrics": [
+    {
+      "id": 1,
+      "icon": "code",
+      "value": "15+",
+      "label": "Active Projects",
+      "color": "blue"
+    },
+    {
+      "id": 2,
+      "icon": "book",
+      "value": "12+",
+      "label": "Technical Articles",
+      "color": "indigo"
+    },
+    {
+      "id": 3,
+      "icon": "star",
+      "value": "5+",
+      "label": "Years Experience",
+      "color": "purple"
+    }
+  ],
+  "marquee": [
+    "React",
+    "TypeScript",
+    "Tailwind CSS",
+    "Framer Motion",
+    "Python",
+    "FastAPI",
+    "PostgreSQL",
+    "Docker",
+    "AWS",
+    "Node.js",
+    "Next.js",
+    "GraphQL"
+  ]
+}

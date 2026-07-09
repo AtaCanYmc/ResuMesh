@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { METRICS_DATA } from '../../data/home';
+import { useContentConfig } from '../../hooks/useHomeData';
+import { MetricsSkeleton } from '../ui/Skeletons';
+import { getIcon } from '../../utils/iconResolver';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -18,6 +20,12 @@ const itemVariants = {
 };
 
 const QuickMetrics: React.FC = () => {
+  const { data: config, isLoading } = useContentConfig();
+
+  if (isLoading || !config) {
+    return <MetricsSkeleton />;
+  }
+
   return (
     <motion.div
       variants={containerVariants}
@@ -26,8 +34,9 @@ const QuickMetrics: React.FC = () => {
       viewport={{ once: true, margin: "-50px" }}
       className="grid grid-cols-1 md:grid-cols-4 gap-4 py-8"
     >
-      {METRICS_DATA.map((metric, index) => {
-        const Icon = metric.icon;
+      {config.metrics.map((metric, index) => {
+        const Icon = getIcon(metric.icon);
+        const isFeatured = index === 0;
 
         const getBgClass = (color: string) => {
           switch(color) {

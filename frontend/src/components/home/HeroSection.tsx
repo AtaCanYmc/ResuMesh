@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Download, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { HERO_DATA, SOCIAL_LINKS } from '../../data/home';
 import { useTranslation } from 'react-i18next';
 import MagneticButton from '../ui/MagneticButton';
+import { useContentConfig } from '../../hooks/useHomeData';
+import { HeroSkeleton } from '../ui/Skeletons';
+import { getIcon } from '../../utils/iconResolver';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -24,6 +26,7 @@ const textVariants = {
 
 const HeroSection: React.FC = () => {
   const { t } = useTranslation();
+  const { data: config, isLoading } = useContentConfig();
 
   // 3D Tilt Effect State
   const x = useMotionValue(0);
@@ -58,66 +61,70 @@ const HeroSection: React.FC = () => {
         <div className="absolute top-[20%] -right-[10%] w-[40%] h-[40%] rounded-full bg-indigo-500/20 dark:bg-purple-600/20 blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-12 w-full">
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-12 w-full min-h-[400px]">
         {/* Left Content: Staggered Text Reveal */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="flex-1 space-y-6 text-center lg:text-left z-10"
-        >
-          <motion.h1 variants={textVariants} className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tighter leading-tight text-gray-900 dark:text-white">
-            Hi, I'm <span className="bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">{HERO_DATA.name}</span>.
-          </motion.h1>
-          <motion.div variants={textVariants} className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-800 dark:text-gray-200">
-            {HERO_DATA.title}
-          </motion.div>
-          <motion.p variants={textVariants} className="text-lg sm:text-xl font-medium text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-            {HERO_DATA.description}
-          </motion.p>
+        {isLoading || !config ? (
+          <HeroSkeleton />
+        ) : (
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex-1 space-y-6 text-center lg:text-left z-10"
+          >
+            <motion.h1 variants={textVariants} className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tighter leading-tight text-gray-900 dark:text-white">
+              Hi, I'm <span className="bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">{config.hero.name}</span>.
+            </motion.h1>
+            <motion.div variants={textVariants} className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-800 dark:text-gray-200">
+              {config.hero.title}
+            </motion.div>
+            <motion.p variants={textVariants} className="text-lg sm:text-xl font-medium text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+              {config.hero.description}
+            </motion.p>
 
-          <motion.div variants={textVariants} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-6">
-            <MagneticButton>
-              <div className="relative group rounded-xl">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl blur opacity-60 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
-                <a
-                  href={HERO_DATA.resumeLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="relative flex items-center justify-center gap-2 px-8 py-3.5 bg-blue-600 text-white font-semibold rounded-xl transition-all shadow-lg focus:outline-none"
-                  aria-label={t('hero.downloadResume')}
+            <motion.div variants={textVariants} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-6">
+              <MagneticButton>
+                <div className="relative group rounded-xl">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl blur opacity-60 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+                  <a
+                    href={config.hero.resumeLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative flex items-center justify-center gap-2 px-8 py-3.5 bg-blue-600 text-white font-semibold rounded-xl transition-all shadow-lg focus:outline-none"
+                    aria-label={t('hero.downloadResume')}
+                  >
+                    <Download size={20} aria-hidden="true" />
+                    <span>{t('hero.downloadResume')}</span>
+                  </a>
+                </div>
+              </MagneticButton>
+
+              <MagneticButton as="a" href="/projects">
+                <Link
+                  to="/projects"
+                  className="flex items-center justify-center gap-2 px-8 py-3.5 bg-white/50 dark:bg-gray-800/50 backdrop-blur-md border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white font-medium rounded-xl transition-all hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
+                  aria-label={t('hero.viewProjects')}
                 >
-                  <Download size={20} aria-hidden="true" />
-                  <span>{t('hero.downloadResume')}</span>
-                </a>
+                  <span>{t('hero.viewProjects')}</span>
+                  <ArrowRight size={20} aria-hidden="true" />
+                </Link>
+              </MagneticButton>
+
+              <div className="flex items-center gap-2 ml-0 sm:ml-4 mt-4 sm:mt-0">
+                {config.socials.map((social: any) => {
+                  const Icon = getIcon(social.icon || social.platform);
+                  return (
+                    <MagneticButton key={social.id} as="a" href={social.url}>
+                      <div className="p-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-xl text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white dark:hover:bg-gray-700 transition-colors shadow-sm cursor-pointer">
+                        <Icon size={20} />
+                      </div>
+                    </MagneticButton>
+                  );
+                })}
               </div>
-            </MagneticButton>
-
-            <MagneticButton as="a" href="/projects">
-              <Link
-                to="/projects"
-                className="flex items-center justify-center gap-2 px-8 py-3.5 bg-white/50 dark:bg-gray-800/50 backdrop-blur-md border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white font-medium rounded-xl transition-all hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
-                aria-label={t('hero.viewProjects')}
-              >
-                <span>{t('hero.viewProjects')}</span>
-                <ArrowRight size={20} aria-hidden="true" />
-              </Link>
-            </MagneticButton>
-
-            <div className="flex items-center gap-2 ml-0 sm:ml-4 mt-4 sm:mt-0">
-              {SOCIAL_LINKS.map((social) => {
-                const Icon = social.icon;
-                return (
-                  <MagneticButton key={social.id} as="a" href={social.url}>
-                    <div className="p-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-xl text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white dark:hover:bg-gray-700 transition-colors shadow-sm cursor-pointer">
-                      <Icon size={20} />
-                    </div>
-                  </MagneticButton>
-                );
-              })}
-            </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
+        )}
 
         {/* Right Content: 3D Interactive Mockup/Avatar */}
         <motion.div

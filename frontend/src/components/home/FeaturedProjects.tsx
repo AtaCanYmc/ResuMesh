@@ -1,8 +1,9 @@
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { FEATURED_PROJECTS } from '../../data/home';
 import SpotlightCard from '../ui/SpotlightCard';
+import { useProjects } from '../../hooks/useHomeData';
+import { ProjectsSkeleton } from '../ui/Skeletons';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -20,6 +21,11 @@ const itemVariants = {
 };
 
 const FeaturedProjects: React.FC = () => {
+  const { data: projects, isLoading } = useProjects();
+
+  if (isLoading) return <ProjectsSkeleton />;
+  if (!projects || projects.length === 0) return null;
+
   return (
     <motion.div
       variants={containerVariants}
@@ -32,9 +38,9 @@ const FeaturedProjects: React.FC = () => {
         Öne Çıkan Çalışmalar
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {FEATURED_PROJECTS.map((project) => {
+        {projects.map((project: any) => {
 
-          const getSpotlightColor = (color: string) => {
+          const getSpotlightColor = (color?: string) => {
             switch(color) {
               case 'blue': return 'rgba(59, 130, 246, 0.15)';
               case 'indigo': return 'rgba(99, 102, 241, 0.15)';
@@ -47,7 +53,7 @@ const FeaturedProjects: React.FC = () => {
             <motion.div variants={itemVariants} key={project.id} className="h-full">
               <SpotlightCard spotlightColor={getSpotlightColor(project.color)} className="h-full">
                 <a
-                  href={project.url}
+                  href={project.url || project.github_url || '#'}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex flex-col h-full p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shadow-sm hover:shadow-md"

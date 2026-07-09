@@ -1,7 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { EXPERIENCES_DATA } from '../../data/home';
 import SpotlightCard from '../ui/SpotlightCard';
+import { useExperiences } from '../../hooks/useHomeData';
+import { TimelineSkeleton } from '../ui/Skeletons';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -19,6 +20,11 @@ const itemVariants = {
 };
 
 export default function CareerTimeline() {
+  const { data: experiences, isLoading } = useExperiences();
+
+  if (isLoading) return <TimelineSkeleton />;
+  if (!experiences || experiences.length === 0) return null;
+
   return (
     <motion.div
       variants={containerVariants}
@@ -36,8 +42,8 @@ export default function CareerTimeline() {
         <div className="absolute left-4 sm:left-8 top-2 bottom-2 w-0.5 bg-gray-200 dark:bg-gray-800 rounded-full" />
 
         <div className="space-y-8">
-          {EXPERIENCES_DATA.map((exp, index) => {
-            const getDotColor = (color: string) => {
+          {experiences.map((exp: any, index: number) => {
+            const getDotColor = (color?: string) => {
               switch(color) {
                 case 'blue': return 'bg-blue-500 shadow-blue-500/50';
                 case 'indigo': return 'bg-indigo-500 shadow-indigo-500/50';
@@ -46,7 +52,7 @@ export default function CareerTimeline() {
               }
             };
 
-            const getSpotlightColor = (color: string) => {
+            const getSpotlightColor = (color?: string) => {
               switch(color) {
                 case 'blue': return 'rgba(59, 130, 246, 0.1)';
                 case 'indigo': return 'rgba(99, 102, 241, 0.1)';
@@ -60,16 +66,16 @@ export default function CareerTimeline() {
                 {/* Timeline Dot */}
                 <div className={`absolute left-[-5px] sm:left-[-5px] top-6 w-3 h-3 rounded-full shadow-lg ${getDotColor(exp.color)}`} />
 
-                <SpotlightCard spotlightColor={getSpotlightColor(exp.color)}>
+                <SpotlightCard spotlightColor={getSpotlightColor(exp.color || 'blue')}>
                   <div className="p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm transition-all hover:shadow-md">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">{exp.role}</h3>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">{exp.title}</h3>
                       <span className="text-sm font-medium px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full w-fit">
-                        {exp.date}
+                        {exp.start_date ? new Date(exp.start_date).getFullYear() : ''} - {exp.end_date ? new Date(exp.end_date).getFullYear() : 'Devam Ediyor'}
                       </span>
                     </div>
-                    <div className={`text-base font-medium mb-3 text-${exp.color}-600 dark:text-${exp.color}-400`}>
-                      {exp.company}
+                    <div className={`text-base font-medium mb-3 text-${exp.color || 'blue'}-600 dark:text-${exp.color || 'blue'}-400`}>
+                      {exp.company_name}
                     </div>
                     <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm sm:text-base">
                       {exp.description}

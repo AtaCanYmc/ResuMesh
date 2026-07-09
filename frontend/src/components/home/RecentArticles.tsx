@@ -1,8 +1,9 @@
 import React from 'react';
 import { ExternalLink, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { ARTICLES_DATA } from '../../data/home';
 import SpotlightCard from '../ui/SpotlightCard';
+import { useArticles } from '../../hooks/useHomeData';
+import { ArticlesSkeleton } from '../ui/Skeletons';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -20,6 +21,11 @@ const itemVariants = {
 };
 
 export default function RecentArticles() {
+  const { data: articles, isLoading } = useArticles();
+
+  if (isLoading) return <ArticlesSkeleton />;
+  if (!articles || articles.length === 0) return null;
+
   return (
     <motion.div
       variants={containerVariants}
@@ -38,8 +44,8 @@ export default function RecentArticles() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {ARTICLES_DATA.map((article) => {
-          const getSpotlightColor = (color: string) => {
+        {articles.map((article: any) => {
+          const getSpotlightColor = (color?: string) => {
             switch(color) {
               case 'blue': return 'rgba(59, 130, 246, 0.15)';
               case 'indigo': return 'rgba(99, 102, 241, 0.15)';
@@ -78,7 +84,7 @@ export default function RecentArticles() {
                   <div className="flex items-center justify-between mb-4">
                     <PlatformLogo />
                     <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                      {article.date}
+                      {article.published_at ? new Date(article.published_at).toLocaleDateString() : ''}
                     </span>
                   </div>
 
@@ -87,7 +93,7 @@ export default function RecentArticles() {
                   </h3>
 
                   <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-3 mb-6 flex-grow">
-                    {article.description}
+                    {article.summary || article.description}
                   </p>
 
                   <div className="flex items-center gap-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 mt-auto">
