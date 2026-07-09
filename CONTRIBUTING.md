@@ -75,4 +75,24 @@ Before submitting a PR, make sure your code passes all existing tests and includ
 PYTHONPATH=. pytest -v
 ```
 
+---
+
+## 🏗️ Architecture & Guidelines
+
+### Adding a new Database Provider
+ResuMesh supports multiple databases (Postgres, MongoDB, Firebase, etc.). To add a new provider:
+1. Create a new file under `backend/app/db/providers/` (e.g., `sqlite_provider.py`).
+2. Implement the `DatabaseProvider` interface methods.
+3. Register your provider in `backend/app/db/factory.py` so it can be instantiated via configuration.
+4. Update the `.env.example` with any new required environment variables.
+
+### Adding a new Scraper Service
+Scrapers are responsible for fetching data from external sources (e.g., Medium, GitHub).
+1. Create a new service under `backend/app/services/scrapers/` (e.g., `devto_scraper.py`).
+2. Inherit from the base scraper class if available, or ensure it implements a standard `fetch_data()` method.
+3. Add a background job in `backend/app/services/scheduler.py` if the scraping should run periodically.
+
+### Architecture Decision Records (ADRs)
+We keep track of significant architectural decisions in the `docs/adr/` directory. If you are introducing a new technology, framework, or making a major architectural change, please write an ADR outlining the context, decision, and consequences.
+
 Thank you for your contribution! 🎉

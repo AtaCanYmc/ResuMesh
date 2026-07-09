@@ -22,13 +22,13 @@ async def test_fetch_github_repos_success(mock_provider):
         }
     ]
 
-    respx.get("https://api.github.com/users/test_user/repos").mock(
+    respx.get("https://api.github.com/users/test-user/repos").mock(
         return_value=Response(200, json=mock_response)
     )
 
     scraper = GitHubScraperService()
     service = IngestionService()
-    await service.fetch_github_repos(scraper, "test_user", mock_provider)
+    await service.fetch_github_repos(scraper, "test-user", mock_provider)
 
     projects = await mock_provider.get_projects()
     assert len(projects) == 1

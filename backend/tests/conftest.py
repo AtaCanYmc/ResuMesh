@@ -29,10 +29,18 @@ from app.db.dependencies import (
     get_system_log_repo,
 )
 from app.main import app, limiter
-from app.schemas.article import ArticleCreate, ArticleResponse
-from app.schemas.certificate import CertificateCreate, CertificateResponse
-from app.schemas.experience import ExperienceCreate, ExperienceResponse
-from app.schemas.project import ProjectCreate, ProjectResponse
+from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate
+from app.schemas.certificate import (
+    CertificateCreate,
+    CertificateResponse,
+    CertificateUpdate,
+)
+from app.schemas.experience import (
+    ExperienceCreate,
+    ExperienceResponse,
+    ExperienceUpdate,
+)
+from app.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
 from app.schemas.search import GlobalSearchResponse, SearchResultItem
 from app.schemas.system_log import SystemLogCreate, SystemLogResponse
 
@@ -82,6 +90,27 @@ class MockProjectRepository(IProjectRepository):
                 return resp
         return await self.create_project(project)
 
+    async def update_project(
+        self, project_id: str, project_update: ProjectUpdate
+    ) -> Optional[ProjectResponse]:
+        for i, p in enumerate(MOCK_DB_STATE["projects"]):
+            if p.id == project_id:
+                data = p.model_dump()
+                for k, v in project_update.model_dump(exclude_unset=True).items():
+                    data[k] = v
+                data["updated_at"] = datetime.now(timezone.utc)
+                resp = ProjectResponse(**data)
+                MOCK_DB_STATE["projects"][i] = resp
+                return resp
+        return None
+
+    async def delete_project(self, project_id: str) -> bool:
+        for i, p in enumerate(MOCK_DB_STATE["projects"]):
+            if p.id == project_id:
+                del MOCK_DB_STATE["projects"][i]
+                return True
+        return False
+
 
 class MockArticleRepository(IArticleRepository):
     async def create_article(self, article: ArticleCreate) -> ArticleResponse:
@@ -108,6 +137,27 @@ class MockArticleRepository(IArticleRepository):
     async def get_all_articles(self) -> List[ArticleResponse]:
         return MOCK_DB_STATE["articles"]
 
+    async def update_article(
+        self, article_id: str, article_update: ArticleUpdate
+    ) -> Optional[ArticleResponse]:
+        for i, a in enumerate(MOCK_DB_STATE["articles"]):
+            if a.id == article_id:
+                data = a.model_dump()
+                for k, v in article_update.model_dump(exclude_unset=True).items():
+                    data[k] = v
+                data["updated_at"] = datetime.now(timezone.utc)
+                resp = ArticleResponse(**data)
+                MOCK_DB_STATE["articles"][i] = resp
+                return resp
+        return None
+
+    async def delete_article(self, article_id: str) -> bool:
+        for i, a in enumerate(MOCK_DB_STATE["articles"]):
+            if a.id == article_id:
+                del MOCK_DB_STATE["articles"][i]
+                return True
+        return False
+
 
 class MockExperienceRepository(IExperienceRepository):
     async def create_experience(
@@ -124,6 +174,27 @@ class MockExperienceRepository(IExperienceRepository):
     async def get_all_experiences(self) -> List[ExperienceResponse]:
         return MOCK_DB_STATE["experiences"]
 
+    async def update_experience(
+        self, experience_id: str, experience_update: ExperienceUpdate
+    ) -> Optional[ExperienceResponse]:
+        for i, e in enumerate(MOCK_DB_STATE["experiences"]):
+            if e.id == experience_id:
+                data = e.model_dump()
+                for k, v in experience_update.model_dump(exclude_unset=True).items():
+                    data[k] = v
+                data["updated_at"] = datetime.now(timezone.utc)
+                resp = ExperienceResponse(**data)
+                MOCK_DB_STATE["experiences"][i] = resp
+                return resp
+        return None
+
+    async def delete_experience(self, experience_id: str) -> bool:
+        for i, e in enumerate(MOCK_DB_STATE["experiences"]):
+            if e.id == experience_id:
+                del MOCK_DB_STATE["experiences"][i]
+                return True
+        return False
+
 
 class MockCertificateRepository(ICertificateRepository):
     async def create_certificate(
@@ -139,6 +210,27 @@ class MockCertificateRepository(ICertificateRepository):
 
     async def get_all_certificates(self) -> List[CertificateResponse]:
         return MOCK_DB_STATE["certificates"]
+
+    async def update_certificate(
+        self, certificate_id: str, certificate_update: CertificateUpdate
+    ) -> Optional[CertificateResponse]:
+        for i, c in enumerate(MOCK_DB_STATE["certificates"]):
+            if c.id == certificate_id:
+                data = c.model_dump()
+                for k, v in certificate_update.model_dump(exclude_unset=True).items():
+                    data[k] = v
+                data["updated_at"] = datetime.now(timezone.utc)
+                resp = CertificateResponse(**data)
+                MOCK_DB_STATE["certificates"][i] = resp
+                return resp
+        return None
+
+    async def delete_certificate(self, certificate_id: str) -> bool:
+        for i, c in enumerate(MOCK_DB_STATE["certificates"]):
+            if c.id == certificate_id:
+                del MOCK_DB_STATE["certificates"][i]
+                return True
+        return False
 
 
 class MockSystemLogRepository(ISystemLogRepository):
