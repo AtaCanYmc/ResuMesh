@@ -55,5 +55,18 @@
   },
   "logs": {
     "empty": "No logs to display."
+  },
+  "home": {
+    "greeting": "Hi, I'm",
+    "featuredProjects": "Featured Projects",
+    "careerTimeline": "Career Timeline",
+    "recentArticles": "Recent Articles",
+    "readArticle": "Read Article"
+  },
+  "footer": {
+    "connect": "Connect",
+    "allRightsReserved": "All rights reserved.",
+    "builtWith": "Built with",
+    "by": "by"
   }
 }

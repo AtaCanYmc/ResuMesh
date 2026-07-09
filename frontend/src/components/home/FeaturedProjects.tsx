@@ -1,6 +1,7 @@
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import SpotlightCard from '../ui/SpotlightCard';
 import { useProjects } from '../../hooks/useHomeData';
 import { ProjectsSkeleton } from '../ui/Skeletons';
@@ -21,6 +22,7 @@ const itemVariants = {
 };
 
 const FeaturedProjects: React.FC = () => {
+  const { t } = useTranslation();
   const { data: projects, isLoading } = useProjects(3);
 
   if (isLoading) return <ProjectsSkeleton />;
@@ -34,14 +36,9 @@ const FeaturedProjects: React.FC = () => {
       viewport={{ once: true, margin: "-100px" }}
       className="pt-8"
     >
-      <div className="flex items-center gap-3 mb-6 justify-center xl:justify-start">
-        <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
-          <BookOpen size={24} />
-        </div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Son Projeler
-        </h2>
-      </div>
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center justify-center xl:justify-start">
+        {t('home.featuredProjects')}
+      </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((project: any) => {
 

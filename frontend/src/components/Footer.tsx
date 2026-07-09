@@ -5,7 +5,7 @@ import { useContentConfig } from '../hooks/useHomeData';
 import { getIcon } from '../utils/iconResolver';
 
 const Footer: React.FC = () => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data: config } = useContentConfig(i18n.language);
 
   if (!config) return null;
@@ -30,7 +30,7 @@ const Footer: React.FC = () => {
           {/* Connect Section */}
           <div className="md:text-right">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-              Connect
+              {t('footer.connect')}
             </h3>
             <div className="flex flex-col md:items-end gap-4">
               <a
@@ -64,9 +64,9 @@ const Footer: React.FC = () => {
 
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-gray-200 dark:border-gray-800 text-sm text-gray-500 dark:text-gray-500">
-          <p>© {new Date().getFullYear()} {config.hero.name}. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {config.hero.name}. {t('footer.allRightsReserved')}</p>
           <p className="flex items-center gap-1.5 mt-2 md:mt-0">
-            Built with <Heart size={14} className="text-red-500 fill-red-500" /> by {config.hero.name}
+            {t('footer.builtWith')} <Heart size={14} className="text-red-500 fill-red-500" /> {t('footer.by')} {config.hero.name}
           </p>
         </div>
       </div>

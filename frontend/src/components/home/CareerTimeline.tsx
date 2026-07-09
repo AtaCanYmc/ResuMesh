@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import SpotlightCard from '../ui/SpotlightCard';
 import { useExperiences } from '../../hooks/useHomeData';
 import { TimelineSkeleton } from '../ui/Skeletons';
@@ -20,6 +21,7 @@ const itemVariants = {
 };
 
 export default function CareerTimeline() {
+  const { t } = useTranslation();
   const { data: experiences, isLoading } = useExperiences();
 
   if (isLoading) return <TimelineSkeleton />;
@@ -34,7 +36,7 @@ export default function CareerTimeline() {
       className="py-12"
     >
       <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-10 flex items-center justify-center xl:justify-start">
-        Kariyer Özeti
+        {t('home.careerTimeline')}
       </h2>
 
       <div className="relative pl-4 sm:pl-8">

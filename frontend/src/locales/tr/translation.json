@@ -55,5 +55,18 @@
   },
   "logs": {
     "empty": "Gösterilecek log bulunamadı."
+  },
+  "home": {
+    "greeting": "Merhaba, ben",
+    "featuredProjects": "Öne Çıkan Çalışmalar",
+    "careerTimeline": "Kariyer Özeti",
+    "recentArticles": "Son Yazılar",
+    "readArticle": "Makaleyi Oku"
+  },
+  "footer": {
+    "connect": "İletişim",
+    "allRightsReserved": "Tüm hakları saklıdır.",
+    "builtWith": "ile",
+    "by": "tarafından geliştirildi"
   }
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ExternalLink, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import SpotlightCard from '../ui/SpotlightCard';
 import { useArticles } from '../../hooks/useHomeData';
 import { ArticlesSkeleton } from '../ui/Skeletons';
@@ -21,6 +22,7 @@ const itemVariants = {
 };
 
 export default function RecentArticles() {
+  const { t } = useTranslation();
   const { data: articles, isLoading } = useArticles(3);
 
   if (isLoading) return <ArticlesSkeleton />;
@@ -39,7 +41,7 @@ export default function RecentArticles() {
           <BookOpen size={24} />
         </div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Son Yazılar
+          {t('home.recentArticles')}
         </h2>
       </div>
 
@@ -97,7 +99,7 @@ export default function RecentArticles() {
                   </p>
 
                   <div className="flex items-center gap-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 mt-auto">
-                    Makaleyi Oku
+                    {t('home.readArticle')}
                     <ExternalLink size={14} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                   </div>
                 </a>

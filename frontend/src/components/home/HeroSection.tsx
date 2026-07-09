@@ -73,7 +73,7 @@ const HeroSection: React.FC = () => {
             className="flex-1 space-y-6 text-center lg:text-left z-10"
           >
             <motion.h1 variants={textVariants} className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tighter leading-tight text-gray-900 dark:text-white">
-              Hi, I'm <span className="bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">{config.hero.name}</span>.
+              {t('home.greeting')} <span className="bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">{config.hero.name}</span>.
             </motion.h1>
             <motion.div variants={textVariants} className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-800 dark:text-gray-200">
               {config.hero.title}
