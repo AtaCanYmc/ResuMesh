@@ -18,6 +18,7 @@ const SEO: React.FC<SEOProps> = ({
   type = "website",
   url = "https://resumesh.dev",
   image = "https://resumesh.dev/images/profile_pic.jpeg",
+  twitterHandle = "@x",
 }) => {
   const structuredData = {
     "@context": "https://schema.org",
