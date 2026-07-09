@@ -22,7 +22,7 @@ def seed_admin():
             print(f"Admin user '{admin_username}' already exists.")
             return
 
-        admin_password = os.getenv("ADMIN_PASSWORD", "admin")
+        admin_password = os.getenv("ADMIN_PASSWORD", "adminpass")
         password_hash = SecurityUtils.hash_password(admin_password)
 
         new_user = User(username=admin_username, password_hash=password_hash)
