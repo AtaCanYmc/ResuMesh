@@ -39,6 +39,18 @@ export interface Certificate {
   credential_id?: string;
 }
 
+export interface Education {
+  id: string;
+  school: string;
+  degree: string;
+  field_of_study: string;
+  start_date: string;
+  end_date?: string;
+  is_current: boolean;
+  grade?: string;
+  description?: string;
+}
+
 export interface SearchResultItem {
   id: string;
   title: string;

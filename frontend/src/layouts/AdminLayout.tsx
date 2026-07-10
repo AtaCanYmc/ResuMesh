@@ -12,7 +12,8 @@ import {
   Upload,
   Wand2,
   Menu,
-  X
+  X,
+  GraduationCap
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -32,6 +33,7 @@ export default function AdminLayout() {
     { path: '/admin/projects', label: 'Projects', icon: <FolderGit size={20} />, end: false },
     { path: '/admin/articles', label: 'Articles', icon: <BookOpen size={20} />, end: false },
     { path: '/admin/experiences', label: 'Experiences', icon: <Briefcase size={20} />, end: false },
+    { path: '/admin/educations', label: 'Educations', icon: <GraduationCap size={20} />, end: false },
     { path: '/admin/certificates', label: 'Certificates', icon: <Award size={20} />, end: false },
     { path: '/admin/system-logs', label: 'System Logs', icon: <Terminal size={20} />, end: false },
     { path: '/admin/import-linkedin', label: 'Import LinkedIn', icon: <Upload size={20} />, end: false },

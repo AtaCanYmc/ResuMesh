@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { Briefcase, GraduationCap } from 'lucide-react';
 import SpotlightCard from '../ui/SpotlightCard';
-import { useExperiences } from '../../hooks/useHomeData';
+import { useExperiences, useEducations } from '../../hooks/useHomeData';
 import { TimelineSkeleton } from '../ui/Skeletons';
 
 const containerVariants = {
@@ -20,12 +21,25 @@ const itemVariants = {
   visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: 'easeOut' } }
 };
 
-export default function CareerTimeline() {
+export default function Timeline() {
   const { t } = useTranslation();
-  const { data: experiences, isLoading } = useExperiences();
+  const { data: experiences, isLoading: isExpLoading } = useExperiences();
+  const { data: educations, isLoading: isEduLoading } = useEducations();
 
-  if (isLoading) return <TimelineSkeleton />;
-  if (!experiences || experiences.length === 0) return null;
+  if (isExpLoading || isEduLoading) return <TimelineSkeleton />;
+
+  const hasExperiences = experiences && experiences.length > 0;
+  const hasEducations = educations && educations.length > 0;
+
+  if (!hasExperiences && !hasEducations) return null;
+
+  // Combine and sort by start_date descending (newest first)
+  const timelineItems = [
+    ...(experiences || []).map((exp: any) => ({ ...exp, type: 'experience' })),
+    ...(educations || []).map((edu: any) => ({ ...edu, type: 'education' }))
+  ].sort((a: any, b: any) => {
+    return new Date(b.start_date).getTime() - new Date(a.start_date).getTime();
+  });
 
   return (
     <motion.div
@@ -44,9 +58,12 @@ export default function CareerTimeline() {
         <div className="absolute left-4 sm:left-8 top-2 bottom-2 w-0.5 bg-gray-200 dark:bg-gray-800 rounded-full" />
 
         <div className="space-y-8">
-          {experiences.map((exp: any, index: number) => {
-            const getDotColor = (color?: string) => {
-              switch(color) {
+          {timelineItems.map((item: any) => {
+            const isEducation = item.type === 'education';
+            const color = isEducation ? 'indigo' : (item.color || 'blue');
+
+            const getDotColor = (c: string) => {
+              switch(c) {
                 case 'blue': return 'bg-blue-500 shadow-blue-500/50';
                 case 'indigo': return 'bg-indigo-500 shadow-indigo-500/50';
                 case 'purple': return 'bg-purple-500 shadow-purple-500/50';
@@ -54,8 +71,8 @@ export default function CareerTimeline() {
               }
             };
 
-            const getSpotlightColor = (color?: string) => {
-              switch(color) {
+            const getSpotlightColor = (c: string) => {
+              switch(c) {
                 case 'blue': return 'rgba(59, 130, 246, 0.1)';
                 case 'indigo': return 'rgba(99, 102, 241, 0.1)';
                 case 'purple': return 'rgba(168, 85, 247, 0.1)';
@@ -64,23 +81,27 @@ export default function CareerTimeline() {
             };
 
             return (
-              <motion.div variants={itemVariants} key={exp.id} className="relative pl-8 sm:pl-12">
+              <motion.div variants={itemVariants} key={`${item.type}-${item.id}`} className="relative pl-8 sm:pl-12">
                 {/* Timeline Dot */}
-                <div className={`absolute left-[-5px] sm:left-[-5px] top-6 w-3 h-3 rounded-full shadow-lg ${getDotColor(exp.color)}`} />
+                <div className={`absolute left-[-11px] sm:left-[-11px] top-5 w-6 h-6 rounded-full flex items-center justify-center text-white shadow-lg ${getDotColor(color)}`}>
+                  {isEducation ? <GraduationCap size={12} /> : <Briefcase size={12} />}
+                </div>
 
-                <SpotlightCard spotlightColor={getSpotlightColor(exp.color || 'blue')}>
+                <SpotlightCard spotlightColor={getSpotlightColor(color)}>
                   <div className="p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm transition-all hover:shadow-md">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">{exp.title}</h3>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                        {isEducation ? item.degree : item.title}
+                      </h3>
                       <span className="text-sm font-medium px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full w-fit">
-                        {exp.start_date ? new Date(exp.start_date).getFullYear() : ''} - {exp.end_date ? new Date(exp.end_date).getFullYear() : 'Devam Ediyor'}
+                        {item.start_date ? new Date(item.start_date).getFullYear() : ''} - {item.end_date ? new Date(item.end_date).getFullYear() : 'Devam Ediyor'}
                       </span>
                     </div>
-                    <div className={`text-base font-medium mb-3 text-${exp.color || 'blue'}-600 dark:text-${exp.color || 'blue'}-400`}>
-                      {exp.company_name}
+                    <div className={`text-base font-medium mb-3 text-${color}-600 dark:text-${color}-400`}>
+                      {isEducation ? `${item.school} • ${item.field_of_study}` : item.company_name}
                     </div>
                     <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm sm:text-base">
-                      {exp.description}
+                      {item.description}
                     </p>
                   </div>
                 </SpotlightCard>

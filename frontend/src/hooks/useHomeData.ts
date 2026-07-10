@@ -53,6 +53,16 @@ export const useExperiences = () => {
   });
 };
 
+export const useEducations = () => {
+  return useQuery({
+    queryKey: ['educations'],
+    queryFn: async () => {
+      const response = await axios.get(`${API_URL}/api/v1/educations/`);
+      return response.data;
+    },
+  });
+};
+
 export const useProjects = (limit?: number) => {
   return useQuery({
     queryKey: ['projects', limit],

@@ -53,6 +53,12 @@
     "emptyTitle": "Deneyim Bulunamadı",
     "emptyDesc": "Henüz deneyim eklenmemiş."
   },
+  "educations": {
+    "title": "Eğitim Hayatı",
+    "subtitle": "Akademik geçmişim ve eğitim yolculuğum.",
+    "emptyTitle": "Eğitim Bulunamadı",
+    "emptyDesc": "Henüz eğitim eklenmemiş."
+  },
   "logs": {
     "empty": "Gösterilecek log bulunamadı."
   },

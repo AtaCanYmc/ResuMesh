@@ -53,6 +53,12 @@
     "emptyTitle": "No Experience Found",
     "emptyDesc": "No experience has been added yet."
   },
+  "educations": {
+    "title": "Education",
+    "subtitle": "My academic background and education journey.",
+    "emptyTitle": "No Education Found",
+    "emptyDesc": "No education has been added yet."
+  },
   "logs": {
     "empty": "No logs to display."
   },
