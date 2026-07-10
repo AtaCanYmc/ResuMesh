@@ -31,6 +31,7 @@ from app.routers import (
     projects,
     search,
     seo,
+    skills,
 )
 from app.schedulers.sync_scheduler import scheduler, start_scheduler
 
@@ -70,6 +71,7 @@ app.include_router(search.router, prefix="/api/v1")
 app.include_router(articles.router, prefix="/api/v1")
 app.include_router(educations.router, prefix="/api/v1")
 app.include_router(experiences.router, prefix="/api/v1")
+app.include_router(skills.router, prefix="/api/v1")
 app.include_router(certificates.router, prefix="/api/v1")
 app.include_router(seo.router, prefix="/api/v1/seo")
 

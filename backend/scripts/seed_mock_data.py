@@ -80,6 +80,31 @@ def seed_mock_data():
                 db.add(art)
             print("Added 5 mock articles.")
 
+        # 4. Seed Skills
+        from app.models.skill import Skill
+
+        skills_count = db.query(Skill).count()
+        if skills_count == 0:
+            skills = [
+                {"name": "React", "category": "Frontend", "icon_name": "react"},
+                {
+                    "name": "TypeScript",
+                    "category": "Frontend",
+                    "icon_name": "typescript",
+                },
+                {"name": "Node.js", "category": "Backend", "icon_name": "nodejs"},
+                {"name": "Python", "category": "Backend", "icon_name": "python"},
+                {"name": "Docker", "category": "DevOps", "icon_name": "docker"},
+                {
+                    "name": "PostgreSQL",
+                    "category": "Database",
+                    "icon_name": "postgresql",
+                },
+            ]
+            for s in skills:
+                db.add(Skill(**s))
+            print("Added 6 mock skills.")
+
         db.commit()
         print("Mock data seeded successfully!")
 

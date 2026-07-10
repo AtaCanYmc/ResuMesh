@@ -2,6 +2,8 @@
   "nav": {
     "about": "Hakkımda",
     "experiences": "Deneyimler",
+    "educations": "Eğitim",
+    "skills": "Yetenekler",
     "projects": "Projeler",
     "articles": "Makaleler",
     "certificates": "Sertifikalar",
@@ -66,6 +68,7 @@
     "greeting": "Ben",
     "featuredProjects": "Öne Çıkan Çalışmalar",
     "careerTimeline": "Kariyer Özeti",
+    "skills": "Yetenekler & Teknolojiler",
     "recentArticles": "Son Yazılar",
     "readArticle": "Makaleyi Oku"
   },

@@ -53,7 +53,15 @@ async def generate_cv(
             project_repo, experience_repo, article_repo, cert_repo, llm_provider
         )
 
-        cv_markdown = await cv_service.generate_tailored_cv(str(payload.job_url))
+        from app.db.session import get_db
+        from app.models.skill import Skill
+
+        db = next(get_db())
+        skills = db.query(Skill).all()
+
+        cv_markdown = await cv_service.generate_tailored_cv(
+            str(payload.job_url), skills=skills
+        )
 
         return {"status": "success", "cv_markdown": cv_markdown}
     except Exception as e:

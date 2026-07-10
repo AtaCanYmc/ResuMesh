@@ -10,6 +10,7 @@ const QuickMetrics = lazy(() => import('../components/home/QuickMetrics'));
 const FeaturedProjects = lazy(() => import('../components/home/FeaturedProjects'));
 const Timeline = lazy(() => import('../components/home/Timeline'));
 const RecentArticles = lazy(() => import('../components/home/RecentArticles'));
+const SkillsMarquee = lazy(() => import('../components/home/SkillsMarquee'));
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -54,6 +55,7 @@ const Home: React.FC = () => {
         <Suspense fallback={<div className="h-40 flex items-center justify-center opacity-50">Yükleniyor...</div>}>
           <QuickMetrics />
           <Timeline />
+          <SkillsMarquee />
           <FeaturedProjects />
           <RecentArticles />
         </Suspense>

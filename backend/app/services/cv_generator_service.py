@@ -23,7 +23,7 @@ class CVGeneratorService:
         self.cert_repo = cert_repo
         self.llm = llm_provider
 
-    async def generate_tailored_cv(self, job_url: str) -> str:
+    async def generate_tailored_cv(self, job_url: str, skills: list = None) -> str:
         # 1. Scrape the job description
         job_description = await ScraperService.scrape_job_description(job_url)
 
@@ -34,6 +34,17 @@ class CVGeneratorService:
         certificates = await self.cert_repo.get_all_certificates()
 
         context_lines = []
+
+        if skills:
+            context_lines.append("## Skills")
+            # Group by category if we want, or just a comma separated list
+            from collections import defaultdict
+
+            skill_map = defaultdict(list)
+            for s in skills:
+                skill_map[s.category].append(s.name)
+            for cat, s_names in skill_map.items():
+                context_lines.append(f"- {cat}: {', '.join(s_names)}")
 
         if projects:
             context_lines.append("## Projects")

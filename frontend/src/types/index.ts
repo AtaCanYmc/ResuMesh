@@ -39,6 +39,23 @@ export interface Certificate {
   credential_id?: string;
 }
 
+export interface Log {
+  id: string;
+  level: string;
+  message: string;
+  module?: string;
+  created_at: string;
+}
+
+export interface Skill {
+  id: string;
+  name: string;
+  category: string;
+  icon_name?: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Education {
   id: string;
   school: string;

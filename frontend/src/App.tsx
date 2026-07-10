@@ -25,6 +25,7 @@ const AdminProjects = React.lazy(() => import('./pages/admin/AdminProjects'));
 const AdminArticles = React.lazy(() => import('./pages/admin/AdminArticles'));
 const AdminExperiences = React.lazy(() => import('./pages/admin/AdminExperiences'));
 const AdminEducations = React.lazy(() => import('./pages/admin/AdminEducations'));
+const AdminSkills = React.lazy(() => import('./pages/admin/AdminSkills'));
 const AdminCertificates = React.lazy(() => import('./pages/admin/AdminCertificates'));
 const AdminSystemLogs = React.lazy(() => import('./pages/admin/AdminSystemLogs'));
 const AdminLinkedInImport = React.lazy(() => import('./pages/admin/AdminLinkedInImport'));
@@ -77,6 +78,7 @@ const router = createBrowserRouter([
       { path: 'articles', element: <AdminArticles /> },
       { path: 'experiences', element: <AdminExperiences /> },
       { path: 'educations', element: <AdminEducations /> },
+      { path: 'skills', element: <AdminSkills /> },
       { path: 'certificates', element: <AdminCertificates /> },
       { path: 'system-logs', element: <AdminSystemLogs /> },
       { path: 'import-linkedin', element: <AdminLinkedInImport /> },
