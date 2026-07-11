@@ -68,8 +68,8 @@ export default function AdminProjects() {
   const columns = [
     { header: 'Title', accessorKey: 'title', cell: (p: Project) => <span className="font-medium text-gray-900 dark:text-white">{p.title}</span> },
     { header: 'Description', accessorKey: 'description', cell: (p: Project) => <span className="line-clamp-1">{p.description || '-'}</span> },
-    { header: 'Stars', accessorKey: 'stargazers_count' },
-    { header: 'Forks', accessorKey: 'forks_count' },
+    { header: 'Stars', accessorKey: 'stars' },
+    { header: 'Forks', accessorKey: 'forks' },
   ];
 
   const handleEdit = (project: Project) => {

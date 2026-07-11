@@ -45,9 +45,9 @@ export default function AdminCertificates() {
   });
 
   const columns = [
-    { header: 'Title', accessorKey: 'title', cell: (c: Certificate) => <span className="font-medium text-gray-900 dark:text-white">{c.title}</span> },
-    { header: 'Issuer', accessorKey: 'issuer' },
-    { header: 'Issue Date', accessorKey: 'issue_date', cell: (c: Certificate) => new Date(c.issue_date).toLocaleDateString() },
+    { header: 'Name', accessorKey: 'name', cell: (c: Certificate) => <span className="font-medium text-gray-900 dark:text-white">{c.name}</span> },
+    { header: 'Issuer', accessorKey: 'issuing_organization' },
+    { header: 'Issue Date', accessorKey: 'issue_date', cell: (c: Certificate) => c.issue_date ? new Date(c.issue_date).toLocaleDateString() : '-' },
     { header: 'Credential ID', accessorKey: 'credential_id', cell: (c: Certificate) => c.credential_id || '-' },
   ];
 
