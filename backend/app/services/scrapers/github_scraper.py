@@ -22,6 +22,7 @@ import re
 from typing import Any
 
 import httpx
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 from app.schemas.project import ProjectCreate
 from app.services.scrapers.base import IScraperService
@@ -85,6 +86,11 @@ class GitHubScraperService(IScraperService):
             raw_github_data=raw,
         )
 
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        reraise=True,
+    )
     async def fetch_data(self, username: str, **kwargs) -> list[ProjectCreate]:
         pat = kwargs.get("pat")
         include_forks = kwargs.get("include_forks", False)
@@ -148,3 +154,7 @@ class GitHubScraperService(IScraperService):
             username,
         )
         return projects
+
+
+# Alias for backward compatibility / router imports
+GitHubScraper = GitHubScraperService

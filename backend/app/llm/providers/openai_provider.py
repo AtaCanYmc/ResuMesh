@@ -4,6 +4,7 @@ from typing import Type
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 from app.llm.base import LLMProvider
 from app.services.template_service import TemplateService
@@ -28,12 +29,22 @@ class OpenAIProvider(LLMProvider):
 
         self.chain = self.prompt | self.llm
 
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        reraise=True,
+    )
     async def generate_cv(self, job_description: str, user_context: str) -> str:
         response = await self.chain.ainvoke(
             {"job_description": job_description, "user_context": user_context}
         )
         return response.content
 
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        reraise=True,
+    )
     async def generate_structured_output(
         self, prompt: str, response_model: Type[BaseModel]
     ) -> BaseModel:

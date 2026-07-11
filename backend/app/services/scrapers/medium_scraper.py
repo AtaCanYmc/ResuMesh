@@ -24,6 +24,7 @@ from datetime import datetime, timezone
 
 import feedparser
 import httpx
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 from app.schemas.article import ArticleCreate, ArticlePlatform
 from app.services.scrapers.base import IScraperService
@@ -79,6 +80,11 @@ class MediumScraperService(IScraperService):
             raw_platform_data={"tags": tags},
         )
 
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        reraise=True,
+    )
     async def fetch_data(self, username: str, **kwargs) -> list[ArticleCreate]:
         """
         Medium RSS beslemesinden kullanıcının makalelerini çeker.
@@ -139,7 +145,7 @@ class MediumScraperService(IScraperService):
             try:
                 articles.append(MediumScraperService._parse_entry(entry))
             except Exception as exc:
-                # Tek bir kötü entry tüm listeyi bozmasm
+                # Tek bir kötü entry tüm listeyi bozmasın
                 logger.warning(
                     "[MEDIUM] Skipping entry title='%s' due to parse error: %s",
                     entry.get("title", "unknown"),
@@ -148,3 +154,7 @@ class MediumScraperService(IScraperService):
 
         logger.info("[MEDIUM] Parsed %d articles for user=%s", len(articles), username)
         return articles
+
+
+# Alias for backward compatibility / router imports
+MediumScraper = MediumScraperService

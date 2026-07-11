@@ -66,7 +66,10 @@ async def test_generate_cv(client, monkeypatch, auth_override):
 
     monkeypatch.setattr(ScraperService, "scrape_job_description", mock_scrape)
 
-    # Force LLM Provider to be mock
+    # Force LLM Provider to be mock and reset cache
+    import app.llm.factory as llm_factory
+
+    monkeypatch.setattr(llm_factory, "_provider_instance", None)
     monkeypatch.setenv("LLM_PROVIDER", "mock")
 
     response = await client.post(

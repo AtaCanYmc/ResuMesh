@@ -14,6 +14,12 @@ postgres = None
 @pytest.fixture(scope="module", autouse=True)
 def setup_postgres(request):
     """Start PostgreSQL container and create tables"""
+    import app.config.database as db_module
+
+    old_engine = db_module.engine
+    old_bind = db_module.SessionLocal.kw.get("bind")
+    old_db_url = os.environ.get("DATABASE_URL")
+
     try:
         global postgres
         postgres = PostgresContainer("postgres:15-alpine")
@@ -24,6 +30,13 @@ def setup_postgres(request):
     def remove_container():
         if postgres:
             postgres.stop()
+        # Restore original database settings
+        db_module.engine = old_engine
+        db_module.SessionLocal.configure(bind=old_bind)
+        if old_db_url is not None:
+            os.environ["DATABASE_URL"] = old_db_url
+        else:
+            os.environ.pop("DATABASE_URL", None)
 
     request.addfinalizer(remove_container)
 
@@ -34,8 +47,6 @@ def setup_postgres(request):
 
     # Crucially, override the app's global engine
     # and SessionLocal to point to the testcontainer!
-    import app.config.database as db_module
-
     db_module.engine = engine
     db_module.SessionLocal.configure(bind=engine)
 

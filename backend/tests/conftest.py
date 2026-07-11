@@ -134,8 +134,10 @@ class MockArticleRepository(IArticleRepository):
                 return resp
         return await self.create_article(article)
 
-    async def get_all_articles(self) -> List[ArticleResponse]:
-        return MOCK_DB_STATE["articles"]
+    async def get_all_articles(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[ArticleResponse]:
+        return MOCK_DB_STATE["articles"][skip : skip + limit]
 
     async def update_article(
         self, article_id: str, article_update: ArticleUpdate
@@ -171,8 +173,10 @@ class MockExperienceRepository(IExperienceRepository):
         MOCK_DB_STATE["experiences"].append(resp)
         return resp
 
-    async def get_all_experiences(self) -> List[ExperienceResponse]:
-        return MOCK_DB_STATE["experiences"]
+    async def get_all_experiences(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[ExperienceResponse]:
+        return MOCK_DB_STATE["experiences"][skip : skip + limit]
 
     async def update_experience(
         self, experience_id: str, experience_update: ExperienceUpdate
@@ -208,8 +212,10 @@ class MockCertificateRepository(ICertificateRepository):
         MOCK_DB_STATE["certificates"].append(resp)
         return resp
 
-    async def get_all_certificates(self) -> List[CertificateResponse]:
-        return MOCK_DB_STATE["certificates"]
+    async def get_all_certificates(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[CertificateResponse]:
+        return MOCK_DB_STATE["certificates"][skip : skip + limit]
 
     async def update_certificate(
         self, certificate_id: str, certificate_update: CertificateUpdate

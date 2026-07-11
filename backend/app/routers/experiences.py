@@ -27,10 +27,12 @@ async def create_experience(
 
 @router.get("/", response_model=List[ExperienceResponse])
 async def get_experiences(
+    skip: int = 0,
+    limit: int = 100,
     provider: IExperienceRepository = Depends(get_experience_repo),
 ):
     try:
-        experiences = await provider.get_all_experiences()
+        experiences = await provider.get_all_experiences(skip=skip, limit=limit)
         return experiences
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

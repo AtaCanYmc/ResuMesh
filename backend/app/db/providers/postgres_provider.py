@@ -139,9 +139,17 @@ class PostgresArticleRepository(BasePostgresRepository, IArticleRepository):
             db.refresh(db_article)
             return ArticleResponse.model_validate(db_article)
 
-    async def get_all_articles(self) -> List[ArticleResponse]:
+    async def get_all_articles(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[ArticleResponse]:
         with self._get_session() as db:
-            articles = db.query(Article).order_by(Article.published_at.desc()).all()
+            articles = (
+                db.query(Article)
+                .order_by(Article.published_at.desc())
+                .offset(skip)
+                .limit(limit)
+                .all()
+            )
             return [ArticleResponse.model_validate(a) for a in articles]
 
     async def update_article(
@@ -184,10 +192,16 @@ class PostgresExperienceRepository(BasePostgresRepository, IExperienceRepository
             db.refresh(db_exp)
             return ExperienceResponse.model_validate(db_exp)
 
-    async def get_all_experiences(self) -> List[ExperienceResponse]:
+    async def get_all_experiences(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[ExperienceResponse]:
         with self._get_session() as db:
             experiences = (
-                db.query(Experience).order_by(Experience.start_date.desc()).all()
+                db.query(Experience)
+                .order_by(Experience.start_date.desc())
+                .offset(skip)
+                .limit(limit)
+                .all()
             )
             return [ExperienceResponse.model_validate(e) for e in experiences]
 
@@ -231,10 +245,16 @@ class PostgresCertificateRepository(BasePostgresRepository, ICertificateReposito
             db.refresh(db_cert)
             return CertificateResponse.model_validate(db_cert)
 
-    async def get_all_certificates(self) -> List[CertificateResponse]:
+    async def get_all_certificates(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[CertificateResponse]:
         with self._get_session() as db:
             certificates = (
-                db.query(Certificate).order_by(Certificate.issue_date.desc()).all()
+                db.query(Certificate)
+                .order_by(Certificate.issue_date.desc())
+                .offset(skip)
+                .limit(limit)
+                .all()
             )
             return [CertificateResponse.model_validate(c) for c in certificates]
 

@@ -124,8 +124,14 @@ class SupabaseProvider(
             raise Exception("Failed to upsert article in Supabase.")
         return ArticleResponse(**response.data[0])
 
-    async def get_all_articles(self) -> List[ArticleResponse]:
-        response = await self.client.table("articles").select("*").execute()
+    async def get_all_articles(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[ArticleResponse]:
+        start = skip
+        end = skip + limit - 1
+        response = (
+            await self.client.table("articles").select("*").range(start, end).execute()
+        )
         return [ArticleResponse(**item) for item in response.data]
 
     async def update_article(
@@ -159,8 +165,17 @@ class SupabaseProvider(
             raise Exception("Failed to create experience in Supabase.")
         return ExperienceResponse(**response.data[0])
 
-    async def get_all_experiences(self) -> List[ExperienceResponse]:
-        response = await self.client.table("experiences").select("*").execute()
+    async def get_all_experiences(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[ExperienceResponse]:
+        start = skip
+        end = skip + limit - 1
+        response = (
+            await self.client.table("experiences")
+            .select("*")
+            .range(start, end)
+            .execute()
+        )
         return [ExperienceResponse(**item) for item in response.data]
 
     async def update_experience(
@@ -195,8 +210,17 @@ class SupabaseProvider(
             raise Exception("Failed to create certificate in Supabase.")
         return CertificateResponse(**response.data[0])
 
-    async def get_all_certificates(self) -> List[CertificateResponse]:
-        response = await self.client.table("certificates").select("*").execute()
+    async def get_all_certificates(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[CertificateResponse]:
+        start = skip
+        end = skip + limit - 1
+        response = (
+            await self.client.table("certificates")
+            .select("*")
+            .range(start, end)
+            .execute()
+        )
         return [CertificateResponse(**item) for item in response.data]
 
     async def update_certificate(

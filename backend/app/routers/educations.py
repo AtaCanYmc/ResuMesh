@@ -11,8 +11,18 @@ router = APIRouter(prefix="/educations", tags=["Educations"])
 
 
 @router.get("/", response_model=List[EducationResponse])
-def get_educations(db: Session = Depends(get_db)):
-    return db.query(Education).order_by(Education.start_date.desc()).all()
+def get_educations(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+):
+    return (
+        db.query(Education)
+        .order_by(Education.start_date.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 
 @router.get("/{education_id}", response_model=EducationResponse)

@@ -8,8 +8,6 @@ from app.db.base import (
     ISearchRepository,
     ISystemLogRepository,
 )
-from app.db.providers.firebase_provider import FirebaseProvider
-from app.db.providers.mongo_provider import MongoProvider
 from app.db.providers.postgres_provider import (
     PostgresArticleRepository,
     PostgresCertificateRepository,
@@ -28,22 +26,6 @@ PROVIDER_REGISTRY = {
         "certificate": PostgresCertificateRepository,
         "system_log": PostgresSystemLogRepository,
         "search": PostgresSearchRepository,
-    },
-    "mongodb": {
-        "project": MongoProvider,
-        "article": MongoProvider,
-        "experience": MongoProvider,
-        "certificate": MongoProvider,
-        "system_log": MongoProvider,
-        "search": MongoProvider,
-    },
-    "firebase": {
-        "project": FirebaseProvider,
-        "article": FirebaseProvider,
-        "experience": FirebaseProvider,
-        "certificate": FirebaseProvider,
-        "system_log": FirebaseProvider,
-        "search": FirebaseProvider,
     },
     "supabase": {
         "project": SupabaseProvider,

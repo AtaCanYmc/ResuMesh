@@ -27,10 +27,12 @@ async def create_certificate(
 
 @router.get("/", response_model=List[CertificateResponse])
 async def get_certificates(
+    skip: int = 0,
+    limit: int = 100,
     provider: ICertificateRepository = Depends(get_certificate_repo),
 ):
     try:
-        certificates = await provider.get_all_certificates()
+        certificates = await provider.get_all_certificates(skip=skip, limit=limit)
         return certificates
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -55,7 +55,9 @@ class IArticleRepository(ABC):
         pass
 
     @abstractmethod
-    async def get_all_articles(self) -> List[ArticleResponse]:
+    async def get_all_articles(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[ArticleResponse]:
         pass
 
     @abstractmethod
@@ -77,7 +79,9 @@ class IExperienceRepository(ABC):
         pass
 
     @abstractmethod
-    async def get_all_experiences(self) -> List[ExperienceResponse]:
+    async def get_all_experiences(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[ExperienceResponse]:
         pass
 
     @abstractmethod
@@ -99,7 +103,9 @@ class ICertificateRepository(ABC):
         pass
 
     @abstractmethod
-    async def get_all_certificates(self) -> List[CertificateResponse]:
+    async def get_all_certificates(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[CertificateResponse]:
         pass
 
     @abstractmethod

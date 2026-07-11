@@ -25,6 +25,7 @@ import re
 from datetime import datetime, timezone
 
 import httpx
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 from app.schemas.article import ArticleCreate, ArticlePlatform
 from app.services.scrapers.base import IScraperService
@@ -96,6 +97,11 @@ class DevToScraperService(IScraperService):
             raw_platform_data=raw,
         )
 
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        reraise=True,
+    )
     async def fetch_data(self, username: str, **kwargs) -> list[ArticleCreate]:
         api_key = kwargs.get("api_key")
         """
@@ -158,3 +164,7 @@ class DevToScraperService(IScraperService):
 
         logger.info("[DEV_TO] Parsed %d articles for user=%s", len(articles), username)
         return articles
+
+
+# Alias for backward compatibility / router imports
+DevToScraper = DevToScraperService
