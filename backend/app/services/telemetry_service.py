@@ -13,8 +13,13 @@ class TelemetryService:
         self.api_key = settings.POSTHOG_API_KEY
         self.host = settings.POSTHOG_HOST
         self.client = None
+        self.is_development = settings.ENVIRONMENT.lower() == "development"
 
-        if self.api_key:
+        if self.is_development:
+            logger.info(
+                "[TELEMETRY] Environment is development. PostHog telemetry is disabled."
+            )
+        elif self.api_key:
             try:
                 self.client = Posthog(project_api_key=self.api_key, host=self.host)
                 logger.info("[TELEMETRY] PostHog telemetry initialized successfully.")
