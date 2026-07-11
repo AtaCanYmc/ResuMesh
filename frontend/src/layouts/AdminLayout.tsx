@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -16,6 +16,7 @@ import {
   GraduationCap
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import PageLoader from '../components/PageLoader';
 
 export default function AdminLayout() {
   const { logout } = useAuth();
@@ -119,7 +120,9 @@ export default function AdminLayout() {
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
           <div className="max-w-7xl mx-auto w-full">
-            <Outlet />
+            <Suspense fallback={<PageLoader />}>
+              <Outlet />
+            </Suspense>
           </div>
         </main>
       </div>

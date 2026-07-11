@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { Wand2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
 import SkillFormModal from '../../components/admin/forms/SkillFormModal';
+import EmptyState from '../../components/ui/EmptyState';
 import { Skill } from '../../types';
 
 export default function AdminSkills() {
@@ -25,7 +27,7 @@ export default function AdminSkills() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async (id: number) => {
       await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/skills/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -43,8 +45,8 @@ export default function AdminSkills() {
 
   const columns = [
     { header: 'Name', accessorKey: 'name', cell: (s: Skill) => <span className="font-medium text-gray-900 dark:text-white">{s.name}</span> },
-    { header: 'Category', accessorKey: 'category' },
-    { header: 'Icon Name', accessorKey: 'icon_name' },
+    { header: 'Category', accessorKey: 'category', cell: (s: Skill) => <span className="capitalize">{s.category}</span> },
+    { header: 'Proficiency', accessorKey: 'proficiency', cell: (s: Skill) => <span className="capitalize">{s.proficiency}</span> },
   ];
 
   const handleEdit = (skill: Skill) => {
@@ -59,7 +61,7 @@ export default function AdminSkills() {
 
   const confirmDelete = () => {
     if (skillToDelete) {
-      deleteMutation.mutate(skillToDelete.id);
+      deleteMutation.mutate(skillToDelete.id as any);
     }
   };
 
@@ -74,6 +76,14 @@ export default function AdminSkills() {
 
       {isLoading ? (
         <div className="flex justify-center p-12 text-gray-500">Loading skills...</div>
+      ) : skills.length === 0 ? (
+        <EmptyState
+          icon={Wand2}
+          title="No skills added yet"
+          message="Showcase your tech stack and expertise by listing your main skills."
+          actionLabel="Add Skill"
+          onAction={handleAdd}
+        />
       ) : (
         <DataTable
           data={skills}

@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { Award } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
 import CertificateFormModal from '../../components/admin/forms/CertificateFormModal';
+import EmptyState from '../../components/ui/EmptyState';
 import { Certificate } from '../../types';
 
 export default function AdminCertificates() {
@@ -42,9 +44,10 @@ export default function AdminCertificates() {
   });
 
   const columns = [
-    { header: 'Name', accessorKey: 'name', cell: (c: Certificate) => <span className="font-medium text-gray-900 dark:text-white">{c.name}</span> },
-    { header: 'Issuer', accessorKey: 'issuing_organization' },
-    { header: 'Issue Date', accessorKey: 'issue_date', cell: (c: Certificate) => c.issue_date ? new Date(c.issue_date).toLocaleDateString() : '-' },
+    { header: 'Title', accessorKey: 'title', cell: (c: Certificate) => <span className="font-medium text-gray-900 dark:text-white">{c.title}</span> },
+    { header: 'Issuer', accessorKey: 'issuer' },
+    { header: 'Issue Date', accessorKey: 'issue_date', cell: (c: Certificate) => new Date(c.issue_date).toLocaleDateString() },
+    { header: 'Credential ID', accessorKey: 'credential_id', cell: (c: Certificate) => c.credential_id || '-' },
   ];
 
   const handleEdit = (certificate: Certificate) => {
@@ -74,6 +77,14 @@ export default function AdminCertificates() {
 
       {isLoading ? (
         <div className="flex justify-center p-12 text-gray-500">Loading certificates...</div>
+      ) : certificates.length === 0 ? (
+        <EmptyState
+          icon={Award}
+          title="No certificates added yet"
+          message="Display your certifications and credentials to stand out to employers."
+          actionLabel="Add Certificate"
+          onAction={handleAdd}
+        />
       ) : (
         <DataTable
           data={certificates}

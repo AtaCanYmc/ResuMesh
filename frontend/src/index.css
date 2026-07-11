@@ -24,3 +24,23 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+@media print {
+  header, footer, aside, button, nav, .no-print {
+    display: none !important;
+  }
+  body, html, main {
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .cv-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}

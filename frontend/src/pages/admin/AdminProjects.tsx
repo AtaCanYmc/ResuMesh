@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { FolderGit } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
 import ProjectFormModal from '../../components/admin/forms/ProjectFormModal';
+import EmptyState from '../../components/ui/EmptyState';
 import { Project } from '../../types';
 
 export default function AdminProjects() {
@@ -77,6 +79,14 @@ export default function AdminProjects() {
 
       {isLoading ? (
         <div className="flex justify-center p-12 text-gray-500">Loading projects...</div>
+      ) : projects.length === 0 ? (
+        <EmptyState
+          icon={FolderGit}
+          title="No projects added yet"
+          message="Showcase your coding skills by adding open-source projects or personal works."
+          actionLabel="Add Project"
+          onAction={handleAdd}
+        />
       ) : (
         <DataTable
           data={projects}

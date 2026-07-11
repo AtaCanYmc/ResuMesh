@@ -123,7 +123,7 @@ const MainLayout: React.FC = () => {
       <motion.aside
         animate={{ width: isDesktopMenuCollapsed ? 80 : 256 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="hidden md:flex bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col z-20 overflow-hidden"
+        className="hidden md:flex bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col z-20 overflow-hidden no-print"
       >
         <SidebarContent isMobile={false} isCollapsed={isDesktopMenuCollapsed} />
       </motion.aside>
@@ -132,7 +132,7 @@ const MainLayout: React.FC = () => {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <FocusTrap focusTrapOptions={{ clickOutsideDeactivates: true, onDeactivate: closeMobileMenu }}>
-            <div className="fixed inset-0 z-50 md:hidden">
+            <div className="fixed inset-0 z-50 md:hidden no-print">
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -158,7 +158,7 @@ const MainLayout: React.FC = () => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         {/* Topbar */}
-        <header className="h-20 bg-glass flex items-center justify-between px-4 sm:px-8 sticky top-0 z-10">
+        <header className="h-20 bg-glass flex items-center justify-between px-4 sm:px-8 sticky top-0 z-10 no-print">
           <div className="flex items-center flex-1 min-w-0">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
@@ -209,7 +209,9 @@ const MainLayout: React.FC = () => {
               </AnimatePresence>
             </div>
           </div>
-          <Footer />
+          <div className="no-print">
+            <Footer />
+          </div>
         </main>
       </div>
     </div>

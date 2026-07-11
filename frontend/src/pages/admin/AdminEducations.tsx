@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { GraduationCap } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
 import EducationFormModal from '../../components/admin/forms/EducationFormModal';
+import EmptyState from '../../components/ui/EmptyState';
 import { Education } from '../../types';
 
 export default function AdminEducations() {
@@ -42,7 +44,7 @@ export default function AdminEducations() {
   });
 
   const columns = [
-    { header: 'School', accessorKey: 'school', cell: (e: Education) => <span className="font-medium text-gray-900 dark:text-white">{e.school}</span> },
+    { header: 'School', accessorKey: 'school_name', cell: (e: Education) => <span className="font-medium text-gray-900 dark:text-white">{e.school_name}</span> },
     { header: 'Degree', accessorKey: 'degree' },
     { header: 'Field of Study', accessorKey: 'field_of_study' },
     { header: 'Start Date', accessorKey: 'start_date', cell: (e: Education) => new Date(e.start_date).toLocaleDateString() },
@@ -75,6 +77,14 @@ export default function AdminEducations() {
 
       {isLoading ? (
         <div className="flex justify-center p-12 text-gray-500">Loading educations...</div>
+      ) : educations.length === 0 ? (
+        <EmptyState
+          icon={GraduationCap}
+          title="No educations added yet"
+          message="Keep track of your academic milestones and degrees in your profile."
+          actionLabel="Add Education"
+          onAction={handleAdd}
+        />
       ) : (
         <DataTable
           data={educations}
