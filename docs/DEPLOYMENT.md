@@ -76,6 +76,8 @@ On Render, we will take the opposite approach.
 * **Environment Variables:**
   * `DATABASE_URL`: The connection string from Neon or Supabase.
   * `CORS_ORIGINS`: Add your deployed frontend URL from Vercel here (e.g., `https://resumesh.vercel.app`), otherwise, the backend will reject the request due to security.
+* **⚠️ Memory Constraints & OOM Warnings:**
+  Playwright headless browser execution and LLM data processing are memory-intensive. Running the backend on Render's lowest Free plan (512MB RAM) will likely trigger "Out of Memory (OOM)" crashes when scraping jobs. For stable production operation, it is **strongly recommended** to use a tier with at least 1GB/2GB of RAM (e.g. Render Starter or Standard plan).
 
 ### 3. Critical: About the "render.yaml" File
 
