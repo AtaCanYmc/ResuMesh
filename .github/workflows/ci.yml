@@ -66,6 +66,7 @@ jobs:
         MONGO_DB_NAME: resumesh
         LLM_PROVIDER: mock
         JWT_SECRET_KEY: test-secret
+        ENABLE_ADMIN_WORKSPACE: "true"
       run: |
         PYTHONPATH=. pytest tests -v
 
@@ -98,3 +99,23 @@ jobs:
     - name: Build
       working-directory: ./frontend
       run: npm run build
+
+  # ─── Auto-Deploy to Render ───
+  deploy:
+    needs: [backend-tests, frontend-build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - name: Trigger Render Deploy Hook
+      env:
+        RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+      run: |
+        if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+          echo "⚠️  RENDER_DEPLOY_HOOK_URL secret is not set. Skipping deploy."
+          exit 0
+        fi
+        echo "🚀 Triggering Render deploy..."
+        curl -s -o /dev/null -w "%{http_code}" "$RENDER_DEPLOY_HOOK_URL" | grep -q "200\|201" \
+          && echo "✅ Deploy triggered successfully." \
+          || (echo "❌ Deploy hook failed." && exit 1)

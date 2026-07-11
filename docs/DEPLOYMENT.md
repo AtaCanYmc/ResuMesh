@@ -111,3 +111,43 @@ Follow this order to connect the systems properly:
 **Summary:** The repo may be single, but the "deployment pipelines" are separated. Each platform looks at its own root directory.
 
 While doing this configuration, if you encounter "build failed" errors on Vercel or Render, simply checking the error codes from the "Logs" section of that service will suffice.
+
+---
+
+## CI/CD: Auto-Deploy Pipeline
+
+The project includes a GitHub Actions workflow (`.github/workflows/ci.yml`) that automates testing and deployment.
+
+### Pipeline Flow
+
+```
+Push/PR to main
+      │
+      ├── backend-tests (pytest + lint)
+      │
+      ├── frontend-build (vitest + build)
+      │
+      └── deploy (only on push to main, after both jobs pass)
+              │
+              └── Triggers Render Deploy Hook via curl
+```
+
+### Setup Steps
+
+1. **Get Render Deploy Hook URL:**
+   - Go to your Render service dashboard → **Settings** → **Deploy Hook**
+   - Copy the URL (format: `https://api.render.com/deploy/srv-xxx?key=yyy`)
+
+2. **Add GitHub Secret:**
+   - Go to your GitHub repo → **Settings** → **Secrets and variables** → **Actions**
+   - Create a new secret named `RENDER_DEPLOY_HOOK_URL` and paste the URL
+
+3. **How it works:**
+   - Every push or PR to `main` runs `backend-tests` and `frontend-build` in parallel
+   - On **push to main only**: if both test jobs pass, the `deploy` job fires the Render webhook
+   - Render receives the webhook and triggers a new build + deploy automatically
+   - If the secret is not set, the deploy step is skipped gracefully (no failure)
+
+### Admin Workspace Flag
+
+The `ENABLE_ADMIN_WORKSPACE` environment variable is set to `true` in the CI test environment so that admin-dependent tests execute normally. On the deployed Render instance, it defaults to `false` (via `render.yaml`), disabling heavy admin operations to prevent OOM crashes on resource-constrained plans.
