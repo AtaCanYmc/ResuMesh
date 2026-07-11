@@ -9,13 +9,16 @@ import PageLoader from './PageLoader';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 import Footer from './Footer';
+import { useContentConfig } from '../hooks/useHomeData';
 
 const MainLayout: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isDesktopMenuCollapsed, setIsDesktopMenuCollapsed] = useState(false);
+  const [isDesktopMenuCollapsed, setIsDesktopMenuCollapsed] = useState(true);
   const location = useLocation();
   const { theme, setTheme } = useTheme();
   const mainRef = useRef<HTMLElement>(null);
+  const { t, i18n } = useTranslation();
+  const { data: config } = useContentConfig(i18n.language);
 
   // Scroll Restoration on route change
   useEffect(() => {
@@ -33,8 +36,6 @@ const MainLayout: React.FC = () => {
     }
   };
 
-  const { t } = useTranslation();
-
   const navItems = [
     { path: '/', label: t('nav.about'), icon: <User size={20} aria-hidden="true" /> },
     { path: '/experiences', label: t('nav.experiences'), icon: <Briefcase size={20} aria-hidden="true" /> },
@@ -50,25 +51,32 @@ const MainLayout: React.FC = () => {
   // Extracted Sidebar content allowing unique layoutId suffix to prevent framer-motion collisions
   const SidebarContent = ({ isMobile = false, isCollapsed = false }: { isMobile?: boolean, isCollapsed?: boolean }) => (
     <>
-      <div className={`p-6 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
-        {!isCollapsed && (
-          <h1 className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 bg-clip-text text-transparent truncate">
-            ResuMesh
-          </h1>
-        )}
-        {isCollapsed && (
-          <h1 className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 bg-clip-text text-transparent">
-            R
-          </h1>
-        )}
-        {isMobile && (
-          <button
-            onClick={closeMobileMenu}
-            className="md:hidden text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-md p-2 -mr-2"
-            aria-label="Menüyü Kapat"
-          >
-            <X size={24} aria-hidden="true" />
-          </button>
+      <div className={`p-6 flex flex-col ${isCollapsed ? 'items-center justify-center' : 'items-start justify-between'}`}>
+        <div className="flex items-center justify-between w-full">
+          {!isCollapsed && (
+            <h1 className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 bg-clip-text text-transparent truncate">
+              ResuMesh
+            </h1>
+          )}
+          {isCollapsed && (
+            <h1 className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 bg-clip-text text-transparent">
+              R
+            </h1>
+          )}
+          {isMobile && (
+            <button
+              onClick={closeMobileMenu}
+              className="md:hidden text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-md p-2 -mr-2"
+              aria-label="Menüyü Kapat"
+            >
+              <X size={24} aria-hidden="true" />
+            </button>
+          )}
+        </div>
+        {!isCollapsed && config?.hero?.name && (
+          <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-1.5 tracking-wide truncate max-w-full">
+            {config.hero.name}
+          </span>
         )}
       </div>
       <nav className={`flex-1 space-y-2 mt-4 relative ${isCollapsed ? 'px-2' : 'px-4'}`}>

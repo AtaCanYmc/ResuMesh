@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/resumesh_logo.jpg" alt="ResuMesh Logo" width="200" height="200" />
+</p>
+
 # ⚡ ResuMesh
 
 > **An AI-powered, open-source smart portfolio aggregator and tailored CV generator.**
