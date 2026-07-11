@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { Outlet, NavLink, Link, useLocation } from 'react-router-dom';
-import { User, Briefcase, FolderGit, BookOpen, Award, Menu, X, Moon, Sun } from 'lucide-react';
+import { User, Briefcase, FolderGit, BookOpen, Award, Menu, X, Moon, Sun, GraduationCap, Wand2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import SearchBar from './SearchBar';
 import { useTheme } from '../context/ThemeContext';
@@ -38,6 +38,8 @@ const MainLayout: React.FC = () => {
   const navItems = [
     { path: '/', label: t('nav.about'), icon: <User size={20} aria-hidden="true" /> },
     { path: '/experiences', label: t('nav.experiences'), icon: <Briefcase size={20} aria-hidden="true" /> },
+    { path: '/educations', label: t('nav.educations'), icon: <GraduationCap size={20} aria-hidden="true" /> },
+    { path: '/skills', label: t('nav.skills'), icon: <Wand2 size={20} aria-hidden="true" /> },
     { path: '/projects', label: t('nav.projects'), icon: <FolderGit size={20} aria-hidden="true" /> },
     { path: '/articles', label: t('nav.articles'), icon: <BookOpen size={20} aria-hidden="true" /> },
     { path: '/certificates', label: t('nav.certificates'), icon: <Award size={20} aria-hidden="true" /> },

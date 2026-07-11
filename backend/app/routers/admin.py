@@ -53,7 +53,7 @@ async def generate_cv(
             project_repo, experience_repo, article_repo, cert_repo, llm_provider
         )
 
-        from app.db.session import get_db
+        from app.db.dependencies import get_db
         from app.models.skill import Skill
 
         db = next(get_db())

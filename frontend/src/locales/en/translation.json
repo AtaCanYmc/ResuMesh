@@ -57,9 +57,15 @@
   },
   "educations": {
     "title": "Education",
-    "subtitle": "My academic background and education journey.",
+    "subtitle": "My academic background and learning journey.",
     "emptyTitle": "No Education Found",
-    "emptyDesc": "No education has been added yet."
+    "emptyDesc": "No education history has been added yet."
+  },
+  "skills": {
+    "title": "Skills",
+    "subtitle": "Technical skills and areas of expertise.",
+    "emptyTitle": "No Skills Found",
+    "emptyDesc": "No skills have been added yet."
   },
   "logs": {
     "empty": "No logs to display."

@@ -13,6 +13,8 @@ import { HelmetProvider } from 'react-helmet-async';
 
 const Home = React.lazy(() => import('./pages/Home'));
 const Experiences = React.lazy(() => import('./pages/Experiences'));
+const Educations = React.lazy(() => import('./pages/Educations'));
+const Skills = React.lazy(() => import('./pages/Skills'));
 const Projects = React.lazy(() => import('./pages/Projects'));
 const Articles = React.lazy(() => import('./pages/Articles'));
 const Certificates = React.lazy(() => import('./pages/Certificates'));
@@ -54,6 +56,8 @@ const router = createBrowserRouter([
     children: [
       { path: '/', element: <Home /> },
       { path: '/experiences', element: <Experiences /> },
+      { path: '/educations', element: <Educations /> },
+      { path: '/skills', element: <Skills /> },
       { path: '/projects', element: <Projects /> },
       { path: '/articles', element: <Articles /> },
       { path: '/certificates', element: <Certificates /> },

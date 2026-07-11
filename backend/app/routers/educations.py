@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.db.session import get_db
+from app.db.dependencies import get_db
 from app.models.education import Education
 from app.schemas.education import EducationCreate, EducationResponse, EducationUpdate
 

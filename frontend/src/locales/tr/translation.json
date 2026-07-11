@@ -61,6 +61,12 @@
     "emptyTitle": "Eğitim Bulunamadı",
     "emptyDesc": "Henüz eğitim eklenmemiş."
   },
+  "skills": {
+    "title": "Yetenekler",
+    "subtitle": "Sahip olduğum teknik beceriler ve uzmanlık alanları.",
+    "emptyTitle": "Yetenek Bulunamadı",
+    "emptyDesc": "Henüz sisteme bir yetenek eklenmemiş."
+  },
   "logs": {
     "empty": "Gösterilecek log bulunamadı."
   },
