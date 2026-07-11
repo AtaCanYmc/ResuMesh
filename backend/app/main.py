@@ -58,6 +58,9 @@ app = FastAPI(
     description="Açık Kaynak Akıllı Portfolyo ve CV Yönetim Sistemi",
     version="1.0.0",
     lifespan=lifespan,
+    docs_url="/api/v1/docs",
+    redoc_url="/api/v1/redoc",
+    openapi_url="/api/v1/openapi.json",
 )
 
 app.state.limiter = limiter
