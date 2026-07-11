@@ -36,9 +36,16 @@ const FeaturedProjects: React.FC = () => {
       viewport={{ once: true, margin: "-100px" }}
       className="pt-8"
     >
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center justify-center xl:justify-start">
-        {t('home.featuredProjects')}
-      </h2>
+      <div className="mb-12 text-center max-w-2xl mx-auto">
+        <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+          <span className="bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 bg-clip-text text-transparent">
+            {t('home.featuredProjects')}
+          </span>
+        </h2>
+        <p className="mt-3 text-lg text-gray-500 dark:text-gray-400">
+          {t('projects.subtitle')}
+        </p>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((project: any) => {
 

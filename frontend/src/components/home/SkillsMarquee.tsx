@@ -100,9 +100,7 @@ export default function SkillsMarquee() {
           </span>
         </h2>
         <p className="mt-3 text-lg text-gray-500 dark:text-gray-400">
-          {i18n.language === 'tr'
-            ? 'Uzmanlaştığım teknolojiler ve yeteneklerimin kategorize edilmiş genel görünümü.'
-            : 'A categorized overview of the technologies and skills I specialize in.'}
+          {t('home.skillsSubtitle')}
         </p>
       </div>
 

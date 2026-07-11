@@ -49,9 +49,16 @@ export default function Timeline() {
       viewport={{ once: true, margin: "-100px" }}
       className="py-12"
     >
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-10 flex items-center justify-center xl:justify-start">
-        {t('home.careerTimeline')}
-      </h2>
+      <div className="mb-12 text-center max-w-2xl mx-auto">
+        <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+          <span className="bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 bg-clip-text text-transparent">
+            {t('home.careerTimeline')}
+          </span>
+        </h2>
+        <p className="mt-3 text-lg text-gray-500 dark:text-gray-400">
+          {t('experiences.subtitle')}
+        </p>
+      </div>
 
       <div className="relative pl-4 sm:pl-8">
         {/* Vertical Timeline Line */}
