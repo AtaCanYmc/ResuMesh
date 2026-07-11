@@ -52,6 +52,18 @@ class ScraperService:
                         "Chrome/114.0.0.0 Safari/537.36"
                     )
                 )
+
+                async def route_handler(route):
+                    req_url = route.request.url
+                    if not is_safe_url(req_url):
+                        logger.warning(
+                            f"Blocking potentially unsafe SSRF request: {req_url}"
+                        )
+                        await route.abort("blockedbyclient")
+                    else:
+                        await route.continue_()
+
+                await page.route("**/*", route_handler)
                 await page.goto(url, wait_until="networkidle", timeout=30000)
 
                 html_content = await page.content()

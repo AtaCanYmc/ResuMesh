@@ -42,11 +42,11 @@ describe('AuthContext', () => {
 
     expect(screen.getByTestId('auth-status').textContent).toBe('Auth');
     expect(screen.getByTestId('token').textContent).toBe('test-token');
-    expect(localStorage.getItem('adminToken')).toBe('test-token');
+    expect(localStorage.getItem('isLoggedIn')).toBe('true');
   });
 
   it('signs out correctly and removes token from localStorage', () => {
-    localStorage.setItem('adminToken', 'initial-token');
+    localStorage.setItem('isLoggedIn', 'true');
     render(
       <AuthProvider>
         <TestComponent />
@@ -59,6 +59,6 @@ describe('AuthContext', () => {
 
     expect(screen.getByTestId('auth-status').textContent).toBe('NoAuth');
     expect(screen.getByTestId('token').textContent).toBe('NoToken');
-    expect(localStorage.getItem('adminToken')).toBeNull();
+    expect(localStorage.getItem('isLoggedIn')).toBeNull();
   });
 });
