@@ -76,7 +76,7 @@ export const useSkills = () => {
     queryKey: ['skills'],
     queryFn: async () => {
       const response = await axios.get(`${API_URL}/api/v1/skills/`);
-      return response.data;
+      return Array.isArray(response.data) ? response.data : [];
     },
   });
 };
