@@ -1,13 +1,44 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 
 from app.core.exceptions import ProjectNotFoundError
 from app.db.base import IProjectRepository
 from app.db.dependencies import get_project_repo
 from app.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
+from app.services.auth_service import get_current_admin
+from app.services.ingestion_service import IngestionService
+from app.services.scrapers.github_scraper import GitHubScraper
 
 router = APIRouter(prefix="/projects", tags=["projects"])
+
+
+class ProjectRefreshRequest(BaseModel):
+    username: str
+    pat: str | None = None
+    include_forks: bool = False
+
+
+@router.post("/refresh", response_model=dict)
+async def refresh_projects(
+    request: ProjectRefreshRequest,
+    provider: IProjectRepository = Depends(get_project_repo),
+    admin: dict = Depends(get_current_admin),
+):
+    try:
+        ingestion = IngestionService()
+        scraper = GitHubScraper()
+        await ingestion.fetch_github_repos(
+            scraper=scraper,
+            username=request.username,
+            provider=provider,
+            pat=request.pat,
+            include_forks=request.include_forks,
+        )
+        return {"status": "success", "message": "Projects refreshed successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/", response_model=ProjectResponse)

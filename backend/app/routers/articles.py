@@ -1,12 +1,59 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 
 from app.db.base import IArticleRepository
 from app.db.dependencies import get_article_repo
 from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate
+from app.services.auth_service import get_current_admin
+from app.services.ingestion_service import IngestionService
+from app.services.scrapers.devto_scraper import DevToScraper
+from app.services.scrapers.medium_scraper import MediumScraper
 
 router = APIRouter(prefix="/articles", tags=["articles"])
+
+
+class ArticleRefreshRequest(BaseModel):
+    username: str
+    platform: str  # "devto" or "medium"
+    api_key: str | None = None
+
+
+@router.post("/refresh", response_model=dict)
+async def refresh_articles(
+    request: ArticleRefreshRequest,
+    provider: IArticleRepository = Depends(get_article_repo),
+    admin: dict = Depends(get_current_admin),
+):
+    try:
+        ingestion = IngestionService()
+        if request.platform.lower() == "devto":
+            scraper = DevToScraper()
+            await ingestion.fetch_devto_articles(
+                scraper=scraper,
+                username=request.username,
+                provider=provider,
+                api_key=request.api_key,
+            )
+        elif request.platform.lower() == "medium":
+            scraper = MediumScraper()
+            await ingestion.fetch_medium_articles(
+                scraper=scraper,
+                username=request.username,
+                provider=provider,
+            )
+        else:
+            raise HTTPException(
+                status_code=400, detail="Invalid platform. Use 'devto' or 'medium'."
+            )
+
+        return {
+            "status": "success",
+            "message": f"Articles from {request.platform} refreshed successfully",
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/", response_model=ArticleResponse)
