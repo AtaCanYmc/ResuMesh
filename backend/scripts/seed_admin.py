@@ -25,7 +25,9 @@ def seed_admin():
         admin_password = os.getenv("ADMIN_PASSWORD", "adminpass")
         password_hash = SecurityUtils.hash_password(admin_password)
 
-        new_user = User(username=admin_username, password_hash=password_hash)
+        new_user = User(
+            username=admin_username, password_hash=password_hash, role="admin"
+        )
         db.add(new_user)
         db.commit()
         print(f"Admin user '{admin_username}' created successfully.")
