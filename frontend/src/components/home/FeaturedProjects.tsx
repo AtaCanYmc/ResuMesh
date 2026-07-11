@@ -23,7 +23,7 @@ const itemVariants = {
 
 const FeaturedProjects: React.FC = () => {
   const { t } = useTranslation();
-  const { data: projects, isLoading } = useProjects(3);
+  const { data: projects, isLoading } = useProjects(6);
 
   if (isLoading) return <ProjectsSkeleton />;
   if (!projects || projects.length === 0) return null;

@@ -23,7 +23,7 @@ const itemVariants = {
 
 export default function RecentArticles() {
   const { t } = useTranslation();
-  const { data: articles, isLoading } = useArticles(3);
+  const { data: articles, isLoading } = useArticles(6);
 
   if (isLoading) return <ArticlesSkeleton />;
   if (!articles || articles.length === 0) return null;
