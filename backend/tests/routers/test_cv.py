@@ -16,6 +16,12 @@ def auth_override():
     app.dependency_overrides.pop(get_current_admin, None)
 
 
+@pytest.fixture(autouse=True)
+def mock_supabase_env(monkeypatch):
+    monkeypatch.setenv("SUPABASE_URL", "https://mock.supabase.co")
+    monkeypatch.setenv("SUPABASE_KEY", "mock_key")
+
+
 @pytest.mark.asyncio
 async def test_unauthorized_upload(client):
     response = await client.post(

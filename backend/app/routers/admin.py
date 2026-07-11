@@ -159,7 +159,7 @@ async def get_system_logs(
     provider: ISystemLogRepository = Depends(get_system_log_repo),
     current_admin: dict = Depends(get_current_admin),
 ):
-    """Veritabanındaki log havuzunu sayfalı ve filtreli olarak getirir."""
+    """Retrieves the system logs from database with pagination and filtering."""
     total_count = await provider.get_logs_count(
         level=level,
         module=module,
@@ -189,12 +189,10 @@ async def import_linkedin_pdf(
     experience_repo: IExperienceRepository = Depends(get_experience_repo),
     certificate_repo: ICertificateRepository = Depends(get_certificate_repo),
 ):
-    """Admin panelinden yüklenen LinkedIn profil PDF'ini akıllıca parçalar
-    ve veritabanına kaydeder."""
+    """Parses LinkedIn profile PDF uploaded via admin panel using LLM
+    and saves to database."""
     if not file.filename.endswith(".pdf"):
-        raise HTTPException(
-            status_code=400, detail="Lütfen geçerli bir PDF dosyası yükleyin."
-        )
+        raise HTTPException(status_code=400, detail="Please upload a valid PDF file.")
 
     try:
         pdf_bytes = await file.read()
@@ -203,7 +201,7 @@ async def import_linkedin_pdf(
         llm_provider = get_llm_provider()
         structured_data = await LinkedInPDFParser.parse_with_llm(raw_text, llm_provider)
 
-        # Veritabanına kaydet (Upsert / Create)
+        # Save to database (Upsert / Create)
         experiences = getattr(structured_data, "experiences", []) or []
         for exp in experiences:
             await experience_repo.create_experience(exp)
@@ -214,8 +212,7 @@ async def import_linkedin_pdf(
 
         return {
             "status": "success",
-            "message": "PDF başarıyla yapay zeka tarafından parse edildi "
-            "ve kaydedildi.",
+            "message": "PDF parsed successfully by AI and saved to database.",
             "data": structured_data.model_dump(),
             "raw": raw_text,
         }
@@ -223,4 +220,4 @@ async def import_linkedin_pdf(
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"İşlem başarısız: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Operation failed: {str(e)}")

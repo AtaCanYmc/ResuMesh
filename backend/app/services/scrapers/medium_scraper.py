@@ -1,20 +1,20 @@
 """
 Medium Scraper Service
 ========================
-Medium'un herkese açık RSS besleme URL'ini kullanarak kullanıcının
-makalelerini çeker ve ResuMesh'in `ArticleCreate` şemasına dönüştürür.
+Fetches the user's articles using Medium's public RSS feed URL
+and maps them to ResuMesh's `ArticleCreate` schema.
 
-Kullanım:
+Usage:
     from app.services.scrapers import MediumScraperService
 
     articles = await MediumScraperService.fetch_articles(username="atacanymc")
 
-Besleme URL formatı:
+Feed URL Format:
     https://medium.com/feed/@{username}
 
-Not:
-    Medium RSS beslemesi API anahtarı gerektirmez. feedparser ile parse edilir.
-    Medium, RSS içeriklerinde HTML gömebilir; özet alanı ham HTML içerebilir.
+Note:
+    Medium RSS feed does not require an API key. It is parsed using feedparser.
+    Medium might embed HTML in RSS contents; summary field could contain raw HTML.
 """
 
 import html
@@ -38,23 +38,23 @@ _DEFAULT_TIMEOUT = 20.0
 
 class MediumScraperService(IScraperService):
     """
-    Medium RSS beslemesini çekip parse eden servis.
+    Service that fetches and parses Medium RSS feed.
     """
 
     def _parse_entry(entry: feedparser.FeedParserDict) -> ArticleCreate:
         """
-        feedparser'ın tek bir RSS girdisini `ArticleCreate` şemasına dönüştürür.
+        Converts a single RSS entry from feedparser to `ArticleCreate` schema.
 
         Args:
-            entry: feedparser tarafından parse edilmiş RSS girdisi.
+            entry: RSS entry parsed by feedparser.
 
         Returns:
-            Veritabanına kaydedilebilir `ArticleCreate` nesnesi.
+            An `ArticleCreate` object ready to be saved to database.
         """
-        # UTM ve tracking parametrelerini URL'den temizle
+        # Clean UTM and tracking parameters from URL
         clean_url = entry.link.split("?")[0]
 
-        # Yayın tarihini UTC datetime'a çevir
+        # Convert publish date to UTC datetime
         if entry.get("published_parsed"):
             published_at = datetime(*entry.published_parsed[:6], tzinfo=timezone.utc)
         else:
@@ -75,7 +75,7 @@ class MediumScraperService(IScraperService):
             summary=clean_summary,
             url=clean_url,
             platform=ArticlePlatform.MEDIUM,
-            reading_time_minutes=0,  # Medium RSS bu bilgiyi sağlamaz
+            reading_time_minutes=0,  # Medium RSS does not provide this info
             published_at=published_at,
             raw_platform_data={"tags": tags},
         )
@@ -87,17 +87,17 @@ class MediumScraperService(IScraperService):
     )
     async def fetch_data(self, username: str, **kwargs) -> list[ArticleCreate]:
         """
-        Medium RSS beslemesinden kullanıcının makalelerini çeker.
+        Fetches the user's articles from Medium RSS feed.
 
         Args:
-            username: Medium kullanıcı adı (@ işareti olmadan).
+            username: Medium username (without @ symbol).
 
         Returns:
-            `ArticleCreate` nesnelerinin listesi.
+            List of `ArticleCreate` objects.
 
         Raises:
-            MediumScraperError: RSS beslemesi çekilemezse veya
-                                HTTP hatası oluşursa veya kullanıcı adı geçersizse.
+            MediumScraperError: If RSS feed cannot be fetched,
+                                HTTP error occurs, or the username is invalid.
         """
         if not re.match(r"^[a-zA-Z0-9\-]+$", username):
             raise MediumScraperError("Invalid Medium username format.")
@@ -125,8 +125,8 @@ class MediumScraperService(IScraperService):
 
         feed = feedparser.parse(response.text)
 
-        # bozo=True → feedparser kötü biçimlendirilmiş XML uyarısı verdi
-        # Devam edebiliyorsak devam et, sadece logla
+        # bozo=True → feedparser warned about ill-formed XML
+        # Continue if possible, just log it
         if feed.bozo:
             logger.warning(
                 "[MEDIUM] RSS parse warning for user=%s: %s",
@@ -145,7 +145,7 @@ class MediumScraperService(IScraperService):
             try:
                 articles.append(MediumScraperService._parse_entry(entry))
             except Exception as exc:
-                # Tek bir kötü entry tüm listeyi bozmasın
+                # Do not let a single bad entry break the entire list
                 logger.warning(
                     "[MEDIUM] Skipping entry title='%s' due to parse error: %s",
                     entry.get("title", "unknown"),

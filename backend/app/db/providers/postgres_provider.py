@@ -425,7 +425,7 @@ class PostgresSearchRepository(BasePostgresRepository, ISearchRepository):
             for e in experiences_db:
                 s_date = e.start_date.strftime("%Y") if e.start_date else ""
                 e_date = (
-                    "Günümüz"
+                    "Present"
                     if e.is_current
                     else (e.end_date.strftime("%Y") if e.end_date else "")
                 )

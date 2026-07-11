@@ -10,7 +10,7 @@ scheduler = AsyncIOScheduler()
 
 
 async def nightly_data_sync_job():
-    """Her gece verileri arka planda güncelleyen ana görev."""
+    """Main task that updates data in the background every night."""
     project_provider = get_project_repo()
     article_provider = get_article_repo()
     log_provider = get_system_log_repo()
@@ -22,7 +22,7 @@ async def nightly_data_sync_job():
     await LogService.info(
         log_provider,
         "SYSTEM",
-        "Zamanlanmış veri senkronizasyonu arka planda başlatıldı.",
+        "Scheduled data synchronization started in background.",
     )
 
     try:
@@ -31,32 +31,32 @@ async def nightly_data_sync_job():
                 github_username, project_provider, log_provider
             )
             await LogService.info(
-                log_provider, "GITHUB", "GitHub depoları başarıyla senkronize edildi."
+                log_provider, "GITHUB", "GitHub repositories synchronized successfully."
             )
         if devto_username and devto_username != "your_devto_username":
             await IngestionService.fetch_devto_articles(
                 devto_username, article_provider, log_provider
             )
             await LogService.info(
-                log_provider, "DEV_TO", "Dev.to makaleleri başarıyla senkronize edildi."
+                log_provider, "DEV_TO", "Dev.to articles synchronized successfully."
             )
         if medium_username and medium_username != "your_medium_username":
             await IngestionService.fetch_medium_articles(
                 medium_username, article_provider
             )
             await LogService.info(
-                log_provider, "MEDIUM", "Medium makaleleri başarıyla senkronize edildi."
+                log_provider, "MEDIUM", "Medium articles synchronized successfully."
             )
 
         await LogService.info(
-            log_provider, "SYSTEM", "Gece senkronizasyon döngüsü hatasız tamamlandı."
+            log_provider, "SYSTEM", "Nightly sync cycle completed without errors."
         )
     except Exception as e:
         error_details = {"exception": type(e).__name__, "message": str(e)}
         await LogService.error(
             log_provider,
             "SYSTEM",
-            "Senkronizasyon döngüsü yarıda kesildi!",
+            "Synchronization cycle was interrupted!",
             error_details,
         )
 
@@ -71,8 +71,8 @@ def start_scheduler():
         )
         return
 
-    # Her gün gece 03:00'te çalışacak şekilde ayarla
+    # Set to run every day at 03:00 AM
     scheduler.add_job(nightly_data_sync_job, "cron", hour=3, minute=0)
-    # Geliştirme aşamasında test etmek istersen her 1 saatte bire ayarlayabilirsin:
+    # If you want to test in development stage, you can set it to every 1 hour:
     # scheduler.add_job(nightly_data_sync_job, 'interval', hours=1)
     scheduler.start()

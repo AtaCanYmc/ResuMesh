@@ -17,7 +17,7 @@ async def get_current_admin(
     token_from_header: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
 ):
-    """İsteğin geçerli bir admin token'ına sahip olup olmadığını denetler."""
+    """Checks if the request has a valid admin token."""
     enabled = os.getenv("ENABLE_ADMIN_WORKSPACE", "false").lower() in (
         "true",
         "1",
@@ -36,7 +36,7 @@ async def get_current_admin(
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Kimlik bilgisi eksik.",
+            detail="Missing credentials.",
             headers={"WWW-Authenticate": "Bearer"},
         )
     try:
@@ -46,7 +46,7 @@ async def get_current_admin(
         if username is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Geçersiz token bilgisi.",
+                detail="Invalid token details.",
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
@@ -54,32 +54,32 @@ async def get_current_admin(
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Kullanıcı bulunamadı.",
+                detail="User not found.",
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
         if not user.is_active:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Kullanıcı hesabı pasif durumda.",
+                detail="User account is inactive.",
             )
 
         if user.role != "admin":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Bu işlem için admin yetkisi gerekiyor.",
+                detail="Admin privileges are required for this operation.",
             )
 
         return user
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token süresi dolmuş.",
+            detail="Token has expired.",
             headers={"WWW-Authenticate": "Bearer"},
         )
     except jwt.InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Geçersiz kimlik bilgisi.",
+            detail="Invalid credentials.",
             headers={"WWW-Authenticate": "Bearer"},
         )

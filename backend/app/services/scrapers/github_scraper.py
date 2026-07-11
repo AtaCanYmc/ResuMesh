@@ -1,18 +1,18 @@
 """
 GitHub Scraper Service
 ========================
-GitHub REST API'den kullanıcının public repolarını çeker ve
-ResuMesh'in `ProjectCreate` şemasına dönüştürür.
+Fetches the user's public repositories from GitHub REST API
+and maps them to ResuMesh's `ProjectCreate` schema.
 
-Kullanım:
+Usage:
     from app.services.scrapers import GitHubScraperService
 
     projects = await GitHubScraperService.fetch_repos(
         username="octocat",
-        pat="ghp_...",          # opsiyonel — rate limit 60 → 5000/saat
+        pat="ghp_...",          # optional — rate limit 60 → 5000/hour
     )
 
-API Referansı:
+API Reference:
     GET https://api.github.com/users/{username}/repos
     Docs: https://docs.github.com/en/rest/repos/repos#list-repositories-for-a-user
 """
@@ -37,19 +37,19 @@ _DEFAULT_PER_PAGE = 100
 
 class GitHubScraperService(IScraperService):
     """
-    GitHub REST API'yi kullanarak repo verilerini çeken servis.
+    Service that fetches repository data using the GitHub REST API.
     """
 
     def _build_headers(pat: str | None = None) -> dict[str, str]:
         """
-        GitHub API için HTTP header'larını oluşturur.
+        Creates HTTP headers for GitHub API.
 
         Args:
-            pat: GitHub Personal Access Token (opsiyonel).
-                 Eklenirse rate limit 60/saat → 5000/saat olur.
+            pat: GitHub Personal Access Token (optional).
+                 If provided, rate limit becomes 5000/hour instead of 60/hour.
 
         Returns:
-            Header dict. `User-Agent` her zaman eklenir.
+            Header dict. `User-Agent` is always included.
         """
         headers: dict[str, str] = {"User-Agent": "ResuMesh-App"}
         if pat:
@@ -59,19 +59,20 @@ class GitHubScraperService(IScraperService):
     @staticmethod
     def _parse_repo(raw: dict[str, Any]) -> ProjectCreate:
         """
-        GitHub API'nin ham repo dict'ini `ProjectCreate` şemasına dönüştürür.
+        Converts the raw repository dict from GitHub API to `ProjectCreate` schema.
 
-        Fork repoları bu metoda ulaşmaz; filtreleme `fetch_repos` içinde yapılır.
+        Fork repositories do not reach this method;
+        filtering is done inside `fetch_data`.
 
         Args:
-            raw: GitHub API'nin döndürdüğü tek repo nesnesi.
+            raw: Single repository object returned by GitHub API.
 
         Returns:
-            Veritabanına kaydedilebilir `ProjectCreate` nesnesi.
+            A `ProjectCreate` object ready to be saved to database.
         """
         primary_lang = raw.get("language")
         languages = [primary_lang] if primary_lang else []
-        # repo adı küçük harfli etiket olarak eklenir, dil ile birleştirilir
+        # Repo name is added as a lowercase tag, combined with language
         tags = list(set(languages + [raw["name"].lower()]))
 
         return ProjectCreate(
@@ -95,21 +96,21 @@ class GitHubScraperService(IScraperService):
         pat = kwargs.get("pat")
         include_forks = kwargs.get("include_forks", False)
         """
-        Kullanıcının GitHub repolarını çeker ve `ProjectCreate` listesi döndürür.
+        Fetches the user's GitHub repositories
+        and returns a list of `ProjectCreate` objects.
 
         Args:
-            username: GitHub kullanıcı adı.
-            pat: Personal Access Token (opsiyonel).
-            include_forks: True ise fork repolar da dahil edilir.
-                           Varsayılan False — yalnızca özgün repolar.
+            username: GitHub username.
+            pat: Personal Access Token (optional).
+            include_forks: If True, fork repositories are also included.
+                           Default is False — only original repositories.
 
         Returns:
-            `ProjectCreate` nesnelerinin listesi.
+            List of `ProjectCreate` objects.
 
         Raises:
-            GitHubScraperError: API isteği başarısız olursa
-                                (4xx / 5xx veya ağ hatası)
-                                veya kullanıcı adı geçersizse.
+            GitHubScraperError: If API request fails (4xx / 5xx or network error)
+                                or if the username is invalid.
         """
         if not re.match(r"^[a-zA-Z0-9\-]+$", username):
             raise GitHubScraperError("Invalid GitHub username format.")
