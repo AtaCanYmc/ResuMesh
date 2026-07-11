@@ -24,9 +24,7 @@
       "FastAPI", "PostgreSQL", "Docker", "AWS", "Node.js", "Next.js", "GraphQL"
     ],
     "footer": {
-      "email": "atacanymc@gmail.com",
-      "aboutTitle": "Why ResuMesh?",
-      "aboutText": "ResuMesh is built to bridge the gap between a static resume and a dynamic portfolio. As an open-source project, it empowers developers to showcase their experiences, articles, and projects in a beautifully cohesive, highly performant platform."
+      "email": "atacanymc@gmail.com"
     }
   },
   "tr": {
@@ -54,9 +52,7 @@
       "FastAPI", "PostgreSQL", "Docker", "AWS", "Node.js", "Next.js", "GraphQL"
     ],
     "footer": {
-      "email": "atacanymc@gmail.com",
-      "aboutTitle": "Neden ResuMesh?",
-      "aboutText": "ResuMesh, statik bir özgeçmiş ile dinamik bir portfolyo arasındaki boşluğu doldurmak için geliştirildi. Açık kaynaklı bir proje olarak, geliştiricilerin deneyimlerini, makalelerini ve projelerini estetik ve yüksek performanslı bir platformda sergilemelerine olanak tanır."
+      "email": "atacanymc@gmail.com"
     }
   }
 }
