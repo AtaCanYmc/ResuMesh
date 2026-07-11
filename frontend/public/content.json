@@ -7,7 +7,7 @@
       "avatarImage": "/images/profile_pic.jpeg",
       "title": "I bridge the gap between AI Workflows and Financial Technologies.",
       "description": "With a Computer Engineering background from Dokuz Eylul University, I specialize in scalable backend architectures and automation processes. I transform complex data into meaningful insights using modern web technologies.",
-      "resumeLink": "/resume.pdf"
+      "resumeLink": "/resumes/resume.pdf"
     },
     "socials": [
       { "id": "github", "platform": "github", "url": "https://github.com/atacan", "label": "GitHub" },
