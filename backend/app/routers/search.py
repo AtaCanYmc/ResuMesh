@@ -15,12 +15,25 @@ router = APIRouter(prefix="/search", tags=["Global Search"])
 @limiter.limit("60/minute")
 async def global_search(
     request: Request,
-    q: str = Query(..., min_length=2, description="Search keyword"),
+    q: str = Query(None, min_length=2, description="Search keyword"),
+    query: str = Query(None, min_length=2, description="Search keyword alias"),
     provider: ISearchRepository = Depends(get_search_repo),
 ):
     """
     Projeler, Makaleler, Deneyimler ve Sertifikalar arasında global arama yapar.
     Veritabanı Agnostik altyapıyı kullanır.
     """
-    results = await provider.global_search(q)
+    keyword = q or query
+    if not keyword:
+        from fastapi import HTTPException
+
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "Search query parameter 'q' or 'query' "
+                "is required with min length 2."
+            ),
+        )
+
+    results = await provider.global_search(keyword)
     return results
