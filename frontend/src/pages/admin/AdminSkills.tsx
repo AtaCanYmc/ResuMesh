@@ -47,7 +47,7 @@ export default function AdminSkills() {
   const columns = [
     { header: 'Name', accessorKey: 'name', cell: (s: Skill) => <span className="font-medium text-gray-900 dark:text-white">{s.name}</span> },
     { header: 'Category', accessorKey: 'category', cell: (s: Skill) => <span className="capitalize">{s.category}</span> },
-    { header: 'Proficiency', accessorKey: 'proficiency', cell: (s: Skill) => <span className="capitalize">{s.proficiency}</span> },
+    { header: 'Icon Name', accessorKey: 'icon_name', cell: (s: Skill) => <span>{s.icon_name || '-'}</span> },
   ];
 
   const handleEdit = (skill: Skill) => {

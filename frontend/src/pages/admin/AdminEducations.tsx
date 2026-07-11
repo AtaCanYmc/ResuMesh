@@ -45,7 +45,7 @@ export default function AdminEducations() {
   });
 
   const columns = [
-    { header: 'School', accessorKey: 'school_name', cell: (e: Education) => <span className="font-medium text-gray-900 dark:text-white">{e.school_name}</span> },
+    { header: 'School', accessorKey: 'school', cell: (e: Education) => <span className="font-medium text-gray-900 dark:text-white">{e.school}</span> },
     { header: 'Degree', accessorKey: 'degree' },
     { header: 'Field of Study', accessorKey: 'field_of_study' },
     { header: 'Start Date', accessorKey: 'start_date', cell: (e: Education) => new Date(e.start_date).toLocaleDateString() },

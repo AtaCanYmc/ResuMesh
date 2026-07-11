@@ -82,11 +82,24 @@ class SupabaseProvider(
 
     async def upsert_project(self, project: ProjectCreate) -> ProjectResponse:
         project_data = project.model_dump(mode="json")
-        response = (
+        existing = (
             await self.client.table("projects")
-            .upsert(project_data, on_conflict="github_url")
+            .select("*")
+            .eq("github_url", project_data["github_url"])
             .execute()
         )
+        if existing.data:
+            proj_id = existing.data[0]["id"]
+            response = (
+                await self.client.table("projects")
+                .update(project_data)
+                .eq("id", proj_id)
+                .execute()
+            )
+        else:
+            response = (
+                await self.client.table("projects").insert(project_data).execute()
+            )
         if not response.data:
             raise Exception("Failed to upsert project in Supabase.")
         return ProjectResponse(**response.data[0])
@@ -94,7 +107,7 @@ class SupabaseProvider(
     async def update_project(
         self, project_id: str, project: ProjectUpdate
     ) -> Optional[ProjectResponse]:
-        update_data = project.model_dump(exclude_unset=True)
+        update_data = project.model_dump(mode="json", exclude_unset=True)
         if "github_url" in update_data and update_data["github_url"] is not None:
             update_data["github_url"] = str(update_data["github_url"])
         response = (
@@ -115,11 +128,24 @@ class SupabaseProvider(
 
     async def upsert_article(self, article: ArticleCreate) -> ArticleResponse:
         article_data = article.model_dump(mode="json")
-        response = (
+        existing = (
             await self.client.table("articles")
-            .upsert(article_data, on_conflict="url")
+            .select("*")
+            .eq("url", article_data["url"])
             .execute()
         )
+        if existing.data:
+            art_id = existing.data[0]["id"]
+            response = (
+                await self.client.table("articles")
+                .update(article_data)
+                .eq("id", art_id)
+                .execute()
+            )
+        else:
+            response = (
+                await self.client.table("articles").insert(article_data).execute()
+            )
         if not response.data:
             raise Exception("Failed to upsert article in Supabase.")
         return ArticleResponse(**response.data[0])
@@ -137,7 +163,7 @@ class SupabaseProvider(
     async def update_article(
         self, article_id: str, article: ArticleUpdate
     ) -> Optional[ArticleResponse]:
-        update_data = article.model_dump(exclude_unset=True)
+        update_data = article.model_dump(mode="json", exclude_unset=True)
         if "url" in update_data and update_data["url"] is not None:
             update_data["url"] = str(update_data["url"])
         response = (
@@ -181,7 +207,7 @@ class SupabaseProvider(
     async def update_experience(
         self, experience_id: str, experience: ExperienceUpdate
     ) -> Optional[ExperienceResponse]:
-        update_data = experience.model_dump(exclude_unset=True)
+        update_data = experience.model_dump(mode="json", exclude_unset=True)
         response = (
             await self.client.table("experiences")
             .update(update_data)
@@ -226,7 +252,7 @@ class SupabaseProvider(
     async def update_certificate(
         self, certificate_id: str, certificate: CertificateUpdate
     ) -> Optional[CertificateResponse]:
-        update_data = certificate.model_dump(exclude_unset=True)
+        update_data = certificate.model_dump(mode="json", exclude_unset=True)
         if (
             "credential_url" in update_data
             and update_data["credential_url"] is not None
