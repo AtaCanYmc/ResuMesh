@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Download, ArrowRight } from 'lucide-react';
+import { Download, ArrowRight, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,7 @@ import MagneticButton from '../ui/MagneticButton';
 import { useContentConfig } from '../../hooks/useHomeData';
 import { HeroSkeleton } from '../ui/Skeletons';
 import { getIcon } from '../../utils/iconResolver';
-import resumeConfig from '../../config/resume.json';
+import { useDownloadResume } from '../../hooks/useDownloadResume';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -28,6 +28,7 @@ const textVariants = {
 const HeroSection: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { data: config, isLoading } = useContentConfig(i18n.language);
+  const { isDownloading, handleDownload } = useDownloadResume(config?.hero?.resumeLink);
 
   // 3D Tilt Effect State
   const x = useMotionValue(0);
@@ -87,16 +88,19 @@ const HeroSection: React.FC = () => {
               <MagneticButton>
                 <div className="relative group rounded-xl">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl blur opacity-60 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
-                  <a
-                    href={resumeConfig.path || config.hero.resumeLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="relative flex items-center justify-center gap-2 px-8 py-3.5 bg-blue-600 text-white font-semibold rounded-xl transition-all shadow-lg focus:outline-none"
+                  <button
+                    onClick={handleDownload}
+                    disabled={isDownloading}
+                    className="relative flex items-center justify-center gap-2 px-8 py-3.5 bg-blue-600 text-white font-semibold rounded-xl transition-all shadow-lg focus:outline-none disabled:opacity-80"
                     aria-label={t('hero.downloadResume')}
                   >
-                    <Download size={20} aria-hidden="true" />
-                    <span>{t('hero.downloadResume')}</span>
-                  </a>
+                    {isDownloading ? (
+                      <Loader2 size={20} className="animate-spin" aria-hidden="true" />
+                    ) : (
+                      <Download size={20} aria-hidden="true" />
+                    )}
+                    <span>{isDownloading ? t('hero.downloadingResume') : t('hero.downloadResume')}</span>
+                  </button>
                 </div>
               </MagneticButton>
 

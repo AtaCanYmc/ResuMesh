@@ -23,6 +23,7 @@
   },
   "hero": {
     "downloadResume": "Özgeçmişimi İndir",
+    "downloadingResume": "PDF İndiriliyor...",
     "viewProjects": "Projelerimi İncele"
   },
   "common": {

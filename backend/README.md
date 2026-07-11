@@ -53,6 +53,14 @@ When mock mode is enabled, the CV generator service will instantly return beauti
 - `DATABASE_URL`: Connection string for PostgreSQL / Supabase.
 - `LLM_PROVIDER`: Choose your LLM engine (`openai`, `groq`, `ollama`, or `mock`).
 
+### 📁 Supabase Storage (CV PDFs Setup)
+To store and serve your resume CV PDFs:
+1. **Create Bucket**: Log in to your Supabase project dashboard, navigate to **Storage**, and create a new bucket named `cv-pdfs`.
+2. **Configure Policies**: Add a policy to allow public access for reading if you want anyone to access the CVs directly. Under the storage page in Supabase, select your bucket, go to policies, and enable:
+   - **Select/Read**: Public (or authenticated if restricted).
+   - **Insert/Update**: Admin (authenticated roles or restrict via service role).
+3. **Verify API Keys**: Make sure `SUPABASE_URL` and `SUPABASE_KEY` (service role key or active API key with write permissions) are set in your `.env` file to authorize PDF uploads.
+
 ---
 
 ## 🧪 Testing and Code Quality
