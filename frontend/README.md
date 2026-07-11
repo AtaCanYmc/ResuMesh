@@ -44,22 +44,32 @@ Open `http://localhost:5173` in your browser.
 * `/src/pages`: Higher-level views and route components (e.g., `AdminDashboard.tsx`).
 * `/src/assets`: Static visuals and global design vectors.
 
-## 📚 Storybook (Component Driven Development)
+## 📚 Component Documentation & Testing
 
-We use **Storybook** to build, test, and document UI components in isolation, independent of the main application logic.
+We believe in Component-Driven Development and high code coverage for crucial user flows.
 
-### Running Storybook
-To start the Storybook development server:
-```bash
-npm run storybook
-```
-This will open the Storybook dashboard at `http://localhost:6006`.
+### 🎨 Isolated UI Primitive Catalog (Storybook)
+Storybook is integrated to build, inspect, and document UI components in isolation, independent of backend status:
+- **Run Storybook Server**:
+  ```bash
+  npm run storybook
+  ```
+  *Opens the interactive sandbox catalog at `http://localhost:6006`.*
+- **Build Storybook Build Bundle**:
+  ```bash
+  npm run build-storybook
+  ```
 
-### Building Storybook
-To build Storybook as a static web application (e.g., for deployment):
-```bash
-npm run build-storybook
-```
+### 🧪 Frontend Test Execution (Vitest & RTL)
+We use **Vitest** + **React Testing Library** for fast, reliable unit/integration checks and Storybook interaction testing:
+- **Run all tests (headless)**:
+  ```bash
+  npm run test
+  ```
+- **Run tests in interactive watch mode**:
+  ```bash
+  npm run test:watch
+  ```
 
 ## 🧹 Linting and Formatting
 

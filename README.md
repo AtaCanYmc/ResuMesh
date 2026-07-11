@@ -33,7 +33,7 @@ It features:
 
 ```mermaid
 graph TD
-    subgraph Frontend [Vite + React]
+    subgraph Frontend [Vite + React Client]
         UI[User Interface]
         Admin[Admin Dashboard]
         Search[Global Search Bar]
@@ -50,16 +50,17 @@ graph TD
         OpenAI[OpenAI]
         Groq[Groq]
         Ollama[Ollama Local]
+        Mock[Mock LLM]
     end
 
     subgraph Data [Data Sources]
-        GH[GitHub API]
-        Med[Medium RSS]
+        GH[GitHub Scraper]
+        Med[Medium Scraper]
+        DevTo[Dev.to Scraper]
     end
 
     subgraph DB [Database Layer]
-        PG[(PostgreSQL)]
-        Mongo[(MongoDB)]
+        PG[(PostgreSQL / Supabase)]
     end
 
     UI --> API
@@ -68,23 +69,46 @@ graph TD
 
     Ingest --> GH
     Ingest --> Med
+    Ingest --> DevTo
     Ingest --> PG
 
     AI --> LLM
     AI --> PG
 
     API --> Logs
-    Logs --> Mongo
+    Logs --> PG
 ```
 
 ---
 
-## 🚀 Global Docker Setup
+## 🛠️ Architectural & Engineering Decisions (ADRs)
 
-### Prerequisites
+Architecture decisions in ResuMesh are documented and justified to maintain a clean, maintainable, and decoupled codebase.
+- **[ADR-0001: Record Architecture Decisions](docs/adr/0001-record-architecture-decisions.md)**: Declares the use of ADRs.
+- **[ADR-0002: Frontend Tech Stack](docs/adr/0002-frontend-tech-stack-vite-react-query.md)**: Justifies React, Vite, and React Query usage.
 
-Before running the project locally, ensure you have the following installed:
-- Docker and Docker Compose
+---
+
+## 🔄 Product Flow: How it Works
+
+1. **Continuous Aggregation**: You enter your developer handles (GitHub, Medium, Dev.to). The backend scrapers ingest all your projects, posts, and articles in the background.
+2. **Context-Driven Search**: Recruiters search your profile through the lightning-fast, fuzzy-matching search bar.
+3. **AI CV Generation**: You provide a target Job Description URL. The system gathers all your DB records, constructs a context-rich prompt, feeds it to the LLM (Groq/OpenAI), and renders a tailored Markdown/PDF CV.
+
+---
+
+## ⚙️ Quick Start with Mock Mode (API Key Free)
+
+You can experience and test ResuMesh locally **without any OpenAI/Groq API keys** or active databases:
+1. In `backend/.env` (or `docker-compose.yml`), set the LLM provider to mock:
+   ```env
+   LLM_PROVIDER=mock
+   ```
+2. Spin up the containers (fallback databases will run automatically). The application will generate mock CVs instantly without consuming any API quota!
+
+---
+
+## 🚀 Running the Application
 
 ### Installation & Setup
 
@@ -101,39 +125,23 @@ Before running the project locally, ensure you have the following installed:
    # Add your API keys to the backend environment variables or docker-compose.yml
    ```
 
-3. **Run with Docker Compose (Profiles Supported):**
-   The project uses Docker profiles to let you choose which database containers to spin up. The backend is agnostic and will connect to whatever you configured, making this setup highly flexible.
-
-   **Run without databases (Backend + Frontend only):**
-   ```bash
-   docker compose up --build -d
-   ```
-
-   **Run with PostgreSQL:**
+3. **Run with Docker Compose:**
+   **Run with PostgreSQL database:**
    ```bash
    docker compose --profile postgres up --build -d
    ```
 
-   **Run with MongoDB:**
-   ```bash
-   docker compose --profile mongo up --build -d
-   ```
-
-   **Run with both databases:**
-   ```bash
-   docker compose --profile postgres --profile mongo up --build -d
-   ```
-
    Once running:
-   - The UI will be available at `http://localhost:3000`
-   - The API will be available at `http://localhost:8000` (or `/api` via NGINX)
-   - API Docs available at `http://localhost:8000/docs`
+   - **Frontend UI**: `http://localhost:3000`
+   - **Backend API**: `http://localhost:8000`
+   - **Interactive API Documentation (Swagger)**: `http://localhost:8000/docs`
+   - **Alternative API Documentation (ReDoc)**: `http://localhost:8000/redoc`
 
 ---
 
-## 🌍 Cloud Deployment (Free Tier)
+## 🌍 Cloud Deployment
 
-Looking to deploy ResuMesh for free using the "Golden Trio" architecture (Vercel, Render, and Neon/Supabase)?
+Looking to deploy ResuMesh for free using Vercel (Frontend), Render (Backend), and remote PostgreSQL (Supabase)?
 
 Read our comprehensive guide here: **[DEPLOYMENT.md](docs/DEPLOYMENT.md)**
 
