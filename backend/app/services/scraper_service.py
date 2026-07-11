@@ -11,14 +11,14 @@ logger = logging.getLogger(__name__)
 
 
 def is_safe_url(url: str) -> bool:
-    """SSRF önleme mekanizması: IP aralığı loopback veya private ise URL'i reddeder."""
+    """SSRF prevention mechanism: Rejects URL if IP range is loopback or private."""
     try:
         parsed = urlparse(url)
         if parsed.scheme not in ("http", "https"):
             return False
         if not parsed.hostname:
             return False
-        # Hostname çözümlenir (IP veya domain)
+        # Resolve hostname (IP or domain)
         ip = socket.gethostbyname(parsed.hostname)
         parsed_ip = ipaddress.ip_address(ip)
         return not (parsed_ip.is_private or parsed_ip.is_loopback)
@@ -37,9 +37,7 @@ class ScraperService:
         Uses Playwright to render JavaScript and bypass simple bot protections.
         """
         if not is_safe_url(url):
-            raise ValueError(
-                "Güvensiz veya sınırlandırılmış bir URL sağlandı (SSRF koruması)."
-            )
+            raise ValueError("Unsafe or restricted URL provided (SSRF protection).")
 
         logger.info(f"Attempting to scrape {url} using Playwright...")
         try:

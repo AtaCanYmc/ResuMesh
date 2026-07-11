@@ -19,7 +19,7 @@ class Project(Base):
     watchers = Column(Integer, default=0)
     forks = Column(Integer, default=0)
 
-    # PostgreSQL ARRAY ve JSONB tiplerinin Python karşılığı
+    # Python mapping for PostgreSQL ARRAY and JSONB types
     languages = Column(ARRAY(String), default=[])
     tags = Column(ARRAY(String), default=[])
     raw_github_data = Column(JSONB, nullable=True)

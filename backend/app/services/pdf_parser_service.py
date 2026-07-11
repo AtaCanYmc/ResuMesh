@@ -10,8 +10,7 @@ from app.schemas.experience import ExperienceCreate
 from app.services.template_service import TemplateService
 
 
-# Yapay zekanın bize tam olarak bu formatta dönmesini garanti ediyoruz
-# (Structured Outputs)
+# We guarantee that AI returns in this exact format (Structured Outputs)
 class LinkedInProfileDataSchema(BaseModel):
     experiences: List[ExperienceCreate] = Field(
         description="List of professional work experiences"
@@ -24,17 +23,17 @@ class LinkedInProfileDataSchema(BaseModel):
 class LinkedInPDFParser:
     @staticmethod
     def extract_raw_text(pdf_bytes: bytes) -> str:
-        """PDF dosyasını hafızada açar ve tüm sayfaların metnini birleştirir."""
+        """Opens the PDF file in memory and merges the text of all pages."""
         MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
         if len(pdf_bytes) > MAX_FILE_SIZE:
-            raise ValueError("Dosya boyutu 5MB sınırını aşamaz.")
+            raise ValueError("File size cannot exceed 5MB.")
 
         if not pdf_bytes.startswith(b"%PDF"):
-            raise ValueError("Geçersiz PDF dosyası. Dosya PDF formatında olmalıdır.")
+            raise ValueError("Invalid PDF file. The file must be in PDF format.")
 
         raw_text = ""
         try:
-            # BytesIO ile diske yazmadan hafızada (in-memory) okuyoruz
+            # Using BytesIO to read in-memory without writing to disk
             pdf_file = io.BytesIO(pdf_bytes)
             reader = PdfReader(pdf_file)
 
@@ -45,14 +44,14 @@ class LinkedInPDFParser:
 
             return raw_text
         except Exception as e:
-            raise Exception(f"PDF metni ayıklanırken hata oluştu: {str(e)}")
+            raise Exception(f"Error occurred while extracting PDF text: {str(e)}")
 
     @staticmethod
     async def parse_with_llm(
         raw_text: str, llm_provider: LLMProvider
     ) -> LinkedInProfileDataSchema:
-        """Ayıklanan ham metni projedeki mevcut
-        LLM katmanına gönderip şemaya oturtur."""
+        """Sends the extracted raw text to the project's LLM layer
+        and parses it into the schema."""
 
         prompt = TemplateService.render_template(
             "prompts/linkedin_pdf_parser.jinja2", raw_text=raw_text

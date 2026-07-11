@@ -1,8 +1,8 @@
 """
 Ingestion Service
 ==================
-Platform scraper servislerini orkestre eder ve çekilen verileri
-repository katmanı aracılığıyla veritabanına kaydeder.
+Orchestrates platform scraper services and saves the fetched data
+to the database via the repository layer.
 """
 
 from typing import Any, Dict
@@ -61,7 +61,7 @@ class IngestionService:
         pat: str | None = None,
         include_forks: bool = False,
     ):
-        """GitHub repolarını çeker ve provider üzerinden kaydeder."""
+        """Fetches GitHub repositories and saves via provider."""
         await self._execute_scraper(
             scraper, provider, "GITHUB", username, pat=pat, include_forks=include_forks
         )
@@ -73,7 +73,7 @@ class IngestionService:
         provider: IArticleRepository,
         api_key: str | None = None,
     ):
-        """Dev.to makalelerini çeker ve provider üzerinden kaydeder."""
+        """Fetches Dev.to articles and saves via provider."""
         await self._execute_scraper(
             scraper, provider, "DEV_TO", username, api_key=api_key
         )
@@ -84,7 +84,7 @@ class IngestionService:
         username: str,
         provider: IArticleRepository,
     ):
-        """Medium RSS makalelerini çeker ve provider üzerinden kaydeder."""
+        """Fetches Medium RSS articles and saves via provider."""
         await self._execute_scraper(scraper, provider, "MEDIUM", username)
 
     async def import_linkedin_data(
@@ -93,7 +93,7 @@ class IngestionService:
         exp_provider: IExperienceRepository,
         cert_provider: ICertificateRepository,
     ):
-        """LinkedIn veri paketini (deneyimler ve sertifikalar) işler."""
+        """Processes LinkedIn data package (experiences and certificates)."""
         experiences = LinkedInDataMapper.parse_experiences(data)
         for exp in experiences:
             await exp_provider.create_experience(exp)

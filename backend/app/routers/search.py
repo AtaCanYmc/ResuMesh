@@ -20,8 +20,8 @@ async def global_search(
     provider: ISearchRepository = Depends(get_search_repo),
 ):
     """
-    Projeler, Makaleler, Deneyimler ve Sertifikalar arasında global arama yapar.
-    Veritabanı Agnostik altyapıyı kullanır.
+    Performs global search across Projects, Articles, Experiences and Certificates.
+    Uses Database Agnostic architecture.
     """
     keyword = q or query
     if not keyword:

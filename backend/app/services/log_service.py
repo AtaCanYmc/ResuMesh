@@ -20,8 +20,8 @@ class LogService:
         endpoint: Optional[str] = None,
         details: Optional[Dict[str, Any]] = None,
     ):
-        """Havuz sistemine yeni bir log satırı ekler.
-        Sadece ERROR ve CRITICAL logları DB'ye kaydedilir."""
+        """Adds a new log entry to the pool.
+        Only ERROR and CRITICAL logs are saved in the DB."""
         log_msg = f"[{module}] {message}"
         level_upper = level.upper()
         if level_upper in ["ERROR", "CRITICAL"]:
@@ -31,7 +31,7 @@ class LogService:
         else:
             logger.info(log_msg)
 
-        # Sadece ERROR ve CRITICAL seviyeleri veritabanına yazılır
+        # Only ERROR and CRITICAL levels are written to the database
         if level_upper not in ["ERROR", "CRITICAL"]:
             return
 
@@ -48,8 +48,10 @@ class LogService:
             )
             await log_provider.create_log(log_entry)
         except Exception as e:
-            # DB bağlantı hatası loglama sisteminin kendisi çökmeyecektir
-            logger.critical(f"[SYSTEM] Log havuzuna (DB) yazılamadı! Hata: {str(e)}")
+            # DB connection error will not crash the logging system itself
+            logger.critical(
+                f"[SYSTEM] Failed to write to log pool (DB)! Error: {str(e)}"
+            )
 
     @staticmethod
     async def info(

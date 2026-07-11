@@ -51,12 +51,12 @@ async def lifespan(app: FastAPI):
         if scheduler.running:
             scheduler.shutdown(wait=False)
     except Exception as e:
-        logger.error(f"Scheduler shutdown sırasında hata oluştu: {e}")
+        logger.error(f"Error occurred during scheduler shutdown: {e}")
 
 
 app = FastAPI(
     title="ResuMesh API",
-    description="Açık Kaynak Akıllı Portfolyo ve CV Yönetim Sistemi",
+    description="Open Source Intelligent Portfolio and CV Management System",
     version="1.0.0",
     lifespan=lifespan,
     docs_url="/api/v1/docs",
