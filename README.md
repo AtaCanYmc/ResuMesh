@@ -16,8 +16,7 @@
 
 ## 📌 Overview
 
-![Dark Mode UI Placeholder](https://via.placeholder.com/800x400?text=Dark+Mode+UI+Screenshot)
-![Search & Admin Panel Placeholder](https://via.placeholder.com/800x400?text=Search+and+Admin+Panel+Screenshot)
+![Landing Page](.github/screenshots/example-landing-page.png)
 
 ResuMesh is a self-hosted, dynamic portfolio hub designed for modern developers. Instead of maintaining static personal websites, ResuMesh continuously syncs your digital footprint from **GitHub**, **Medium**, and **Dev.to** into a single, unified database.
 
