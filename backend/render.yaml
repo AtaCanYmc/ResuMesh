@@ -32,3 +32,5 @@ services:
         sync: false
       - key: ENABLE_ADMIN_WORKSPACE
         value: "false"
+      - key: ENABLE_CRON_JOBS
+        value: "false"

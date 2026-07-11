@@ -62,6 +62,15 @@ async def nightly_data_sync_job():
 
 
 def start_scheduler():
+    enabled = os.getenv("ENABLE_CRON_JOBS", "false").lower() in ("true", "1", "yes")
+    if not enabled:
+        import logging
+
+        logging.getLogger(__name__).warning(
+            "ENABLE_CRON_JOBS is disabled. Nightly sync job will NOT run."
+        )
+        return
+
     # Her gün gece 03:00'te çalışacak şekilde ayarla
     scheduler.add_job(nightly_data_sync_job, "cron", hour=3, minute=0)
     # Geliştirme aşamasında test etmek istersen her 1 saatte bire ayarlayabilirsin:
