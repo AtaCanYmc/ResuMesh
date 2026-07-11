@@ -1,5 +1,71 @@
 # Changelog
 
+## [1.9.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.8.0...v1.9.0) (2026-07-11)
+
+
+### Features
+
+* add admin dependency to CRUD operations for articles, certificates, educations, experiences, projects, and skills ([6bd9672](https://github.com/AtaCanYmc/ResuMesh/commit/6bd96729c8a82a1382b5fa25c076458d2a70fc6a))
+* add admin workspace toggle to manage resource usage in production environments ([1fd3acc](https://github.com/AtaCanYmc/ResuMesh/commit/1fd3acc71db0d369b5442c8c47dbc56fc165f3c5))
+* add auto-deploy pipeline to GitHub Actions and document admin workspace flag ([12c876e](https://github.com/AtaCanYmc/ResuMesh/commit/12c876e9515a7451cf2a7a46553803af7b8dd11e))
+* add CORS support and enhance error handling in project loading ([8246d0e](https://github.com/AtaCanYmc/ResuMesh/commit/8246d0ebd1e4e43404dc0f57072db5f0b8f34b2b))
+* add cron jobs toggle to enable/disable nightly data sync scheduler ([44c4e95](https://github.com/AtaCanYmc/ResuMesh/commit/44c4e95e469280a47241652f96e142e94dafba79))
+* add Docker Compose configuration for local PostgreSQL database setup ([49d778b](https://github.com/AtaCanYmc/ResuMesh/commit/49d778b9559ecfd128395c9637e9246494a99688))
+* add environment-based CORS origin filtering for development ([e320dac](https://github.com/AtaCanYmc/ResuMesh/commit/e320dacd485a156878e97d0e87b28e25978f4498))
+* add local PostgreSQL Docker Compose configuration and quickstart guides to README ([02a95b3](https://github.com/AtaCanYmc/ResuMesh/commit/02a95b3f5a11294134df400c5dd26a3a010b5e70))
+* add logging for scheduler shutdown and implement health check endpoint ([96a526d](https://github.com/AtaCanYmc/ResuMesh/commit/96a526d1faa10e688f60faacc778358ee320f015))
+* add OpenAPI documentation endpoints and corresponding tests ([6f202fa](https://github.com/AtaCanYmc/ResuMesh/commit/6f202fa3bbf1f731ad4e3c15cfa55782eb87a9d7))
+* add OpenAPI documentation endpoints and corresponding tests ([035d09d](https://github.com/AtaCanYmc/ResuMesh/commit/035d09d798194a5a953d90f392de01ba1016daa9))
+* add render configuration for resumesh backend with database and environment variables ([9bd75fb](https://github.com/AtaCanYmc/ResuMesh/commit/9bd75fb40d065b51fbf9a6b18673576deed1d5b1))
+* add response interceptor to handle unauthorized access and update admin user role in seed script ([8763b0c](https://github.com/AtaCanYmc/ResuMesh/commit/8763b0c813983ce5458cd81eef3028f4c894813c))
+* add resume download functionality with loading state and fallback support ([2840c75](https://github.com/AtaCanYmc/ResuMesh/commit/2840c755b169bd0b6309bbeec02933949e60efa3))
+* add tests for admin permission requirements on CRUD endpoints ([9ab8490](https://github.com/AtaCanYmc/ResuMesh/commit/9ab84904298010e50b634c0040fca93716f5b213))
+* add tests for AuthContext, ProtectedRoute, and ThemeContext components ([e12b955](https://github.com/AtaCanYmc/ResuMesh/commit/e12b955c668bd7a042f091fdfd6525d7db970ef7))
+* enhance API root and health check responses with additional metadata ([10e2dc5](https://github.com/AtaCanYmc/ResuMesh/commit/10e2dc588e92a1c773c3165f9dadc3f56c895cd0))
+* enhance footer to support dynamic language display for hero attribution ([af07445](https://github.com/AtaCanYmc/ResuMesh/commit/af07445baea179166a6bb7ef9493bc4050496e20))
+* enhance global search functionality with query alias and validation ([650a051](https://github.com/AtaCanYmc/ResuMesh/commit/650a05163c1fe20a6e1533ad3da50d05a8e4a937))
+* enhance MainLayout with dynamic content configuration and improved sidebar layout ([0a402c3](https://github.com/AtaCanYmc/ResuMesh/commit/0a402c3f843964659ece76fd015dce2b128c514e))
+* enhance useHomeData hook with keepPreviousData for improved loading experience ([53da095](https://github.com/AtaCanYmc/ResuMesh/commit/53da095389257d2e46786acef3457f3afcb2b48b))
+* implement cookie-based authentication and add logout/verify endpoints ([e91ea7b](https://github.com/AtaCanYmc/ResuMesh/commit/e91ea7bff242dcbf49331affcb6a4b3092644fca))
+* implement CV upload, listing, and download functionality with Supabase storage ([49c9553](https://github.com/AtaCanYmc/ResuMesh/commit/49c9553dec933f1fcb43b345dd20d3ebb1248e1f))
+* implement resume linking functionality with dynamic path generation ([499fdcc](https://github.com/AtaCanYmc/ResuMesh/commit/499fdcc14edb507ce60ef884df3399f17fd3d991))
+* replace loading indicators with skeleton components for improved UX ([83b4885](https://github.com/AtaCanYmc/ResuMesh/commit/83b4885f4bf48091bcef97d3242e6db7c3566258))
+* update deployment documentation and Dockerfile for improved memory management and Playwright setup ([ee6e41d](https://github.com/AtaCanYmc/ResuMesh/commit/ee6e41d5a63c5402ab9605cd3eb9b8a07e366df4))
+* update Docker configuration and add health check tests ([16ceef7](https://github.com/AtaCanYmc/ResuMesh/commit/16ceef78018cbd06269e90e31846b6b1bf51d1cf))
+* update favicon link to use .ico format for better compatibility ([1682c08](https://github.com/AtaCanYmc/ResuMesh/commit/1682c08dccf8a3ad9e2adcbb5c45b00ed6c9f416))
+* update favicon link to use .ico format for better compatibility ([927e0a5](https://github.com/AtaCanYmc/ResuMesh/commit/927e0a5469e06da1985dd2b40adbff4fafca8b2f))
+* update footer email address for improved contact accuracy ([d6bbb83](https://github.com/AtaCanYmc/ResuMesh/commit/d6bbb837e682ff30b7d0bfcb38f6b83329b3cfc7))
+* update hero name reference to use fullName for improved clarity ([647e0d6](https://github.com/AtaCanYmc/ResuMesh/commit/647e0d674a01149b873f598c78be1b81a01c905a))
+* update README for improved quick start instructions and component documentation ([7908e8f](https://github.com/AtaCanYmc/ResuMesh/commit/7908e8fb51febe97ffa0cd2b4aa10a797b3056ef))
+* update README with new landing page screenshot ([3b693a9](https://github.com/AtaCanYmc/ResuMesh/commit/3b693a9b3cfba8b06693cacfc39b1eae7c12cf1e))
+* update resume link path for improved file organization ([a950883](https://github.com/AtaCanYmc/ResuMesh/commit/a950883e0188e39dfdf0d3d81ffbc29cc5d6fb6b))
+
+
+### Bug Fixes
+
+* add marquee section to content.json and update useHomeData to include it ([6450881](https://github.com/AtaCanYmc/ResuMesh/commit/64508819fa3641068acdff8a8a6b58ed93bbd291))
+* add Vercel Analytics integration to App component ([99de4f1](https://github.com/AtaCanYmc/ResuMesh/commit/99de4f14b71e42a7d2c1cc25dc77bea2d72d894d))
+* add Vercel Analytics integration to App component ([c37dbb2](https://github.com/AtaCanYmc/ResuMesh/commit/c37dbb28c471a4edbf062e55ae2736c77e471f75))
+* correct API endpoint paths for root and health check ([fdf1311](https://github.com/AtaCanYmc/ResuMesh/commit/fdf13116738d34cb34bb998f38367f2aeb7ec6dd))
+* enhance marquee animation with reverse direction and CSS adjustments ([096c978](https://github.com/AtaCanYmc/ResuMesh/commit/096c97868cd359716ab0a90efebc39fd7a33fc5b))
+* enhance SkillsMarquee component with dynamic category filtering and animations ([6c2d347](https://github.com/AtaCanYmc/ResuMesh/commit/6c2d3478f0cbf5a16c3353c8376e0cf9faecce3e))
+* ensure skills data is an array before rendering in SkillsMarquee component ([8f493e2](https://github.com/AtaCanYmc/ResuMesh/commit/8f493e2bc475a7f33a0dbe7571daf4c68a122601))
+* ensure skills data is an array before rendering in SkillsMarquee… ([90eee9e](https://github.com/AtaCanYmc/ResuMesh/commit/90eee9ed538c98c7e6bc67ccf73949e688c45978))
+* increase the number of projects and articles fetched for better … ([5f7da59](https://github.com/AtaCanYmc/ResuMesh/commit/5f7da59d3fab32a555f74997912731fed192b634))
+* increase the number of projects and articles fetched for better content display ([195a6b9](https://github.com/AtaCanYmc/ResuMesh/commit/195a6b94806f3833bda4ea16bed1b3b2a8a2a054))
+* increase z-index of header for improved visibility ([48ab47b](https://github.com/AtaCanYmc/ResuMesh/commit/48ab47b5b92ca57bfeb2cc42bab833f5e80310fa))
+* remove redundant GITHUB_USERNAME from .env.example ([69137e5](https://github.com/AtaCanYmc/ResuMesh/commit/69137e52b729585ffe53b106969892c290e84bb2))
+* restore footer about section in content and translation files ([308bcb2](https://github.com/AtaCanYmc/ResuMesh/commit/308bcb2978317c6f7ea0552b03f4fb30de98dffb))
+* update LinkedIn URL in content.json for correct profile link ([18c54af](https://github.com/AtaCanYmc/ResuMesh/commit/18c54af7c63c6829fff80cdd009d8f4006a44995))
+* update LinkedIn URL in content.json for correct profile link ([d3e3229](https://github.com/AtaCanYmc/ResuMesh/commit/d3e32291aba35255ca18de4b6cde22060fe4de63))
+* update logo image path in README for correct display ([55c1b91](https://github.com/AtaCanYmc/ResuMesh/commit/55c1b914faf4a1937f8e58480d5d660855b3ab0f))
+* update logo image path in README for correct display ([9ac8051](https://github.com/AtaCanYmc/ResuMesh/commit/9ac8051337a2518858cbf2ec94c66a7fb417bd2c))
+* update project sections with enhanced headings and subtitles for better clarity ([5416c09](https://github.com/AtaCanYmc/ResuMesh/commit/5416c09091a758f1ba7bbd15a736a8d6f879c7fa))
+* update project sections with enhanced headings and subtitles for… ([6cbc500](https://github.com/AtaCanYmc/ResuMesh/commit/6cbc50037f56165629ce40931d710947429ca9f9))
+* update project statistics in content.json for accuracy ([33cac4c](https://github.com/AtaCanYmc/ResuMesh/commit/33cac4cae36d93bfb74f48ac3855bb974706517e))
+* update social links and footer information in content.json and add new icons ([10224c8](https://github.com/AtaCanYmc/ResuMesh/commit/10224c8cc4724f4c91aa2444237f14776304a928))
+* update Turkish comments and error messages to English for consistency ([20fb372](https://github.com/AtaCanYmc/ResuMesh/commit/20fb372dd669c78a61fffdbe96b6f174a379495a))
+
 ## [1.8.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.7.0...v1.8.0) (2026-07-11)
 
 
