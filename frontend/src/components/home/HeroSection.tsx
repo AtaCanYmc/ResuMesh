@@ -145,9 +145,13 @@ const HeroSection: React.FC = () => {
               style={{ transform: "translateZ(50px)" }}
               className="text-center p-8 bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-2xl border border-white/20 dark:border-white/10"
             >
-              {config.hero.avatarImage ? (
+              {config.hero.avatarImage || import.meta.env.VITE_GITHUB_USERNAME ? (
                 <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-white/20 shadow-lg">
-                  <img src={config.hero.avatarImage} alt={config.hero.fullName} className="w-full h-full object-cover" />
+                  <img
+                    src={config.hero.avatarImage || `https://github.com/${import.meta.env.VITE_GITHUB_USERNAME}.png`}
+                    alt={config.hero.fullName}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               ) : (
                 <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg">

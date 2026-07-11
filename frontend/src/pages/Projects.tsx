@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Project } from '../types';
 import axios from 'axios';
-import { Star, GitFork, Loader2, Code, FolderSearch, ChevronDown, FolderGit } from 'lucide-react';
+import { Star, GitFork, Loader2, Code, FolderSearch, ChevronDown, FolderGit, AlertOctagon } from 'lucide-react';
 import Modal from '../components/Modal';
 import { useQuery } from '@tanstack/react-query';
 import { ContentCard } from '../components/ui/ContentCard';
@@ -26,7 +26,25 @@ export default function Projects() {
   });
 
   if (isError) {
-    throw error; // Let ErrorBoundary handle it
+    return (
+      <>
+        <SEO
+          title={`Hata | ResuMesh`}
+          description="Projeler yüklenirken bir hata oluştu."
+        />
+        <div className="py-8 max-w-4xl mx-auto">
+          <div className="flex flex-col items-center justify-center min-h-[40vh] p-8 text-center bg-red-50 dark:bg-red-900/10 rounded-2xl border border-red-200 dark:border-red-900/30">
+            <AlertOctagon className="w-16 h-16 text-red-500 mb-4" />
+            <h2 className="text-xl font-bold text-gray-900 dark:text-red-400 mb-2">
+              Projeler Yüklenemedi
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 max-w-md">
+              Açık kaynak projeleri yüklenirken bir sorun oluştu. Lütfen daha sonra tekrar deneyin.
+            </p>
+          </div>
+        </div>
+      </>
+    );
   }
 
   // Extract unique languages
