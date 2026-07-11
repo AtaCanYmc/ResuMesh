@@ -64,21 +64,21 @@
       {
         "id": 1,
         "icon": "code",
-        "value": "15+",
+        "value": "25+",
         "label": "Active Projects",
         "color": "blue"
       },
       {
         "id": 2,
         "icon": "book",
-        "value": "12+",
+        "value": "40+",
         "label": "Technical Articles",
         "color": "indigo"
       },
       {
         "id": 3,
         "icon": "star",
-        "value": "5+",
+        "value": "4+",
         "label": "Years Experience",
         "color": "purple"
       }
@@ -98,21 +98,21 @@
       {
         "id": 1,
         "icon": "code",
-        "value": "15+",
+        "value": "25+",
         "label": "Aktif Proje",
         "color": "blue"
       },
       {
         "id": 2,
         "icon": "book",
-        "value": "12+",
+        "value": "40+",
         "label": "Teknik Makale",
         "color": "indigo"
       },
       {
         "id": 3,
         "icon": "star",
-        "value": "5+",
+        "value": "4+",
         "label": "Yıl Deneyim",
         "color": "purple"
       }
