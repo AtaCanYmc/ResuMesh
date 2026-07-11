@@ -25,6 +25,13 @@ class LinkedInPDFParser:
     @staticmethod
     def extract_raw_text(pdf_bytes: bytes) -> str:
         """PDF dosyasını hafızada açar ve tüm sayfaların metnini birleştirir."""
+        MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+        if len(pdf_bytes) > MAX_FILE_SIZE:
+            raise ValueError("Dosya boyutu 5MB sınırını aşamaz.")
+
+        if not pdf_bytes.startswith(b"%PDF"):
+            raise ValueError("Geçersiz PDF dosyası. Dosya PDF formatında olmalıdır.")
+
         raw_text = ""
         try:
             # BytesIO ile diske yazmadan hafızada (in-memory) okuyoruz

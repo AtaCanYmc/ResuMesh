@@ -187,5 +187,7 @@ async def import_linkedin_pdf(
             "raw": raw_text,
         }
 
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"İşlem başarısız: {str(e)}")

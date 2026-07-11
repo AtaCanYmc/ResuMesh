@@ -20,18 +20,24 @@ class LogService:
         endpoint: Optional[str] = None,
         details: Optional[Dict[str, Any]] = None,
     ):
-        """Havuz sistemine yeni bir log satırı ekler."""
+        """Havuz sistemine yeni bir log satırı ekler.
+        Sadece ERROR ve CRITICAL logları DB'ye kaydedilir."""
         log_msg = f"[{module}] {message}"
-        if level in ["ERROR", "CRITICAL"]:
+        level_upper = level.upper()
+        if level_upper in ["ERROR", "CRITICAL"]:
             logger.error(log_msg)
-        elif level == "WARNING":
+        elif level_upper == "WARNING":
             logger.warning(log_msg)
         else:
             logger.info(log_msg)
 
+        # Sadece ERROR ve CRITICAL seviyeleri veritabanına yazılır
+        if level_upper not in ["ERROR", "CRITICAL"]:
+            return
+
         try:
             log_entry = SystemLogCreate(
-                level=level.upper(),
+                level=level_upper,
                 module=module.upper(),
                 message=message,
                 user_id=user_id,
@@ -42,7 +48,8 @@ class LogService:
             )
             await log_provider.create_log(log_entry)
         except Exception as e:
-            logger.critical(f"[SYSTEM] Log havuzuna yazılamadı! Hata: {str(e)}")
+            # DB bağlantı hatası loglama sisteminin kendisi çökmeyecektir
+            logger.critical(f"[SYSTEM] Log havuzuna (DB) yazılamadı! Hata: {str(e)}")
 
     @staticmethod
     async def info(
