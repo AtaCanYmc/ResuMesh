@@ -9,9 +9,9 @@ class Settings(BaseSettings):
         "http://localhost:3000",
         "http://localhost",
         "http://127.0.0.1",
-        "https://resumesh.dev",
     ]
     CORS_ALLOWED_ORIGINS: str = ""
+    ENVIRONMENT: str = "development"
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
@@ -19,6 +19,12 @@ class Settings(BaseSettings):
 
     def __init__(self, **values):
         super().__init__(**values)
+        if self.ENVIRONMENT.lower() != "development":
+            self.CORS_ORIGINS = [
+                origin
+                for origin in self.CORS_ORIGINS
+                if "localhost" not in origin and "127.0.0.1" not in origin
+            ]
         if self.CORS_ALLOWED_ORIGINS:
             origins = [
                 o.strip() for o in self.CORS_ALLOWED_ORIGINS.split(",") if o.strip()
