@@ -14,6 +14,7 @@ class ProjectBase(BaseModel):
     languages: List[str] = Field(default_factory=list)
     tags: List[str] = Field(default_factory=list)
     raw_github_data: Optional[Dict[str, Any]] = None
+    created_at: Optional[datetime] = None
 
 
 class ProjectCreate(ProjectBase):

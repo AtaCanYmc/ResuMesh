@@ -85,6 +85,7 @@ class GitHubScraperService(IScraperService):
             languages=languages,
             tags=tags,
             raw_github_data=raw,
+            created_at=raw.get("created_at"),
         )
 
     @retry(
