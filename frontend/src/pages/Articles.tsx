@@ -7,6 +7,8 @@ import SEO from '../components/SEO';
 import EmptyState from '../components/ui/EmptyState';
 import { useTranslation } from 'react-i18next';
 
+import { ArticlesSkeleton } from '../components/ui/Skeletons';
+
 export default function Articles() {
   const { t } = useTranslation();
   const [articles, setArticles] = useState<Article[]>([]);
@@ -31,11 +33,7 @@ export default function Articles() {
   const filteredArticles = articles.filter(a => a.platform === activeTab);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-      </div>
-    );
+    return <ArticlesSkeleton />;
   }
 
   return (

@@ -9,6 +9,7 @@ import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
 import ArticleFormModal from '../../components/admin/forms/ArticleFormModal';
 import EmptyState from '../../components/ui/EmptyState';
+import { TableSkeleton } from '../../components/ui/Skeletons';
 import { Article } from '../../types';
 
 export default function AdminArticles() {
@@ -76,7 +77,7 @@ export default function AdminArticles() {
       />
 
       {isLoading ? (
-        <div className="flex justify-center p-12 text-gray-500">Loading articles...</div>
+        <TableSkeleton />
       ) : articles.length === 0 ? (
         <EmptyState
           icon={BookOpen}

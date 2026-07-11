@@ -68,3 +68,32 @@ export const ArticlesSkeleton = () => (
     </div>
   </div>
 );
+
+export const TableSkeleton = () => (
+  <div className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm animate-pulse overflow-hidden">
+    <div className="px-6 py-4 bg-gray-50 dark:bg-gray-950/50 border-b border-gray-200 dark:border-gray-800 flex justify-between">
+      <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-20"></div>
+      <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-28"></div>
+      <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-24"></div>
+      <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-16"></div>
+    </div>
+    <div className="divide-y divide-gray-200 dark:divide-gray-800">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div key={i} className="px-6 py-5 flex justify-between items-center">
+          <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-1/4"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-1/5"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-1/6"></div>
+          <div className="h-8 bg-gray-200 dark:bg-gray-800 rounded-lg w-16"></div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+export const ListSkeleton = () => (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse w-full">
+    {[1, 2, 3, 4, 5, 6].map((i) => (
+      <div key={i} className="h-48 bg-gray-200 dark:bg-gray-800 rounded-2xl w-full"></div>
+    ))}
+  </div>
+);

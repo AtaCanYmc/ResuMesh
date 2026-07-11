@@ -5,6 +5,8 @@ import { Loader2, Briefcase } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useTranslation } from 'react-i18next';
 
+import { TimelineSkeleton } from '../components/ui/Skeletons';
+
 export default function Experiences() {
   const { t } = useTranslation();
   const [experiences, setExperiences] = useState<Experience[]>([]);
@@ -25,11 +27,7 @@ export default function Experiences() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-      </div>
-    );
+    return <TimelineSkeleton />;
   }
 
   return (

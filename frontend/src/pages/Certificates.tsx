@@ -5,6 +5,8 @@ import { Loader2, Award, ExternalLink, Calendar } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useTranslation } from 'react-i18next';
 
+import { ListSkeleton } from '../components/ui/Skeletons';
+
 export default function Certificates() {
   const { t } = useTranslation();
   const [certificates, setCertificates] = useState<Certificate[]>([]);
@@ -25,11 +27,7 @@ export default function Certificates() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-      </div>
-    );
+    return <ListSkeleton />;
   }
 
   return (

@@ -9,6 +9,7 @@ import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
 import ProjectFormModal from '../../components/admin/forms/ProjectFormModal';
 import EmptyState from '../../components/ui/EmptyState';
+import { TableSkeleton } from '../../components/ui/Skeletons';
 import { Project } from '../../types';
 
 export default function AdminProjects() {
@@ -78,7 +79,7 @@ export default function AdminProjects() {
       />
 
       {isLoading ? (
-        <div className="flex justify-center p-12 text-gray-500">Loading projects...</div>
+        <TableSkeleton />
       ) : projects.length === 0 ? (
         <EmptyState
           icon={FolderGit}

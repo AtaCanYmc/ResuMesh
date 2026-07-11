@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useLogs } from '../../hooks/useLogs';
 import LogTable from '../../components/LogTable';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
-import { ShieldAlert, Loader2, Search, Filter } from 'lucide-react';
+import { TableSkeleton } from '../../components/ui/Skeletons';
+import { ShieldAlert, Search, Filter } from 'lucide-react';
 
 export default function AdminSystemLogs() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -57,9 +58,7 @@ export default function AdminSystemLogs() {
       )}
 
       {loading && !logs.length ? (
-        <div className="flex items-center justify-center h-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-        </div>
+        <TableSkeleton />
       ) : (
         <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm overflow-hidden">
           <LogTable logs={logs} />

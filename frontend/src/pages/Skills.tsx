@@ -5,6 +5,8 @@ import { Loader2, Wand2 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useTranslation } from 'react-i18next';
 
+import { ListSkeleton } from '../components/ui/Skeletons';
+
 export default function Skills() {
   const { t } = useTranslation();
   const [skills, setSkills] = useState<Skill[]>([]);
@@ -25,11 +27,7 @@ export default function Skills() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-      </div>
-    );
+    return <ListSkeleton />;
   }
 
   // Group skills by category

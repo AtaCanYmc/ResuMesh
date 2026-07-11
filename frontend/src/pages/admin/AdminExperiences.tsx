@@ -9,6 +9,7 @@ import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
 import ExperienceFormModal from '../../components/admin/forms/ExperienceFormModal';
 import EmptyState from '../../components/ui/EmptyState';
+import { TableSkeleton } from '../../components/ui/Skeletons';
 import { Experience } from '../../types';
 
 export default function AdminExperiences() {
@@ -76,7 +77,7 @@ export default function AdminExperiences() {
       />
 
       {isLoading ? (
-        <div className="flex justify-center p-12 text-gray-500">Loading experiences...</div>
+        <TableSkeleton />
       ) : experiences.length === 0 ? (
         <EmptyState
           icon={Briefcase}

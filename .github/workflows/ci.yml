@@ -89,6 +89,12 @@ jobs:
       working-directory: ./frontend
       run: npm run lint
 
+    - name: Run Vitest Tests
+      working-directory: ./frontend
+      run: |
+        npx playwright install chromium
+        npm run test
+
     - name: Build
       working-directory: ./frontend
       run: npm run build

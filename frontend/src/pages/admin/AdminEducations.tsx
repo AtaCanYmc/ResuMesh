@@ -9,6 +9,7 @@ import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
 import EducationFormModal from '../../components/admin/forms/EducationFormModal';
 import EmptyState from '../../components/ui/EmptyState';
+import { TableSkeleton } from '../../components/ui/Skeletons';
 import { Education } from '../../types';
 
 export default function AdminEducations() {
@@ -76,7 +77,7 @@ export default function AdminEducations() {
       />
 
       {isLoading ? (
-        <div className="flex justify-center p-12 text-gray-500">Loading educations...</div>
+        <TableSkeleton />
       ) : educations.length === 0 ? (
         <EmptyState
           icon={GraduationCap}

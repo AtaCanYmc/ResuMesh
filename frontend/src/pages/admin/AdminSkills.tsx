@@ -9,6 +9,7 @@ import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
 import SkillFormModal from '../../components/admin/forms/SkillFormModal';
 import EmptyState from '../../components/ui/EmptyState';
+import { TableSkeleton } from '../../components/ui/Skeletons';
 import { Skill } from '../../types';
 
 export default function AdminSkills() {
@@ -75,7 +76,7 @@ export default function AdminSkills() {
       />
 
       {isLoading ? (
-        <div className="flex justify-center p-12 text-gray-500">Loading skills...</div>
+        <TableSkeleton />
       ) : skills.length === 0 ? (
         <EmptyState
           icon={Wand2}

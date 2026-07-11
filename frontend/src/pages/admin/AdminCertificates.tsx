@@ -9,6 +9,7 @@ import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
 import CertificateFormModal from '../../components/admin/forms/CertificateFormModal';
 import EmptyState from '../../components/ui/EmptyState';
+import { TableSkeleton } from '../../components/ui/Skeletons';
 import { Certificate } from '../../types';
 
 export default function AdminCertificates() {
@@ -76,7 +77,7 @@ export default function AdminCertificates() {
       />
 
       {isLoading ? (
-        <div className="flex justify-center p-12 text-gray-500">Loading certificates...</div>
+        <TableSkeleton />
       ) : certificates.length === 0 ? (
         <EmptyState
           icon={Award}
