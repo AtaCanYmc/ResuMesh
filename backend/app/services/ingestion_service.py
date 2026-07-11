@@ -30,17 +30,20 @@ class IngestionService:
         provider,
         platform_name: str,
         username: str,
+        upsert_method: str,
         **kwargs,
     ):
         try:
             items = await scraper.fetch_data(username, **kwargs)
             for item in items:
-                if hasattr(provider, "upsert_project"):
-                    await provider.upsert_project(item)
-                elif hasattr(provider, "upsert_article"):
-                    await provider.upsert_article(item)
+                func = getattr(provider, upsert_method, None)
+                if func:
+                    await func(item)
                 else:
-                    raise ValueError(f"Unknown provider type for {platform_name}")
+                    raise ValueError(
+                        f"Provider does not have method {upsert_method} "
+                        f"for {platform_name}"
+                    )
         except ScraperError as exc:
             log_repo = self.log_provider or provider
             await LogService.warning(
@@ -63,7 +66,13 @@ class IngestionService:
     ):
         """Fetches GitHub repositories and saves via provider."""
         await self._execute_scraper(
-            scraper, provider, "GITHUB", username, pat=pat, include_forks=include_forks
+            scraper,
+            provider,
+            "GITHUB",
+            username,
+            "upsert_project",
+            pat=pat,
+            include_forks=include_forks,
         )
 
     async def fetch_devto_articles(
@@ -75,7 +84,7 @@ class IngestionService:
     ):
         """Fetches Dev.to articles and saves via provider."""
         await self._execute_scraper(
-            scraper, provider, "DEV_TO", username, api_key=api_key
+            scraper, provider, "DEV_TO", username, "upsert_article", api_key=api_key
         )
 
     async def fetch_medium_articles(
@@ -85,7 +94,9 @@ class IngestionService:
         provider: IArticleRepository,
     ):
         """Fetches Medium RSS articles and saves via provider."""
-        await self._execute_scraper(scraper, provider, "MEDIUM", username)
+        await self._execute_scraper(
+            scraper, provider, "MEDIUM", username, "upsert_article"
+        )
 
     async def import_linkedin_data(
         self,
