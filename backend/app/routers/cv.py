@@ -9,7 +9,9 @@ router = APIRouter(prefix="/cv", tags=["CV Storage"])
 
 @router.post("/upload")
 async def upload_cv(
-    file: UploadFile = File(...), admin: dict = Depends(get_current_admin)
+    file: UploadFile = File(...),
+    admin: dict = Depends(get_current_admin),
+    telemetry_ctx: dict = Depends(get_telemetry_data),
 ):
     if not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are allowed")
@@ -19,6 +21,16 @@ async def upload_cv(
         file_bytes = await file.read()
         filename = await storage.upload_cv(file.filename, file_bytes)
         public_url = storage.get_public_url(filename)
+        telemetry_ctx["background_tasks"].add_task(
+            telemetry.capture_event,
+            distinct_id=telemetry_ctx["ip"],
+            event_name="cv_uploaded",
+            properties={
+                "filename": filename,
+                "ip": telemetry_ctx["ip"],
+                "user_agent": telemetry_ctx["ua"],
+            },
+        )
         return {
             "status": "success",
             "message": "CV uploaded successfully",

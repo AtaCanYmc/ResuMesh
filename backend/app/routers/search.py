@@ -5,6 +5,7 @@ from slowapi.util import get_remote_address
 from app.db.base import ISearchRepository
 from app.db.dependencies import get_search_repo
 from app.schemas.search import GlobalSearchResponse
+from app.services.telemetry_service import get_telemetry_data, telemetry
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -18,6 +19,7 @@ async def global_search(
     q: str = Query(None, min_length=2, description="Search keyword"),
     query: str = Query(None, min_length=2, description="Search keyword alias"),
     provider: ISearchRepository = Depends(get_search_repo),
+    telemetry_ctx: dict = Depends(get_telemetry_data),
 ):
     """
     Performs global search across Projects, Articles, Experiences and Certificates.
@@ -36,4 +38,14 @@ async def global_search(
         )
 
     results = await provider.global_search(keyword)
+    telemetry_ctx["background_tasks"].add_task(
+        telemetry.capture_event,
+        distinct_id=telemetry_ctx["ip"],
+        event_name="search_performed",
+        properties={
+            "query": keyword,
+            "ip": telemetry_ctx["ip"],
+            "user_agent": telemetry_ctx["ua"],
+        },
+    )
     return results
