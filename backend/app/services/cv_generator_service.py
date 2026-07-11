@@ -1,3 +1,5 @@
+import asyncio
+
 from app.db.base import (
     IArticleRepository,
     ICertificateRepository,
@@ -24,14 +26,22 @@ class CVGeneratorService:
         self.llm = llm_provider
 
     async def generate_tailored_cv(self, job_url: str, skills: list = None) -> str:
-        # 1. Scrape the job description
-        job_description = await ScraperService.scrape_job_description(job_url)
+        # Fetch external scraping and internal database records concurrently
+        job_desc_task = ScraperService.scrape_job_description(job_url)
+        projects_task = self.project_repo.get_projects(limit=10)
+        experiences_task = self.experience_repo.get_all_experiences()
+        articles_task = self.article_repo.get_all_articles()
+        certs_task = self.cert_repo.get_all_certificates()
 
-        # 2. Assemble context from DB
-        projects = await self.project_repo.get_projects(limit=10)
-        experiences = await self.experience_repo.get_all_experiences()
-        articles = await self.article_repo.get_all_articles()
-        certificates = await self.cert_repo.get_all_certificates()
+        (
+            job_description,
+            projects,
+            experiences,
+            articles,
+            certificates,
+        ) = await asyncio.gather(
+            job_desc_task, projects_task, experiences_task, articles_task, certs_task
+        )
 
         context_lines = []
 

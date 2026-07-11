@@ -25,7 +25,7 @@ export default function InfiniteMarquee({
   return (
     <div className={`flex overflow-hidden touch-pan-y motion-reduce:overflow-x-auto ${className}`}>
       {/* Group 1 */}
-      <div className={`flex min-w-full shrink-0 items-center justify-around gap-8 px-4 ${directionClass} ${speedClass[speed]}`}>
+      <div className={`flex min-w-full shrink-0 items-center justify-around gap-8 px-4 ${directionClass} ${speedClass[speed]} will-change-transform`}>
         {items.map((item, i) => (
           <div key={`group1-${i}`} className="flex-shrink-0">
             {item}
@@ -33,7 +33,7 @@ export default function InfiniteMarquee({
         ))}
       </div>
       {/* Group 2 (Duplicate for seamless loop) */}
-      <div className={`hidden motion-safe:flex min-w-full shrink-0 items-center justify-around gap-8 px-4 ${directionClass} ${speedClass[speed]}`} aria-hidden="true">
+      <div className={`hidden motion-safe:flex min-w-full shrink-0 items-center justify-around gap-8 px-4 ${directionClass} ${speedClass[speed]} will-change-transform`} aria-hidden="true">
         {items.map((item, i) => (
           <div key={`group2-${i}`} className="flex-shrink-0">
             {item}

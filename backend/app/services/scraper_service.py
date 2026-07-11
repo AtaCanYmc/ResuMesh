@@ -1,10 +1,29 @@
+import ipaddress
 import logging
+import socket
+from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 logger = logging.getLogger(__name__)
+
+
+def is_safe_url(url: str) -> bool:
+    """SSRF önleme mekanizması: IP aralığı loopback veya private ise URL'i reddeder."""
+    try:
+        parsed = urlparse(url)
+        if parsed.scheme not in ("http", "https"):
+            return False
+        if not parsed.hostname:
+            return False
+        # Hostname çözümlenir (IP veya domain)
+        ip = socket.gethostbyname(parsed.hostname)
+        parsed_ip = ipaddress.ip_address(ip)
+        return not (parsed_ip.is_private or parsed_ip.is_loopback)
+    except Exception:
+        return False
 
 
 class ScraperService:
@@ -17,6 +36,11 @@ class ScraperService:
         Fetches the HTML content of a given URL and extracts the visible text.
         Uses Playwright to render JavaScript and bypass simple bot protections.
         """
+        if not is_safe_url(url):
+            raise ValueError(
+                "Güvensiz veya sınırlandırılmış bir URL sağlandı (SSRF koruması)."
+            )
+
         logger.info(f"Attempting to scrape {url} using Playwright...")
         try:
             async with async_playwright() as p:

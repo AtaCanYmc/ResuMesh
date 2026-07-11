@@ -64,6 +64,8 @@ async def generate_cv(
         )
 
         return {"status": "success", "cv_markdown": cv_markdown}
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
