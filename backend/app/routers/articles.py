@@ -10,6 +10,7 @@ from app.services.auth_service import get_current_admin
 from app.services.ingestion_service import IngestionService
 from app.services.scrapers.devto_scraper import DevToScraper
 from app.services.scrapers.medium_scraper import MediumScraper
+from app.services.telemetry_service import get_telemetry_data, telemetry
 
 router = APIRouter(prefix="/articles", tags=["articles"])
 
@@ -26,6 +27,7 @@ async def refresh_articles(
     background_tasks: BackgroundTasks,
     provider: IArticleRepository = Depends(get_article_repo),
     admin: dict = Depends(get_current_admin),
+    telemetry_ctx: dict = Depends(get_telemetry_data),
 ):
     try:
         ingestion = IngestionService()
@@ -51,6 +53,18 @@ async def refresh_articles(
                 status_code=400, detail="Invalid platform. Use 'devto' or 'medium'."
             )
 
+        telemetry_ctx["background_tasks"].add_task(
+            telemetry.capture_event,
+            distinct_id=telemetry_ctx["ip"],
+            event_name="articles_refresh_triggered",
+            properties={
+                "username": request.username,
+                "platform": request.platform,
+                "ip": telemetry_ctx["ip"],
+                "user_agent": telemetry_ctx["ua"],
+            },
+        )
+
         return {
             "status": "processing",
             "message": f"Articles from {request.platform} "
@@ -65,9 +79,21 @@ async def create_article(
     article: ArticleCreate,
     provider: IArticleRepository = Depends(get_article_repo),
     admin: dict = Depends(get_current_admin),
+    telemetry_ctx: dict = Depends(get_telemetry_data),
 ):
     try:
         result = await provider.upsert_article(article)
+        telemetry_ctx["background_tasks"].add_task(
+            telemetry.capture_event,
+            distinct_id=telemetry_ctx["ip"],
+            event_name="article_created",
+            properties={
+                "article_id": result.id if hasattr(result, "id") else None,
+                "title": article.title,
+                "ip": telemetry_ctx["ip"],
+                "user_agent": telemetry_ctx["ua"],
+            },
+        )
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -92,10 +118,22 @@ async def update_article(
     article: ArticleUpdate,
     provider: IArticleRepository = Depends(get_article_repo),
     admin: dict = Depends(get_current_admin),
+    telemetry_ctx: dict = Depends(get_telemetry_data),
 ):
     updated = await provider.update_article(article_id, article)
     if not updated:
         raise HTTPException(status_code=404, detail="Article not found")
+    telemetry_ctx["background_tasks"].add_task(
+        telemetry.capture_event,
+        distinct_id=telemetry_ctx["ip"],
+        event_name="article_updated",
+        properties={
+            "article_id": article_id,
+            "title": getattr(updated, "title", None),
+            "ip": telemetry_ctx["ip"],
+            "user_agent": telemetry_ctx["ua"],
+        },
+    )
     return updated
 
 
@@ -104,8 +142,19 @@ async def delete_article(
     article_id: str,
     provider: IArticleRepository = Depends(get_article_repo),
     admin: dict = Depends(get_current_admin),
+    telemetry_ctx: dict = Depends(get_telemetry_data),
 ):
     deleted = await provider.delete_article(article_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Article not found")
+    telemetry_ctx["background_tasks"].add_task(
+        telemetry.capture_event,
+        distinct_id=telemetry_ctx["ip"],
+        event_name="article_deleted",
+        properties={
+            "article_id": article_id,
+            "ip": telemetry_ctx["ip"],
+            "user_agent": telemetry_ctx["ua"],
+        },
+    )
     return {"status": "success"}

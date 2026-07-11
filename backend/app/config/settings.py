@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     ]
     CORS_ALLOWED_ORIGINS: str = ""
     ENVIRONMENT: str = "development"
+    POSTHOG_API_KEY: str = ""
+    POSTHOG_HOST: str = "https://us.i.posthog.com"
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"

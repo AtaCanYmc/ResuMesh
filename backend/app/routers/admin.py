@@ -36,6 +36,7 @@ from app.services.auth_service import get_current_admin
 from app.services.cv_generator_service import CVGeneratorService
 from app.services.ingestion_service import IngestionService
 from app.services.pdf_parser_service import LinkedInPDFParser
+from app.services.telemetry_service import get_telemetry_data, telemetry
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -57,6 +58,7 @@ async def generate_cv(
     cert_repo: ICertificateRepository = Depends(get_certificate_repo),
     db: Session = Depends(get_db),
     admin=Depends(get_current_admin),
+    telemetry_ctx: dict = Depends(get_telemetry_data),
 ):
     try:
         llm_provider = get_llm_provider()
@@ -70,6 +72,17 @@ async def generate_cv(
 
         cv_markdown = await cv_service.generate_tailored_cv(
             str(payload.job_url), skills=skills
+        )
+
+        telemetry_ctx["background_tasks"].add_task(
+            telemetry.capture_event,
+            distinct_id=telemetry_ctx["ip"],
+            event_name="cv_generation_requested",
+            properties={
+                "job_url": str(payload.job_url),
+                "ip": telemetry_ctx["ip"],
+                "user_agent": telemetry_ctx["ua"],
+            },
         )
 
         return {"status": "success", "cv_markdown": cv_markdown}
@@ -88,6 +101,7 @@ async def refresh_data(
     article_repo: IArticleRepository = Depends(get_article_repo),
     log_repo: ISystemLogRepository = Depends(get_system_log_repo),
     admin=Depends(get_current_admin),
+    telemetry_ctx: dict = Depends(get_telemetry_data),
 ):
     """Admin endpoint to manually trigger data scraping
     from platforms in the background."""
@@ -139,6 +153,19 @@ async def refresh_data(
             status_code=400, detail="No platform usernames configured in environment."
         )
 
+    telemetry_ctx["background_tasks"].add_task(
+        telemetry.capture_event,
+        distinct_id=telemetry_ctx["ip"],
+        event_name="data_refresh_triggered",
+        properties={
+            "github": bool(github_user),
+            "medium": bool(medium_user),
+            "devto": bool(devto_user),
+            "ip": telemetry_ctx["ip"],
+            "user_agent": telemetry_ctx["ua"],
+        },
+    )
+
     return {
         "status": "processing",
         "message": "Data ingestion started in the background.",
@@ -158,6 +185,7 @@ async def get_system_logs(
     end_date: Optional[str] = None,
     provider: ISystemLogRepository = Depends(get_system_log_repo),
     current_admin: dict = Depends(get_current_admin),
+    telemetry_ctx: dict = Depends(get_telemetry_data),
 ):
     """Retrieves the system logs from database with pagination and filtering."""
     total_count = await provider.get_logs_count(
@@ -177,6 +205,20 @@ async def get_system_logs(
         end_date=end_date,
     )
 
+    telemetry_ctx["background_tasks"].add_task(
+        telemetry.capture_event,
+        distinct_id=telemetry_ctx["ip"],
+        event_name="system_logs_viewed",
+        properties={
+            "page": page,
+            "limit": limit,
+            "level": level,
+            "module": module,
+            "ip": telemetry_ctx["ip"],
+            "user_agent": telemetry_ctx["ua"],
+        },
+    )
+
     return {"total": total_count, "page": page, "limit": limit, "data": logs}
 
 
@@ -188,6 +230,7 @@ async def import_linkedin_pdf(
     current_admin: dict = Depends(get_current_admin),
     experience_repo: IExperienceRepository = Depends(get_experience_repo),
     certificate_repo: ICertificateRepository = Depends(get_certificate_repo),
+    telemetry_ctx: dict = Depends(get_telemetry_data),
 ):
     """Parses LinkedIn profile PDF uploaded via admin panel using LLM
     and saves to database."""
@@ -209,6 +252,17 @@ async def import_linkedin_pdf(
         certificates = getattr(structured_data, "certificates", []) or []
         for cert in certificates:
             await certificate_repo.create_certificate(cert)
+
+        telemetry_ctx["background_tasks"].add_task(
+            telemetry.capture_event,
+            distinct_id=telemetry_ctx["ip"],
+            event_name="linkedin_pdf_imported",
+            properties={
+                "filename": file.filename,
+                "ip": telemetry_ctx["ip"],
+                "user_agent": telemetry_ctx["ua"],
+            },
+        )
 
         return {
             "status": "success",
