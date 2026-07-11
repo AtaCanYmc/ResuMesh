@@ -94,7 +94,7 @@ class SupabaseProvider(
     async def update_project(
         self, project_id: str, project: ProjectUpdate
     ) -> Optional[ProjectResponse]:
-        update_data = project.model_dump(exclude_unset=True)
+        update_data = project.model_dump(mode="json", exclude_unset=True)
         if "github_url" in update_data and update_data["github_url"] is not None:
             update_data["github_url"] = str(update_data["github_url"])
         response = (
@@ -137,7 +137,7 @@ class SupabaseProvider(
     async def update_article(
         self, article_id: str, article: ArticleUpdate
     ) -> Optional[ArticleResponse]:
-        update_data = article.model_dump(exclude_unset=True)
+        update_data = article.model_dump(mode="json", exclude_unset=True)
         if "url" in update_data and update_data["url"] is not None:
             update_data["url"] = str(update_data["url"])
         response = (
@@ -181,7 +181,7 @@ class SupabaseProvider(
     async def update_experience(
         self, experience_id: str, experience: ExperienceUpdate
     ) -> Optional[ExperienceResponse]:
-        update_data = experience.model_dump(exclude_unset=True)
+        update_data = experience.model_dump(mode="json", exclude_unset=True)
         response = (
             await self.client.table("experiences")
             .update(update_data)
@@ -226,7 +226,7 @@ class SupabaseProvider(
     async def update_certificate(
         self, certificate_id: str, certificate: CertificateUpdate
     ) -> Optional[CertificateResponse]:
-        update_data = certificate.model_dump(exclude_unset=True)
+        update_data = certificate.model_dump(mode="json", exclude_unset=True)
         if (
             "credential_url" in update_data
             and update_data["credential_url"] is not None
