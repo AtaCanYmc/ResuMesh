@@ -1,4 +1,13 @@
 {
+  "socials": [
+    { "id": "github", "platform": "github", "url": "https://github.com/AtaCanYmc", "label": "GitHub" },
+    { "id": "linkedin", "platform": "linkedin", "url": "https://linkedin.com/in/atacanyucel", "label": "LinkedIn" },
+    { "id": "devto", "platform": "devto", "url": "https://dev.to/atacanymc", "label": "Dev.to" },
+    { "id": "medium", "platform": "medium", "url": "https://medium.com/@atacanymc", "label": "Medium" }
+  ],
+  "footer": {
+    "email": "atacanymc@gmail.com"
+  },
   "en": {
     "hero": {
       "name": "Ata Can",
@@ -9,11 +18,6 @@
       "description": "With a Computer Engineering background from Dokuz Eylul University, I specialize in scalable backend architectures and automation processes. I transform complex data into meaningful insights using modern web technologies.",
       "resumeLink": "/resumes/resume.pdf"
     },
-    "socials": [
-      { "id": "github", "platform": "github", "url": "https://github.com/atacan", "label": "GitHub" },
-      { "id": "linkedin", "platform": "linkedin", "url": "https://linkedin.com/in/atacanyucel", "label": "LinkedIn" },
-      { "id": "twitter", "platform": "twitter", "url": "https://twitter.com/atacanyucel", "label": "Twitter" }
-    ],
     "metrics": [
       { "id": 1, "icon": "code", "value": "15+", "label": "Active Projects", "color": "blue" },
       { "id": 2, "icon": "book", "value": "12+", "label": "Technical Articles", "color": "indigo" },
@@ -22,10 +26,7 @@
     "marquee": [
       "React", "TypeScript", "Tailwind CSS", "Framer Motion", "Python",
       "FastAPI", "PostgreSQL", "Docker", "AWS", "Node.js", "Next.js", "GraphQL"
-    ],
-    "footer": {
-      "email": "atacanymc@gmail.com"
-    }
+    ]
   },
   "tr": {
     "hero": {
@@ -37,11 +38,6 @@
       "description": "Dokuz Eylül Üniversitesi Bilgisayar Mühendisliği geçmişimle, ölçeklenebilir backend mimarileri ve otomasyon süreçleri üzerine çalışıyorum. Modern web teknolojileriyle karmaşık verileri anlamlı içgörülere dönüştürüyorum.",
       "resumeLink": "/resume.pdf"
     },
-    "socials": [
-      { "id": "github", "platform": "github", "url": "https://github.com/atacan", "label": "GitHub" },
-      { "id": "linkedin", "platform": "linkedin", "url": "https://linkedin.com/in/atacanyucel", "label": "LinkedIn" },
-      { "id": "twitter", "platform": "twitter", "url": "https://twitter.com/atacanyucel", "label": "Twitter" }
-    ],
     "metrics": [
       { "id": 1, "icon": "code", "value": "15+", "label": "Aktif Proje", "color": "blue" },
       { "id": 2, "icon": "book", "value": "12+", "label": "Teknik Makale", "color": "indigo" },
@@ -50,9 +46,6 @@
     "marquee": [
       "React", "TypeScript", "Tailwind CSS", "Framer Motion", "Python",
       "FastAPI", "PostgreSQL", "Docker", "AWS", "Node.js", "Next.js", "GraphQL"
-    ],
-    "footer": {
-      "email": "atacanymc@gmail.com"
-    }
+    ]
   }
 }

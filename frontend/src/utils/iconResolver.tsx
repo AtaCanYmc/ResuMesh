@@ -20,6 +20,18 @@ const TwitterIcon = (props: any) => (
   </svg>
 );
 
+const DevtoIcon = (props: any) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" width="1em" height="1em" {...props}>
+    <path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zM9 15.75H7.5V8.25H9v7.5zM12.5 15.75H11V8.25h1.5v7.5zm4.5-5.5h-2.5v1.5h2.5v1.5h-2.5v1.5H17v1.5h-4v-7.5h4v1.5z" />
+  </svg>
+);
+
+const MediumIcon = (props: any) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" width="1em" height="1em" {...props}>
+    <path d="M13.54 12a6.8 6.8 0 11-6.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M23.95 12c0 3.25-.33 5.89-.73 5.89-.4 0-.73-2.64-.73-5.89s.33-5.89.73-5.89c.4 0 .73 2.64.73 5.89z" />
+  </svg>
+);
+
 const ICON_MAP: Record<string, React.FC<any>> = {
   code: Code,
   book: BookOpen,
@@ -31,6 +43,8 @@ const ICON_MAP: Record<string, React.FC<any>> = {
   github: GithubIcon,
   linkedin: LinkedinIcon,
   twitter: TwitterIcon,
+  devto: DevtoIcon,
+  medium: MediumIcon,
 };
 
 export const getIcon = (name: string) => {
