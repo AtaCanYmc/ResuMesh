@@ -82,11 +82,24 @@ class SupabaseProvider(
 
     async def upsert_project(self, project: ProjectCreate) -> ProjectResponse:
         project_data = project.model_dump(mode="json")
-        response = (
+        existing = (
             await self.client.table("projects")
-            .upsert(project_data, on_conflict="github_url")
+            .select("*")
+            .eq("github_url", project_data["github_url"])
             .execute()
         )
+        if existing.data:
+            proj_id = existing.data[0]["id"]
+            response = (
+                await self.client.table("projects")
+                .update(project_data)
+                .eq("id", proj_id)
+                .execute()
+            )
+        else:
+            response = (
+                await self.client.table("projects").insert(project_data).execute()
+            )
         if not response.data:
             raise Exception("Failed to upsert project in Supabase.")
         return ProjectResponse(**response.data[0])
@@ -115,11 +128,24 @@ class SupabaseProvider(
 
     async def upsert_article(self, article: ArticleCreate) -> ArticleResponse:
         article_data = article.model_dump(mode="json")
-        response = (
+        existing = (
             await self.client.table("articles")
-            .upsert(article_data, on_conflict="url")
+            .select("*")
+            .eq("url", article_data["url"])
             .execute()
         )
+        if existing.data:
+            art_id = existing.data[0]["id"]
+            response = (
+                await self.client.table("articles")
+                .update(article_data)
+                .eq("id", art_id)
+                .execute()
+            )
+        else:
+            response = (
+                await self.client.table("articles").insert(article_data).execute()
+            )
         if not response.data:
             raise Exception("Failed to upsert article in Supabase.")
         return ArticleResponse(**response.data[0])
