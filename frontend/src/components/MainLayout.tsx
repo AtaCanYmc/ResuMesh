@@ -73,9 +73,9 @@ const MainLayout: React.FC = () => {
             </button>
           )}
         </div>
-        {!isCollapsed && config?.hero?.name && (
+        {!isCollapsed && config?.hero?.fullName && (
           <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-1.5 tracking-wide truncate max-w-full">
-            {config.hero.name}
+            {config.hero.fullName}
           </span>
         )}
       </div>
