@@ -91,6 +91,8 @@ const router = createBrowserRouter([
   },
 ]);
 
+import { Analytics } from '@vercel/analytics/react';
+
 function App() {
   return (
     <HelmetProvider>
@@ -109,6 +111,7 @@ function App() {
           />
           {/* Suspense is moved to MainLayout so layout stays intact during page loads */}
           <RouterProvider router={router} />
+          <Analytics />
         </AuthProvider>
       </QueryClientProvider>
       </ThemeProvider>
