@@ -1,5 +1,9 @@
+# flake8: noqa: E402
+import logging
 import os
 from contextlib import asynccontextmanager
+
+logger = logging.getLogger(__name__)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -42,7 +46,11 @@ limiter = Limiter(key_func=get_remote_address)
 async def lifespan(app: FastAPI):
     start_scheduler()
     yield
-    scheduler.shutdown()
+    try:
+        if scheduler.running:
+            scheduler.shutdown(wait=False)
+    except Exception as e:
+        logger.error(f"Scheduler shutdown sırasında hata oluştu: {e}")
 
 
 app = FastAPI(
@@ -79,3 +87,8 @@ app.include_router(seo.router, prefix="/api/v1/seo")
 @app.get("/")
 def read_root():
     return {"message": "Welcome to ResuMesh API"}
+
+
+@app.get("/health", include_in_schema=False)
+async def health_check():
+    return {"status": "ok"}
