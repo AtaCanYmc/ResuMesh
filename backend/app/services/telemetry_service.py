@@ -60,6 +60,6 @@ async def get_telemetry_data(request: Request, background_tasks: BackgroundTasks
         "ip": request.client.host if request.client else "unknown",
         "ua": request.headers.get("user-agent", "unknown"),
         "background_tasks": background_tasks,
-        "url": request.url,
+        "url": str(request.url),
         "language": request.headers.get("language", "unknown"),
     }
