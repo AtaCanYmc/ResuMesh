@@ -9,6 +9,7 @@ from app.schemas.certificate import (
     CertificateResponse,
     CertificateUpdate,
 )
+from app.services.auth_service import get_current_admin
 
 router = APIRouter(prefix="/certificates", tags=["certificates"])
 
@@ -17,6 +18,7 @@ router = APIRouter(prefix="/certificates", tags=["certificates"])
 async def create_certificate(
     certificate: CertificateCreate,
     provider: ICertificateRepository = Depends(get_certificate_repo),
+    admin: dict = Depends(get_current_admin),
 ):
     try:
         result = await provider.create_certificate(certificate)
@@ -43,6 +45,7 @@ async def update_certificate(
     certificate_id: str,
     certificate: CertificateUpdate,
     provider: ICertificateRepository = Depends(get_certificate_repo),
+    admin: dict = Depends(get_current_admin),
 ):
     updated = await provider.update_certificate(certificate_id, certificate)
     if not updated:
@@ -54,6 +57,7 @@ async def update_certificate(
 async def delete_certificate(
     certificate_id: str,
     provider: ICertificateRepository = Depends(get_certificate_repo),
+    admin: dict = Depends(get_current_admin),
 ):
     deleted = await provider.delete_certificate(certificate_id)
     if not deleted:

@@ -9,6 +9,7 @@ from app.schemas.experience import (
     ExperienceResponse,
     ExperienceUpdate,
 )
+from app.services.auth_service import get_current_admin
 
 router = APIRouter(prefix="/experiences", tags=["experiences"])
 
@@ -17,6 +18,7 @@ router = APIRouter(prefix="/experiences", tags=["experiences"])
 async def create_experience(
     experience: ExperienceCreate,
     provider: IExperienceRepository = Depends(get_experience_repo),
+    admin: dict = Depends(get_current_admin),
 ):
     try:
         result = await provider.create_experience(experience)
@@ -43,6 +45,7 @@ async def update_experience(
     experience_id: str,
     experience: ExperienceUpdate,
     provider: IExperienceRepository = Depends(get_experience_repo),
+    admin: dict = Depends(get_current_admin),
 ):
     updated = await provider.update_experience(experience_id, experience)
     if not updated:
@@ -52,7 +55,9 @@ async def update_experience(
 
 @router.delete("/{experience_id}")
 async def delete_experience(
-    experience_id: str, provider: IExperienceRepository = Depends(get_experience_repo)
+    experience_id: str,
+    provider: IExperienceRepository = Depends(get_experience_repo),
+    admin: dict = Depends(get_current_admin),
 ):
     deleted = await provider.delete_experience(experience_id)
     if not deleted:

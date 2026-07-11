@@ -62,7 +62,9 @@ async def refresh_articles(
 
 @router.post("/", response_model=ArticleResponse)
 async def create_article(
-    article: ArticleCreate, provider: IArticleRepository = Depends(get_article_repo)
+    article: ArticleCreate,
+    provider: IArticleRepository = Depends(get_article_repo),
+    admin: dict = Depends(get_current_admin),
 ):
     try:
         result = await provider.upsert_article(article)
@@ -89,6 +91,7 @@ async def update_article(
     article_id: str,
     article: ArticleUpdate,
     provider: IArticleRepository = Depends(get_article_repo),
+    admin: dict = Depends(get_current_admin),
 ):
     updated = await provider.update_article(article_id, article)
     if not updated:
@@ -98,7 +101,9 @@ async def update_article(
 
 @router.delete("/{article_id}")
 async def delete_article(
-    article_id: str, provider: IArticleRepository = Depends(get_article_repo)
+    article_id: str,
+    provider: IArticleRepository = Depends(get_article_repo),
+    admin: dict = Depends(get_current_admin),
 ):
     deleted = await provider.delete_article(article_id)
     if not deleted:

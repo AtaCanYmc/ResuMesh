@@ -84,11 +84,22 @@ app.include_router(certificates.router, prefix="/api/v1")
 app.include_router(seo.router, prefix="/api/v1/seo")
 
 
-@app.get("/")
+@app.get("/api/v1/")
 def read_root():
-    return {"message": "Welcome to ResuMesh API"}
+    return {
+        "message": "Welcome to ResuMesh API",
+        "version": "1.0.0",
+        "title": "ResuMesh API",
+        "description": "ResuMesh API",
+        "author": "AtaCanYmc",
+    }
 
 
-@app.get("/health", include_in_schema=False)
+@app.get("/api/v1/health", include_in_schema=False)
 async def health_check():
-    return {"status": "ok"}
+    return {
+        "status": "ok",
+        "message": "ResuMesh API is healthy",
+        "version": "1.0.0",
+        "description": "ResuMesh API is healthy",
+    }
