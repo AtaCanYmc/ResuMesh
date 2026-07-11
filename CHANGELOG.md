@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.8.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.7.0...v1.8.0) (2026-07-11)
+
+
+### Features
+
+* add article and project refresh functionality with platform-specific scrapers ([489b9e4](https://github.com/AtaCanYmc/ResuMesh/commit/489b9e484bf237964fa2746d87436369d9c83ce0))
+* add education management functionality with CRUD operations and UI components ([7bfbdc9](https://github.com/AtaCanYmc/ResuMesh/commit/7bfbdc95286fd0713cc86cf406519b4337c42f84))
+* add pagination support for articles, experiences, certificates, skills, and educations retrieval ([06e9037](https://github.com/AtaCanYmc/ResuMesh/commit/06e9037d51728d1c4e2d0a79d685b280e63de089))
+* add skills and educations management with CRUD operations and integrate into the admin panel ([8f671bb](https://github.com/AtaCanYmc/ResuMesh/commit/8f671bb5ddf7fa540b1e04c7a9cbdd452fb345aa))
+* enhance admin sections with empty state components and improve data table columns ([7943813](https://github.com/AtaCanYmc/ResuMesh/commit/794381359f36568c2d84b731c249413db0fa313c))
+* enhance logging and PDF processing with error handling and size validation ([9dc881e](https://github.com/AtaCanYmc/ResuMesh/commit/9dc881ecbcbb86ed78ea313cb40c394d057de0c0))
+* implement background processing for data ingestion in refresh endpoints ([0c57920](https://github.com/AtaCanYmc/ResuMesh/commit/0c57920407333f1b76fa8036cc4d2e04aee15198))
+* implement skills management with CRUD operations and integrate into admin panel ([44303a3](https://github.com/AtaCanYmc/ResuMesh/commit/44303a3d3dca6b2cc7d2f4ab5f8ed13cb3cd2dee))
+* implement SSRF protection in scraper service and enhance CV generation with concurrent tasks ([0670477](https://github.com/AtaCanYmc/ResuMesh/commit/06704778a5c515ec9c43425e351921ef753ae89b))
+* refactor admin dependencies to use session management and improve testability ([94bd63e](https://github.com/AtaCanYmc/ResuMesh/commit/94bd63eeabc4b78f5c0cd3a343040bcb50fbb6ac))
+
 ## [1.7.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.6.0...v1.7.0) (2026-07-09)
 
 
