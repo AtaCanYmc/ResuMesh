@@ -7,6 +7,7 @@ import MagneticButton from '../ui/MagneticButton';
 import { useContentConfig } from '../../hooks/useHomeData';
 import { HeroSkeleton } from '../ui/Skeletons';
 import { getIcon } from '../../utils/iconResolver';
+import resumeConfig from '../../config/resume.json';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -87,7 +88,7 @@ const HeroSection: React.FC = () => {
                 <div className="relative group rounded-xl">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl blur opacity-60 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
                   <a
-                    href={config.hero.resumeLink}
+                    href={resumeConfig.path || config.hero.resumeLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="relative flex items-center justify-center gap-2 px-8 py-3.5 bg-blue-600 text-white font-semibold rounded-xl transition-all shadow-lg focus:outline-none"
