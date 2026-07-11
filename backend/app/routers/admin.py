@@ -1,8 +1,16 @@
-import asyncio
 import os
 from typing import Optional
 
-from fastapi import APIRouter, Depends, File, HTTPException, Query, Request, UploadFile
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    File,
+    HTTPException,
+    Query,
+    Request,
+    UploadFile,
+)
 from pydantic import BaseModel, HttpUrl
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -74,44 +82,66 @@ async def generate_cv(
 @limiter.limit("2/minute")
 async def refresh_data(
     request: Request,
+    background_tasks: BackgroundTasks,
     project_repo: IProjectRepository = Depends(get_project_repo),
     article_repo: IArticleRepository = Depends(get_article_repo),
     log_repo: ISystemLogRepository = Depends(get_system_log_repo),
     admin=Depends(get_current_admin),
 ):
-    """Admin endpoint to manually trigger data scraping from platforms."""
+    """Admin endpoint to manually trigger data scraping
+    from platforms in the background."""
     github_user = os.getenv("GITHUB_USERNAME")
     medium_user = os.getenv("MEDIUM_USERNAME")
     devto_user = os.getenv("DEVTO_USERNAME")
 
-    tasks = []
+    ingestion = IngestionService(log_provider=log_repo)
+    has_tasks = False
 
     if github_user:
-        tasks.append(
-            IngestionService.fetch_github_repos(github_user, project_repo, log_repo)
-        )
-    if medium_user:
-        tasks.append(
-            IngestionService.fetch_medium_articles(medium_user, article_repo, log_repo)
-        )
-    if devto_user:
-        tasks.append(
-            IngestionService.fetch_devto_articles(devto_user, article_repo, log_repo)
-        )
+        from app.services.scrapers.github_scraper import GitHubScraper
 
-    if not tasks:
+        scraper = GitHubScraper()
+        background_tasks.add_task(
+            ingestion.fetch_github_repos,
+            scraper=scraper,
+            username=github_user,
+            provider=project_repo,
+        )
+        has_tasks = True
+
+    if medium_user:
+        from app.services.scrapers.medium_scraper import MediumScraper
+
+        scraper = MediumScraper()
+        background_tasks.add_task(
+            ingestion.fetch_medium_articles,
+            scraper=scraper,
+            username=medium_user,
+            provider=article_repo,
+        )
+        has_tasks = True
+
+    if devto_user:
+        from app.services.scrapers.devto_scraper import DevToScraper
+
+        scraper = DevToScraper()
+        background_tasks.add_task(
+            ingestion.fetch_devto_articles,
+            scraper=scraper,
+            username=devto_user,
+            provider=article_repo,
+        )
+        has_tasks = True
+
+    if not has_tasks:
         raise HTTPException(
             status_code=400, detail="No platform usernames configured in environment."
         )
 
-    try:
-        await asyncio.gather(*tasks)
-        return {
-            "status": "success",
-            "message": "Data successfully refreshed from configured platforms.",
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return {
+        "status": "processing",
+        "message": "Data ingestion started in the background.",
+    }
 
 
 @router.get("/logs")

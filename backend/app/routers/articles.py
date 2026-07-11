@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel
 
 from app.db.base import IArticleRepository
@@ -23,6 +23,7 @@ class ArticleRefreshRequest(BaseModel):
 @router.post("/refresh", response_model=dict)
 async def refresh_articles(
     request: ArticleRefreshRequest,
+    background_tasks: BackgroundTasks,
     provider: IArticleRepository = Depends(get_article_repo),
     admin: dict = Depends(get_current_admin),
 ):
@@ -30,7 +31,8 @@ async def refresh_articles(
         ingestion = IngestionService()
         if request.platform.lower() == "devto":
             scraper = DevToScraper()
-            await ingestion.fetch_devto_articles(
+            background_tasks.add_task(
+                ingestion.fetch_devto_articles,
                 scraper=scraper,
                 username=request.username,
                 provider=provider,
@@ -38,7 +40,8 @@ async def refresh_articles(
             )
         elif request.platform.lower() == "medium":
             scraper = MediumScraper()
-            await ingestion.fetch_medium_articles(
+            background_tasks.add_task(
+                ingestion.fetch_medium_articles,
                 scraper=scraper,
                 username=request.username,
                 provider=provider,
@@ -49,8 +52,9 @@ async def refresh_articles(
             )
 
         return {
-            "status": "success",
-            "message": f"Articles from {request.platform} refreshed successfully",
+            "status": "processing",
+            "message": f"Articles from {request.platform} "
+            f"ingestion started in background",
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

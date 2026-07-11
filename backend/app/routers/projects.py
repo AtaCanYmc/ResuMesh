@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel
 
 from app.core.exceptions import ProjectNotFoundError
@@ -23,20 +23,25 @@ class ProjectRefreshRequest(BaseModel):
 @router.post("/refresh", response_model=dict)
 async def refresh_projects(
     request: ProjectRefreshRequest,
+    background_tasks: BackgroundTasks,
     provider: IProjectRepository = Depends(get_project_repo),
     admin: dict = Depends(get_current_admin),
 ):
     try:
         ingestion = IngestionService()
         scraper = GitHubScraper()
-        await ingestion.fetch_github_repos(
+        background_tasks.add_task(
+            ingestion.fetch_github_repos,
             scraper=scraper,
             username=request.username,
             provider=provider,
             pat=request.pat,
             include_forks=request.include_forks,
         )
-        return {"status": "success", "message": "Projects refreshed successfully"}
+        return {
+            "status": "processing",
+            "message": "Projects ingestion started in background",
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
