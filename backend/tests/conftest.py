@@ -418,6 +418,14 @@ def mock_provider():
 @pytest_asyncio.fixture
 async def client(mock_provider):
     """FastAPI istemcisi döner, bağımlılıkları granular mocklar ile ezer."""
+    from unittest.mock import MagicMock
+
+    mock_db = MagicMock()
+    mock_db.query.return_value.all.return_value = []
+
+    from app.db.dependencies import get_db
+
+    app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_project_repo] = lambda: mock_provider.project_repo
     app.dependency_overrides[get_article_repo] = lambda: mock_provider.article_repo
     app.dependency_overrides[get_experience_repo] = lambda: mock_provider.exp_repo

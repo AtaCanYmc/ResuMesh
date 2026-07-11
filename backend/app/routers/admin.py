@@ -14,6 +14,7 @@ from fastapi import (
 from pydantic import BaseModel, HttpUrl
 from slowapi import Limiter
 from slowapi.util import get_remote_address
+from sqlalchemy.orm import Session
 
 from app.db.base import (
     IArticleRepository,
@@ -25,6 +26,7 @@ from app.db.base import (
 from app.db.dependencies import (
     get_article_repo,
     get_certificate_repo,
+    get_db,
     get_experience_repo,
     get_project_repo,
     get_system_log_repo,
@@ -53,6 +55,7 @@ async def generate_cv(
     experience_repo: IExperienceRepository = Depends(get_experience_repo),
     article_repo: IArticleRepository = Depends(get_article_repo),
     cert_repo: ICertificateRepository = Depends(get_certificate_repo),
+    db: Session = Depends(get_db),
     admin=Depends(get_current_admin),
 ):
     try:
@@ -61,10 +64,8 @@ async def generate_cv(
             project_repo, experience_repo, article_repo, cert_repo, llm_provider
         )
 
-        from app.db.dependencies import get_db
         from app.models.skill import Skill
 
-        db = next(get_db())
         skills = db.query(Skill).all()
 
         cv_markdown = await cv_service.generate_tailored_cv(
