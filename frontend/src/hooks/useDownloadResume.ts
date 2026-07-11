@@ -28,7 +28,7 @@ export const useDownloadResume = (fallbackLink?: string) => {
       a.remove();
       window.URL.revokeObjectURL(url);
 
-      if (import.meta.env.VITE_POSTHOG_API_KEY) {
+      if (import.meta.env.VITE_POSTHOG_API_KEY && import.meta.env.MODE !== 'development') {
         posthog.capture('cv_download_clicked', {
           filename,
           fallback_used: false,
@@ -44,7 +44,7 @@ export const useDownloadResume = (fallbackLink?: string) => {
       a.click();
       a.remove();
 
-      if (import.meta.env.VITE_POSTHOG_API_KEY) {
+      if (import.meta.env.VITE_POSTHOG_API_KEY && import.meta.env.MODE !== 'development') {
         posthog.capture('cv_download_clicked', {
           filename,
           fallback_used: true,

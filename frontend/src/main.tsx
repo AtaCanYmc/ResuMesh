@@ -5,7 +5,7 @@ import './index.css'
 import './i18n/config'
 import App from './App.tsx'
 
-if (import.meta.env.VITE_POSTHOG_API_KEY) {
+if (import.meta.env.VITE_POSTHOG_API_KEY && import.meta.env.MODE !== 'development') {
   posthog.init(import.meta.env.VITE_POSTHOG_API_KEY, {
     api_host: import.meta.env.VITE_POSTHOG_HOST || 'https://us.i.posthog.com',
     autocapture: false,
