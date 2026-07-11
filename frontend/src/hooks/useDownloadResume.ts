@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import posthog from 'posthog-js';
 
 export const useDownloadResume = (fallbackLink?: string) => {
   const [isDownloading, setIsDownloading] = useState(false);
@@ -26,6 +27,13 @@ export const useDownloadResume = (fallbackLink?: string) => {
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
+
+      if (import.meta.env.VITE_POSTHOG_API_KEY) {
+        posthog.capture('cv_download_clicked', {
+          filename,
+          fallback_used: false,
+        });
+      }
     } catch (error) {
       console.error('Supabase download failed, falling back to local file', error);
       // Fallback: download local PDF
@@ -35,6 +43,14 @@ export const useDownloadResume = (fallbackLink?: string) => {
       document.body.appendChild(a);
       a.click();
       a.remove();
+
+      if (import.meta.env.VITE_POSTHOG_API_KEY) {
+        posthog.capture('cv_download_clicked', {
+          filename,
+          fallback_used: true,
+          error: String(error),
+        });
+      }
     } finally {
       setIsDownloading(false);
     }
