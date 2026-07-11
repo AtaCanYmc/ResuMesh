@@ -36,13 +36,15 @@ export default function RecentArticles() {
       viewport={{ once: true, margin: "-100px" }}
       className="pt-12"
     >
-      <div className="flex items-center gap-3 mb-6 justify-center xl:justify-start">
-        <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
-          <BookOpen size={24} />
-        </div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          {t('home.recentArticles')}
+      <div className="mb-12 text-center max-w-2xl mx-auto">
+        <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+          <span className="bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 bg-clip-text text-transparent">
+            {t('home.recentArticles')}
+          </span>
         </h2>
+        <p className="mt-3 text-lg text-gray-500 dark:text-gray-400">
+          {t('articles.subtitle')}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
