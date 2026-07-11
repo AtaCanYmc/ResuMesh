@@ -90,7 +90,15 @@ const Footer: React.FC = () => {
             </button>
           </div>
           <p className="flex items-center gap-1.5 mt-4 md:mt-0">
-            {t('footer.builtWith')} <Heart size={14} className="text-red-500 fill-red-500" /> {t('footer.by')} {config.hero.name}
+            {i18n.language === 'tr' ? (
+              <>
+                {config.hero.name} tarafından <Heart size={14} className="text-red-500 fill-red-500 animate-pulse" /> ile geliştirildi
+              </>
+            ) : (
+              <>
+                {t('footer.builtWith')} <Heart size={14} className="text-red-500 fill-red-500" /> {t('footer.by')} {config.hero.name}
+              </>
+            )}
           </p>
         </div>
       </div>
