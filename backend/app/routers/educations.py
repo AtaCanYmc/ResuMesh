@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.db.dependencies import get_db
 from app.models.education import Education
 from app.schemas.education import EducationCreate, EducationResponse, EducationUpdate
+from app.services.auth_service import get_current_admin
 
 router = APIRouter(prefix="/educations", tags=["Educations"])
 
@@ -34,7 +35,11 @@ def get_education(education_id: str, db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=EducationResponse)
-def create_education(education: EducationCreate, db: Session = Depends(get_db)):
+def create_education(
+    education: EducationCreate,
+    db: Session = Depends(get_db),
+    admin: dict = Depends(get_current_admin),
+):
     db_education = Education(**education.model_dump())
     db.add(db_education)
     db.commit()
@@ -44,7 +49,10 @@ def create_education(education: EducationCreate, db: Session = Depends(get_db)):
 
 @router.put("/{education_id}", response_model=EducationResponse)
 def update_education(
-    education_id: str, education: EducationUpdate, db: Session = Depends(get_db)
+    education_id: str,
+    education: EducationUpdate,
+    db: Session = Depends(get_db),
+    admin: dict = Depends(get_current_admin),
 ):
     db_education = db.query(Education).filter(Education.id == education_id).first()
     if not db_education:
@@ -60,7 +68,11 @@ def update_education(
 
 
 @router.delete("/{education_id}")
-def delete_education(education_id: str, db: Session = Depends(get_db)):
+def delete_education(
+    education_id: str,
+    db: Session = Depends(get_db),
+    admin: dict = Depends(get_current_admin),
+):
     db_education = db.query(Education).filter(Education.id == education_id).first()
     if not db_education:
         raise HTTPException(status_code=404, detail="Education not found")

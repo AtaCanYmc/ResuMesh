@@ -48,7 +48,9 @@ async def refresh_projects(
 
 @router.post("/", response_model=ProjectResponse)
 async def create_project(
-    project: ProjectCreate, provider: IProjectRepository = Depends(get_project_repo)
+    project: ProjectCreate,
+    provider: IProjectRepository = Depends(get_project_repo),
+    admin: dict = Depends(get_current_admin),
 ):
     return await provider.create_project(project)
 
@@ -77,6 +79,7 @@ async def update_project(
     project_id: str,
     project: ProjectUpdate,
     provider: IProjectRepository = Depends(get_project_repo),
+    admin: dict = Depends(get_current_admin),
 ):
     updated = await provider.update_project(project_id, project)
     if not updated:
@@ -86,7 +89,9 @@ async def update_project(
 
 @router.delete("/{project_id}")
 async def delete_project(
-    project_id: str, provider: IProjectRepository = Depends(get_project_repo)
+    project_id: str,
+    provider: IProjectRepository = Depends(get_project_repo),
+    admin: dict = Depends(get_current_admin),
 ):
     deleted = await provider.delete_project(project_id)
     if not deleted:

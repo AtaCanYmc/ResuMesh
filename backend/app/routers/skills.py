@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.db.dependencies import get_db
 from app.models.skill import Skill
 from app.schemas.skill import SkillCreate, SkillResponse, SkillUpdate
+from app.services.auth_service import get_current_admin
 
 router = APIRouter(prefix="/skills", tags=["Skills"])
 
@@ -34,7 +35,11 @@ def get_skill(skill_id: str, db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=SkillResponse)
-def create_skill(skill: SkillCreate, db: Session = Depends(get_db)):
+def create_skill(
+    skill: SkillCreate,
+    db: Session = Depends(get_db),
+    admin: dict = Depends(get_current_admin),
+):
     db_skill = Skill(**skill.model_dump())
     db.add(db_skill)
     db.commit()
@@ -43,7 +48,12 @@ def create_skill(skill: SkillCreate, db: Session = Depends(get_db)):
 
 
 @router.put("/{skill_id}", response_model=SkillResponse)
-def update_skill(skill_id: str, skill: SkillUpdate, db: Session = Depends(get_db)):
+def update_skill(
+    skill_id: str,
+    skill: SkillUpdate,
+    db: Session = Depends(get_db),
+    admin: dict = Depends(get_current_admin),
+):
     db_skill = db.query(Skill).filter(Skill.id == skill_id).first()
     if not db_skill:
         raise HTTPException(status_code=404, detail="Skill not found")
@@ -58,7 +68,11 @@ def update_skill(skill_id: str, skill: SkillUpdate, db: Session = Depends(get_db
 
 
 @router.delete("/{skill_id}")
-def delete_skill(skill_id: str, db: Session = Depends(get_db)):
+def delete_skill(
+    skill_id: str,
+    db: Session = Depends(get_db),
+    admin: dict = Depends(get_current_admin),
+):
     db_skill = db.query(Skill).filter(Skill.id == skill_id).first()
     if not db_skill:
         raise HTTPException(status_code=404, detail="Skill not found")
