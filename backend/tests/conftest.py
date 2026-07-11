@@ -2,6 +2,7 @@
 import os
 
 os.environ["JWT_SECRET_KEY"] = "test-secret-key"
+os.environ["ENABLE_ADMIN_WORKSPACE"] = "true"
 
 import asyncio
 import uuid

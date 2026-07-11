@@ -1,3 +1,5 @@
+import os
+
 import jwt
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
@@ -16,6 +18,20 @@ async def get_current_admin(
     db: Session = Depends(get_db),
 ):
     """İsteğin geçerli bir admin token'ına sahip olup olmadığını denetler."""
+    enabled = os.getenv("ENABLE_ADMIN_WORKSPACE", "false").lower() in (
+        "true",
+        "1",
+        "yes",
+    )
+    if not enabled:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=(
+                "Admin panel operations are disabled "
+                "on this environment/instance to save resources."
+            ),
+        )
+
     token = request.cookies.get("access_token") or token_from_header
     if not token:
         raise HTTPException(

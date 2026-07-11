@@ -1,3 +1,5 @@
+import os
+
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from slowapi import Limiter
@@ -22,6 +24,20 @@ async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
 ):
+    enabled = os.getenv("ENABLE_ADMIN_WORKSPACE", "false").lower() in (
+        "true",
+        "1",
+        "yes",
+    )
+    if not enabled:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=(
+                "Admin panel operations are disabled "
+                "on this environment/instance to save resources."
+            ),
+        )
+
     user = db.query(User).filter(User.username == form_data.username).first()
     if not user or not SecurityUtils.verify_password(
         form_data.password, user.password_hash

@@ -30,3 +30,5 @@ services:
         sync: false
       - key: DEVTO_USERNAME
         sync: false
+      - key: ENABLE_ADMIN_WORKSPACE
+        value: "false"
