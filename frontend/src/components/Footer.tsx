@@ -33,8 +33,8 @@ const Footer: React.FC = () => {
               </span>
             </h3>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed max-w-md">
-              <strong className="block mb-2 text-gray-800 dark:text-gray-200">{config.footer.aboutTitle}</strong>
-              {config.footer.aboutText}
+              <strong className="block mb-2 text-gray-800 dark:text-gray-200">{t('footer.aboutTitle')}</strong>
+              {t('footer.aboutText')}
             </p>
           </div>
 

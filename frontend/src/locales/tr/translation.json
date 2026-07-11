@@ -83,6 +83,8 @@
     "connect": "İletişim",
     "allRightsReserved": "Tüm hakları saklıdır.",
     "builtWith": "ile",
-    "by": "tarafından geliştirildi"
+    "by": "tarafından geliştirildi",
+    "aboutTitle": "Neden ResuMesh?",
+    "aboutText": "ResuMesh, statik bir özgeçmiş ile dinamik bir portfolyo arasındaki boşluğu doldurmak için geliştirildi. Açık kaynaklı bir proje olarak, geliştiricilerin deneyimlerini, makalelerini ve projelerini estetik ve yüksek performanslı bir platformda sergilemelerine olanak tanır."
   }
 }

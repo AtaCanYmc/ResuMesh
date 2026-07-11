@@ -37,7 +37,14 @@ export const useContentConfig = (lang: string = 'tr') => {
     queryKey: ['contentConfig', lang],
     queryFn: async () => {
       const response = await axios.get('/content.json');
-      return response.data[lang] || response.data['en'];
+      const shortLang = lang.split('-')[0].toLowerCase();
+      const langData = response.data[shortLang] || response.data[lang] || response.data['en'];
+      return {
+        ...langData,
+        socials: response.data.socials || [],
+        footer: response.data.footer || {},
+        marquee: response.data.marquee || []
+      };
     },
     staleTime: Infinity,
     placeholderData: keepPreviousData,
