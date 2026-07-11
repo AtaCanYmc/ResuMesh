@@ -52,7 +52,7 @@ export default function SkillsMarquee() {
   const { data: skills, isLoading } = useSkills();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  if (isLoading || !skills || skills.length === 0) {
+  if (isLoading || !skills || !Array.isArray(skills) || skills.length === 0) {
     return null;
   }
 
