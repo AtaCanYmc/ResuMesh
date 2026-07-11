@@ -1,0 +1,32 @@
+databases:
+  - name: resumesh-db
+    databaseName: resumesh
+    user: resumesh
+
+services:
+  - type: web
+    name: resumesh-backend
+    runtime: docker
+    dockerContext: ./
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: POSTGRE_URL
+        fromDatabase:
+          name: resumesh-db
+          property: connectionString
+      - key: LLM_PROVIDER
+        value: groq
+      - key: GROQ_API_KEY
+        sync: false
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: GITHUB_USERNAME
+        sync: false
+      - key: MEDIUM_USERNAME
+        sync: false
+      - key: DEVTO_USERNAME
+        sync: false
