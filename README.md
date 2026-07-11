@@ -30,6 +30,7 @@ It features:
 
 - [/backend](./backend): FastAPI architecture, Database providers, Alembic migrations, AI CV Generator, and Pytest suite.
 - [/frontend](./frontend): React + TypeScript client, Vite configuration, Tailwind CSS design system, Storybook component documentation, and Oxlint rules.
+- [/database](./database): Local PostgreSQL Docker Compose configuration and quickstart database guides.
 
 ---
 
