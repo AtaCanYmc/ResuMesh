@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/resumesh_logo.jpg" alt="ResuMesh Logo" width="200" height="200" />
+  <img src=".github/screenshots/resumesh_logo.jpg" alt="ResuMesh Logo" width="200" height="200" />
 </p>
 
 # ⚡ ResuMesh
