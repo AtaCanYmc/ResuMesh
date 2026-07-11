@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { FolderGit } from 'lucide-react';
+import { FolderGit, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import DataTable from '../../components/admin/DataTable';
@@ -46,6 +46,25 @@ export default function AdminProjects() {
     }
   });
 
+  // Refresh Mutation
+  const refreshMutation = useMutation({
+    mutationFn: async () => {
+      const username = import.meta.env.VITE_GITHUB_USERNAME || 'AtaCanYmc';
+      await axios.post(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/projects/refresh`,
+        { username, include_forks: false },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    },
+    onSuccess: () => {
+      toast.success('Projects ingestion started in background.');
+      queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.detail || 'Failed to trigger projects refresh.');
+    }
+  });
+
   const columns = [
     { header: 'Title', accessorKey: 'title', cell: (p: Project) => <span className="font-medium text-gray-900 dark:text-white">{p.title}</span> },
     { header: 'Description', accessorKey: 'description', cell: (p: Project) => <span className="line-clamp-1">{p.description || '-'}</span> },
@@ -76,6 +95,10 @@ export default function AdminProjects() {
         description="Manage your open source and personal projects."
         actionLabel="Add Project"
         onAction={handleAdd}
+        secondaryActionLabel={refreshMutation.isPending ? "Refreshing..." : "Refresh Github"}
+        secondaryActionIcon={<RefreshCw size={18} className={refreshMutation.isPending ? "animate-spin" : ""} />}
+        onSecondaryAction={() => refreshMutation.mutate()}
+        isSecondaryPending={refreshMutation.isPending}
       />
 
       {isLoading ? (

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import DataTable from '../../components/admin/DataTable';
@@ -44,6 +44,34 @@ export default function AdminArticles() {
     }
   });
 
+  // Refresh Mutation
+  const refreshMutation = useMutation({
+    mutationFn: async () => {
+      const devtoUser = import.meta.env.VITE_DEVTO_USERNAME || 'atacanymc';
+      const mediumUser = import.meta.env.VITE_MEDIUM_USERNAME || 'atacanymc';
+
+      await Promise.all([
+        axios.post(
+          `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/articles/refresh`,
+          { username: devtoUser, platform: 'devto' },
+          { headers: { Authorization: `Bearer ${token}` } }
+        ),
+        axios.post(
+          `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/articles/refresh`,
+          { username: mediumUser, platform: 'medium' },
+          { headers: { Authorization: `Bearer ${token}` } }
+        )
+      ]);
+    },
+    onSuccess: () => {
+      toast.success('Articles ingestion started in background.');
+      queryClient.invalidateQueries({ queryKey: ['admin-articles'] });
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.detail || 'Failed to trigger articles refresh.');
+    }
+  });
+
   const columns = [
     { header: 'Title', accessorKey: 'title', cell: (a: Article) => <span className="font-medium text-gray-900 dark:text-white">{a.title}</span> },
     { header: 'Platform', accessorKey: 'platform', cell: (a: Article) => <span className="capitalize">{a.platform}</span> },
@@ -74,6 +102,10 @@ export default function AdminArticles() {
         description="Manage your published articles and blog posts."
         actionLabel="Add Article"
         onAction={handleAdd}
+        secondaryActionLabel={refreshMutation.isPending ? "Refreshing..." : "Refresh Articles"}
+        secondaryActionIcon={<RefreshCw size={18} className={refreshMutation.isPending ? "animate-spin" : ""} />}
+        onSecondaryAction={() => refreshMutation.mutate()}
+        isSecondaryPending={refreshMutation.isPending}
       />
 
       {isLoading ? (
