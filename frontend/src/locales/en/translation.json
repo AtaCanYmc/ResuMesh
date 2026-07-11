@@ -23,6 +23,7 @@
   },
   "hero": {
     "downloadResume": "Download Resume",
+    "downloadingResume": "Downloading PDF...",
     "viewProjects": "View Projects"
   },
   "common": {
