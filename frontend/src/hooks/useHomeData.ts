@@ -42,7 +42,8 @@ export const useContentConfig = (lang: string = 'tr') => {
       return {
         ...langData,
         socials: response.data.socials || [],
-        footer: response.data.footer || {}
+        footer: response.data.footer || {},
+        marquee: response.data.marquee || []
       };
     },
     staleTime: Infinity,
