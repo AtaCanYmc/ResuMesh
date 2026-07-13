@@ -42,3 +42,4 @@ respx==0.21.1
 testcontainers[postgres]==4.14.2
 Faker>=25.0.0
 posthog==3.11.0
+rxresume-python @ git+https://github.com/atacanyaymac/rxresume-python.git

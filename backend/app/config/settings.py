@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     POSTHOG_API_KEY: str = ""
     POSTHOG_HOST: str = "https://us.i.posthog.com"
+    REACTIVE_RESUME_URL: str = "http://localhost:3000"
+    REACTIVE_RESUME_API_KEY: str = ""
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
