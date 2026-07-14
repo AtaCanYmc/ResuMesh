@@ -33,7 +33,7 @@ langchain-community==0.4.2
 Jinja2>=3.1.6
 
 # Reactive Resume
-rxresume-python==0.4.0
+rxresume-python==0.5.0
 
 # Testing
 pytest>=8.0.0
