@@ -152,3 +152,107 @@ async def get_rxresume_ai_providers(
         raise HTTPException(
             status_code=500, detail=f"Failed to fetch AI providers: {str(e)}"
         )
+
+
+@router.get("/statistics")
+async def get_rxresume_statistics(
+    admin=Depends(get_current_admin),
+    log_repo: ISystemLogRepository = Depends(get_system_log_repo),
+):
+    try:
+        service = ReactiveResumeService(log_provider=log_repo)
+        resumes_count = await service.client.statistics.get_resumes_count()
+        users_count = await service.client.statistics.get_users_count()
+        github_stars = await service.client.statistics.get_github_stars()
+
+        # Robust parsing for numbers or dict structures
+        r_val = (
+            resumes_count.get("count", 0)
+            if isinstance(resumes_count, dict)
+            else resumes_count
+        )
+        u_val = (
+            users_count.get("count", 0)
+            if isinstance(users_count, dict)
+            else users_count
+        )
+        g_val = (
+            github_stars.get("stars", github_stars.get("count", 0))
+            if isinstance(github_stars, dict)
+            else github_stars
+        )
+
+        return {
+            "status": "success",
+            "statistics": {
+                "resumesCount": r_val,
+                "usersCount": u_val,
+                "githubStars": g_val,
+            },
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Failed to fetch statistics: {str(e)}"
+        )
+
+
+@router.get("/resume/{resume_id}/versions")
+async def get_rxresume_versions(
+    resume_id: str,
+    admin=Depends(get_current_admin),
+    log_repo: ISystemLogRepository = Depends(get_system_log_repo),
+):
+    try:
+        service = ReactiveResumeService(log_provider=log_repo)
+        versions = await service.client.resumes.get_versions(resume_id)
+        return {"status": "success", "versions": versions}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Failed to fetch resume versions: {str(e)}"
+        )
+
+
+@router.post("/resume/{resume_id}/analyze")
+async def analyze_rxresume(
+    resume_id: str,
+    provider_id: str = None,
+    admin=Depends(get_current_admin),
+    log_repo: ISystemLogRepository = Depends(get_system_log_repo),
+):
+    try:
+        service = ReactiveResumeService(log_provider=log_repo)
+        if not provider_id:
+            providers = await service.client.ai_providers.list()
+            if providers and len(providers) > 0:
+                provider_id = providers[0].get("id")
+            else:
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        "No AI Providers found on Reactive Resume. "
+                        "Please configure an AI Provider first."
+                    ),
+                )
+
+        analysis = await service.client.ai.analyze_resume(resume_id, provider_id)
+        return {"status": "success", "analysis": analysis}
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Resume analysis failed: {str(e)}")
+
+
+@router.get("/resume/{resume_id}/analysis")
+async def get_rxresume_analysis(
+    resume_id: str,
+    admin=Depends(get_current_admin),
+    log_repo: ISystemLogRepository = Depends(get_system_log_repo),
+):
+    try:
+        service = ReactiveResumeService(log_provider=log_repo)
+        analysis = await service.client.resumes.get_latest_analysis(resume_id)
+        return {"status": "success", "analysis": analysis}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Failed to fetch latest resume analysis: {str(e)}"
+        )

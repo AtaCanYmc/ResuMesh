@@ -227,3 +227,102 @@ async def test_get_rxresume_ai_providers(client, monkeypatch, auth_override):
     assert data["status"] == "success"
     assert len(data["providers"]) == 1
     assert data["providers"][0]["label"] == "OpenAI GPT-4"
+
+
+@pytest.mark.asyncio
+async def test_get_rxresume_statistics(client, monkeypatch, auth_override):
+    from app.services.reactive_resume_service import ReactiveResumeService
+
+    async def mock_resumes_count():
+        return {"count": 12}
+
+    async def mock_users_count():
+        return {"count": 5}
+
+    async def mock_github_stars():
+        return {"stars": 999}
+
+    service = ReactiveResumeService()
+    monkeypatch.setattr(
+        service.client.statistics, "get_resumes_count", mock_resumes_count
+    )
+    monkeypatch.setattr(service.client.statistics, "get_users_count", mock_users_count)
+    monkeypatch.setattr(
+        service.client.statistics, "get_github_stars", mock_github_stars
+    )
+    monkeypatch.setattr(
+        "app.routers.rxresume.ReactiveResumeService", lambda *args, **kwargs: service
+    )
+
+    response = await client.get("/api/v1/admin/rxresume/statistics")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert data["statistics"]["resumesCount"] == 12
+    assert data["statistics"]["usersCount"] == 5
+    assert data["statistics"]["githubStars"] == 999
+
+
+@pytest.mark.asyncio
+async def test_get_rxresume_versions(client, monkeypatch, auth_override):
+    from app.services.reactive_resume_service import ReactiveResumeService
+
+    async def mock_versions(resume_id):
+        return [{"id": "v-1", "name": "Initial Revision"}]
+
+    service = ReactiveResumeService()
+    monkeypatch.setattr(service.client.resumes, "get_versions", mock_versions)
+    monkeypatch.setattr(
+        "app.routers.rxresume.ReactiveResumeService", lambda *args, **kwargs: service
+    )
+
+    response = await client.get("/api/v1/admin/rxresume/resume/resume-1/versions")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert len(data["versions"]) == 1
+    assert data["versions"][0]["id"] == "v-1"
+
+
+@pytest.mark.asyncio
+async def test_analyze_rxresume(client, monkeypatch, auth_override):
+    from app.services.reactive_resume_service import ReactiveResumeService
+
+    async def mock_providers():
+        return [{"id": "provider-1"}]
+
+    async def mock_analyze(resume_id, provider_id):
+        return {"score": 85, "feedback": "Great resume"}
+
+    service = ReactiveResumeService()
+    monkeypatch.setattr(service.client.ai_providers, "list", mock_providers)
+    monkeypatch.setattr(service.client.ai, "analyze_resume", mock_analyze)
+    monkeypatch.setattr(
+        "app.routers.rxresume.ReactiveResumeService", lambda *args, **kwargs: service
+    )
+
+    response = await client.post("/api/v1/admin/rxresume/resume/resume-1/analyze")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert data["analysis"]["score"] == 85
+
+
+@pytest.mark.asyncio
+async def test_get_rxresume_analysis(client, monkeypatch, auth_override):
+    from app.services.reactive_resume_service import ReactiveResumeService
+
+    async def mock_analysis(resume_id):
+        return {"grammar": 90, "score": 85, "feedback": "Great resume"}
+
+    service = ReactiveResumeService()
+    monkeypatch.setattr(service.client.resumes, "get_latest_analysis", mock_analysis)
+    monkeypatch.setattr(
+        "app.routers.rxresume.ReactiveResumeService", lambda *args, **kwargs: service
+    )
+
+    response = await client.get("/api/v1/admin/rxresume/resume/resume-1/analysis")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert data["analysis"]["grammar"] == 90
