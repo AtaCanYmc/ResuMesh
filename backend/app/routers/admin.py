@@ -70,7 +70,7 @@ async def generate_cv(
 
         skills = db.query(Skill).all()
 
-        cv_markdown = await cv_service.generate_tailored_cv(
+        cv_data = await cv_service.generate_tailored_cv(
             str(payload.job_url), skills=skills
         )
 
@@ -85,7 +85,7 @@ async def generate_cv(
             },
         )
 
-        return {"status": "success", "cv_markdown": cv_markdown}
+        return {"status": "success", "cv_data": cv_data}
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:

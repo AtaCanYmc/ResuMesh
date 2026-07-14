@@ -79,4 +79,4 @@ async def test_generate_cv(client, monkeypatch, auth_override):
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "success"
-    assert "Mocked CV" in data["cv_markdown"]
+    assert data["cv_data"]["title"] == "Mocked CV"

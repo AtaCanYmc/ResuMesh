@@ -15,8 +15,32 @@ class MockLLMProvider(LLMProvider):
     async def generate_structured_output(
         self, prompt: str, response_model: Type[BaseModel]
     ) -> BaseModel:
+        if response_model.__name__ == "ResumeImportData":
+            from reactive_resume.models.resume import Basics, Section, WorkItem
+
+            return response_model(
+                title="Mocked CV",
+                basics=Basics(
+                    name="Mock Candidate",
+                    headline="Python Developer",
+                    email="mock@example.com",
+                    phone="123-456-7890",
+                    location="Remote",
+                ),
+                sections={
+                    "work": Section(
+                        id="work",
+                        name="Work Experience",
+                        items=[
+                            WorkItem(
+                                id="mock-w1",
+                                company="Mock Corp",
+                                position="Mock Engineer",
+                                summary="Tailored experience in Python and FastAPI.",
+                            )
+                        ],
+                    )
+                },
+            )
         # For mock, we simply return an empty instantiation of the model.
-        # This assumes the model has defaults,
-        # or it might fail if there are required fields.
-        # In a real mock, you'd probably want to return a dummy instance.
         return response_model.model_construct()
