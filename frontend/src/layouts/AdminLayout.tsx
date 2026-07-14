@@ -13,7 +13,8 @@ import {
   Wand2,
   Menu,
   X,
-  GraduationCap
+  GraduationCap,
+  Cloud
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import PageLoader from '../components/PageLoader';
@@ -40,6 +41,7 @@ export default function AdminLayout() {
     { path: '/admin/system-logs', label: 'System Logs', icon: <Terminal size={20} />, end: false },
     { path: '/admin/import-linkedin', label: 'Import LinkedIn', icon: <Upload size={20} />, end: false },
     { path: '/admin/ai-cv', label: 'AI CV Builder', icon: <Wand2 size={20} />, end: false },
+    { path: '/admin/reactive-resume', label: 'Reactive Resume', icon: <Cloud size={20} />, end: false },
   ];
 
   return (

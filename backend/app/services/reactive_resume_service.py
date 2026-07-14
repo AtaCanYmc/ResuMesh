@@ -16,6 +16,18 @@ class ReactiveResumeService:
         )
         self.log_provider = log_provider
 
+    async def list_resumes(self):
+        """List all resumes in Reactive Resume."""
+        try:
+            return await self.client.resumes.list()
+        except Exception as e:
+            await LogService.error(
+                self.log_provider,
+                "REACTIVE_RESUME",
+                f"Error listing resumes: {str(e)}",
+            )
+            raise
+
     async def get_resume(self, resume_id: str):
         """Fetches a specific resume from Reactive Resume."""
         try:

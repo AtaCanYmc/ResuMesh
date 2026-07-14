@@ -80,3 +80,68 @@ async def test_generate_cv(client, monkeypatch, auth_override):
     data = response.json()
     assert data["status"] == "success"
     assert data["cv_data"]["title"] == "Mocked CV"
+
+
+@pytest.mark.asyncio
+async def test_get_rxresume_resumes(client, monkeypatch, auth_override):
+    from datetime import datetime
+
+    from reactive_resume.models.resume import Basics, Resume, ResumeData
+
+    from app.services.reactive_resume_service import ReactiveResumeService
+
+    mock_resume = Resume(
+        id="resume-1",
+        name="Test CV",
+        slug="test-cv",
+        userId="user-123",
+        visibility="public",
+        locked=False,
+        data=ResumeData(basics=Basics(name="Ata")),
+        createdAt=datetime.now(),
+        updatedAt=datetime.now(),
+    )
+
+    async def mock_list_resumes(self):
+        return [mock_resume]
+
+    monkeypatch.setattr(ReactiveResumeService, "list_resumes", mock_list_resumes)
+
+    response = await client.get("/api/v1/admin/rxresume/resumes")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert len(data["resumes"]) == 1
+    assert data["resumes"][0]["name"] == "Test CV"
+
+
+@pytest.mark.asyncio
+async def test_get_rxresume_pdf(client, monkeypatch, auth_override):
+    from app.services.reactive_resume_service import ReactiveResumeService
+
+    async def mock_export_to_pdf(self, resume_id):
+        return f"http://mocked-pdf-url/{resume_id}"
+
+    monkeypatch.setattr(ReactiveResumeService, "export_to_pdf", mock_export_to_pdf)
+
+    response = await client.get("/api/v1/admin/rxresume/resume/resume-1/pdf")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert data["url"] == "http://mocked-pdf-url/resume-1"
+
+
+@pytest.mark.asyncio
+async def test_sync_rxresume(client, monkeypatch, auth_override):
+    from app.services.reactive_resume_service import ReactiveResumeService
+
+    async def mock_sync(self, resume_id, import_data):
+        return None
+
+    monkeypatch.setattr(ReactiveResumeService, "sync_mesh_data_to_resume", mock_sync)
+
+    response = await client.post("/api/v1/admin/rxresume/resume/resume-1/sync")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert "synchronized" in data["message"]
