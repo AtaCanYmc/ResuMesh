@@ -2,6 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel
+from resumesh_scrapers import GitHubScraper
 
 from app.core.exceptions import ProjectNotFoundError
 from app.db.base import IProjectRepository
@@ -9,7 +10,6 @@ from app.db.dependencies import get_project_repo
 from app.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
 from app.services.auth_service import get_current_admin
 from app.services.ingestion_service import IngestionService
-from app.services.scrapers.github_scraper import GitHubScraper
 from app.services.telemetry_service import get_telemetry_data, telemetry
 
 router = APIRouter(prefix="/projects", tags=["projects"])

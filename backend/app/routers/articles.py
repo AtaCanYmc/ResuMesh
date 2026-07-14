@@ -2,14 +2,13 @@ from typing import List
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel
+from resumesh_scrapers import DevToScraper, MediumScraper
 
 from app.db.base import IArticleRepository
 from app.db.dependencies import get_article_repo
 from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate
 from app.services.auth_service import get_current_admin
 from app.services.ingestion_service import IngestionService
-from app.services.scrapers.devto_scraper import DevToScraper
-from app.services.scrapers.medium_scraper import MediumScraper
 from app.services.telemetry_service import get_telemetry_data, telemetry
 
 router = APIRouter(prefix="/articles", tags=["articles"])

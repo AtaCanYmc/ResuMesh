@@ -27,8 +27,7 @@ import json
 import os
 
 from dotenv import load_dotenv
-
-from app.services.scrapers.medium_scraper import MediumScraperService
+from resumesh_scrapers import MediumScraperService
 
 load_dotenv()
 

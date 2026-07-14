@@ -113,7 +113,7 @@ async def refresh_data(
     has_tasks = False
 
     if github_user:
-        from app.services.scrapers.github_scraper import GitHubScraper
+        from resumesh_scrapers import GitHubScraper
 
         scraper = GitHubScraper()
         background_tasks.add_task(
@@ -125,7 +125,7 @@ async def refresh_data(
         has_tasks = True
 
     if medium_user:
-        from app.services.scrapers.medium_scraper import MediumScraper
+        from resumesh_scrapers import MediumScraper
 
         scraper = MediumScraper()
         background_tasks.add_task(
@@ -137,7 +137,7 @@ async def refresh_data(
         has_tasks = True
 
     if devto_user:
-        from app.services.scrapers.devto_scraper import DevToScraper
+        from resumesh_scrapers import DevToScraper
 
         scraper = DevToScraper()
         background_tasks.add_task(

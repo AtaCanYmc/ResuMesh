@@ -1,9 +1,9 @@
 import pytest
 import respx
 from httpx import Response
+from resumesh_scrapers import GitHubScraperService
 
 from app.services.ingestion_service import IngestionService
-from app.services.scrapers.github_scraper import GitHubScraperService
 
 
 @pytest.mark.asyncio
