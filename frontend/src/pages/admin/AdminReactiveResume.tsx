@@ -54,25 +54,25 @@ export default function AdminReactiveResume() {
   });
 
   const downloadPdfMutation = useMutation({
-    mutationFn: async (resumeId: string) => {
+    mutationFn: async ({ resumeId, newWindow }: { resumeId: string; newWindow: Window | null }) => {
       setDownloadingId(resumeId);
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/admin/rxresume/resume/${resumeId}/pdf`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      return res.data.url;
-    },
-    onSuccess: (url: string) => {
-      if (url) {
-        window.open(url, '_blank');
-        toast.success('Opening PDF in a new tab.');
-      } else {
-        toast.error('PDF URL not found.');
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/admin/rxresume/resume/${resumeId}/pdf`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const url = res.data.url;
+        if (url && newWindow) {
+          newWindow.location.href = url;
+        } else if (newWindow) {
+          newWindow.close();
+          toast.error('PDF URL not found.');
+        }
+      } catch (error: any) {
+        if (newWindow) newWindow.close();
+        toast.error(error.response?.data?.detail || 'Failed to retrieve PDF download URL.');
+      } finally {
+        setDownloadingId(null);
       }
-      setDownloadingId(null);
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.detail || 'Failed to retrieve PDF download URL.');
-      setDownloadingId(null);
     }
   });
 
@@ -122,7 +122,10 @@ export default function AdminReactiveResume() {
             {syncingId === r.id ? 'Syncing...' : 'Sync Data'}
           </button>
           <button
-            onClick={() => downloadPdfMutation.mutate(r.id)}
+            onClick={() => {
+              const newWindow = window.open('about:blank', '_blank');
+              downloadPdfMutation.mutate({ resumeId: r.id, newWindow });
+            }}
             disabled={downloadingId !== null}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors disabled:opacity-50 text-gray-700 dark:text-gray-200"
           >
