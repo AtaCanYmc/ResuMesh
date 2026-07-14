@@ -31,8 +31,7 @@ import json
 import os
 
 from dotenv import load_dotenv
-
-from app.services.scrapers.devto_scraper import DevToScraperService
+from resumesh_scrapers import DevToScraperService
 
 load_dotenv()
 
