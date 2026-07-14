@@ -145,3 +145,85 @@ async def test_sync_rxresume(client, monkeypatch, auth_override):
     data = response.json()
     assert data["status"] == "success"
     assert "synchronized" in data["message"]
+
+
+@pytest.mark.asyncio
+async def test_get_rxresume_applications(client, monkeypatch, auth_override):
+    from datetime import datetime
+
+    from reactive_resume.models.application import Application
+
+    from app.services.reactive_resume_service import ReactiveResumeService
+
+    mock_app = Application(
+        id="app-1",
+        userId="user-123",
+        company="Acme Corp",
+        position="Developer",
+        stage="Applied",
+        date=datetime.now(),
+        createdAt=datetime.now(),
+        updatedAt=datetime.now(),
+    )
+
+    # Mock the client.applications.list method
+    async def mock_list():
+        return [mock_app]
+
+    # Initialize a dummy client to patch
+    service = ReactiveResumeService()
+    monkeypatch.setattr(service.client.applications, "list", mock_list)
+
+    # Patch service to return mocked instance
+    monkeypatch.setattr(
+        "app.routers.rxresume.ReactiveResumeService", lambda *args, **kwargs: service
+    )
+
+    response = await client.get("/api/v1/admin/rxresume/applications")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert len(data["applications"]) == 1
+    assert data["applications"][0]["company"] == "Acme Corp"
+
+
+@pytest.mark.asyncio
+async def test_get_rxresume_agent_threads(client, monkeypatch, auth_override):
+    from app.services.reactive_resume_service import ReactiveResumeService
+
+    async def mock_threads():
+        return [{"id": "thread-1", "title": "Chat with AI"}]
+
+    service = ReactiveResumeService()
+    monkeypatch.setattr(service.client.agent, "list_threads", mock_threads)
+    monkeypatch.setattr(
+        "app.routers.rxresume.ReactiveResumeService", lambda *args, **kwargs: service
+    )
+
+    response = await client.get("/api/v1/admin/rxresume/agent/threads")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert len(data["threads"]) == 1
+    assert data["threads"][0]["id"] == "thread-1"
+
+
+@pytest.mark.asyncio
+async def test_get_rxresume_ai_providers(client, monkeypatch, auth_override):
+    from app.services.reactive_resume_service import ReactiveResumeService
+
+    async def mock_providers():
+        return [{"id": "provider-1", "label": "OpenAI GPT-4"}]
+
+    service = ReactiveResumeService()
+    monkeypatch.setattr(service.client.ai_providers, "list", mock_providers)
+    monkeypatch.setattr(
+        "app.routers.rxresume.ReactiveResumeService", lambda *args, **kwargs: service
+    )
+
+    response = await client.get("/api/v1/admin/rxresume/ai-providers")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert len(data["providers"]) == 1
+    assert data["providers"][0]["label"] == "OpenAI GPT-4"

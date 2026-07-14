@@ -34,6 +34,7 @@ from app.routers import (
     educations,
     experiences,
     projects,
+    rxresume,
     search,
     seo,
     skills,
@@ -87,6 +88,7 @@ app.include_router(skills.router, prefix="/api/v1")
 app.include_router(certificates.router, prefix="/api/v1")
 app.include_router(seo.router, prefix="/api/v1/seo")
 app.include_router(cv.router, prefix="/api/v1")
+app.include_router(rxresume.router, prefix="/api/v1")
 
 
 @app.get("/api/v1/")
