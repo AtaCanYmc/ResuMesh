@@ -714,30 +714,52 @@ export default function AdminReactiveResume() {
 
               {/* Suggestions List */}
               {activeAnalysis.suggestions && activeAnalysis.suggestions.length > 0 && (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <h5 className="font-bold text-sm text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
                     <FileBarChart2 size={16} className="text-indigo-500" />
                     Key Suggestions & Improvements
                   </h5>
-                  <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 space-y-1.5">
-                    {activeAnalysis.suggestions.map((suggestion, idx) => (
-                      <li key={idx}>{suggestion}</li>
-                    ))}
+                  <ul className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+                    {activeAnalysis.suggestions.map((suggestion: any, idx) => {
+                      if (typeof suggestion === 'object' && suggestion !== null) {
+                        return (
+                          <li key={idx} className="p-3 bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-850 rounded-xl space-y-1">
+                            {suggestion.title && <p className="font-bold text-gray-900 dark:text-white">{suggestion.title}</p>}
+                            {suggestion.why && <p className="text-xs text-gray-500 dark:text-gray-400"><strong>Why: </strong>{suggestion.why}</p>}
+                            {suggestion.impact && <p className="text-xs text-gray-500 dark:text-gray-400"><strong>Impact: </strong>{suggestion.impact}</p>}
+                            {suggestion.exampleRewrite && (
+                              <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 p-2 rounded-lg mt-2 font-mono text-xs text-gray-700 dark:text-gray-300">
+                                <strong>Example: </strong>{suggestion.exampleRewrite}
+                              </div>
+                            )}
+                          </li>
+                        );
+                      }
+                      return <li key={idx} className="list-disc pl-5">{String(suggestion)}</li>;
+                    })}
                   </ul>
                 </div>
               )}
 
               {/* Tips List */}
               {activeAnalysis.tips && activeAnalysis.tips.length > 0 && (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <h5 className="font-bold text-sm text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
                     <Sparkles size={16} className="text-green-500" />
                     Career & Industry Tips
                   </h5>
-                  <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 space-y-1.5">
-                    {activeAnalysis.tips.map((tip, idx) => (
-                      <li key={idx}>{tip}</li>
-                    ))}
+                  <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                    {activeAnalysis.tips.map((tip: any, idx) => {
+                      if (typeof tip === 'object' && tip !== null) {
+                        return (
+                          <li key={idx} className="p-3 bg-green-50/20 dark:bg-green-950/10 border border-green-100/20 rounded-xl">
+                            {tip.title && <p className="font-bold text-gray-900 dark:text-white">{tip.title}</p>}
+                            {tip.why && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{tip.why}</p>}
+                          </li>
+                        );
+                      }
+                      return <li key={idx} className="list-disc pl-5">{String(tip)}</li>;
+                    })}
                   </ul>
                 </div>
               )}
