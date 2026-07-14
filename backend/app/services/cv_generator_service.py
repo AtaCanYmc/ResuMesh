@@ -8,6 +8,7 @@ from app.db.base import (
 )
 from app.llm.base import LLMProvider
 from app.services.scraper_service import ScraperService
+from app.services.template_service import TemplateService
 
 
 class CVGeneratorService:
@@ -25,7 +26,7 @@ class CVGeneratorService:
         self.cert_repo = cert_repo
         self.llm = llm_provider
 
-    async def generate_tailored_cv(self, job_url: str, skills: list = None) -> str:
+    async def generate_tailored_cv(self, job_url: str, skills: list = None):
         # Fetch external scraping and internal database records concurrently
         job_desc_task = ScraperService.scrape_job_description(job_url)
         projects_task = self.project_repo.get_projects(limit=10)
@@ -86,9 +87,17 @@ class CVGeneratorService:
         safe_job_description = job_description[:MAX_INPUT_LENGTH]
         safe_user_context = user_context[:MAX_INPUT_LENGTH]
 
-        # 3. Call LLM
-        cv_markdown = await self.llm.generate_cv(
-            job_description=safe_job_description, user_context=safe_user_context
+        # 3. Call LLM for Structured Output
+        from reactive_resume.models import ResumeImportData
+
+        prompt = TemplateService.render_template(
+            "prompts/cv_generator.jinja2",
+            job_description=safe_job_description,
+            user_context=safe_user_context,
         )
 
-        return cv_markdown
+        tailored_cv_data = await self.llm.generate_structured_output(
+            prompt=prompt, response_model=ResumeImportData
+        )
+
+        return tailored_cv_data

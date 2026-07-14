@@ -32,6 +32,8 @@ const AdminCertificates = React.lazy(() => import('./pages/admin/AdminCertificat
 const AdminSystemLogs = React.lazy(() => import('./pages/admin/AdminSystemLogs'));
 const AdminLinkedInImport = React.lazy(() => import('./pages/admin/AdminLinkedInImport'));
 const AdminAiCv = React.lazy(() => import('./pages/admin/AdminAiCv'));
+const AdminReactiveResume = React.lazy(() => import('./pages/admin/AdminReactiveResume'));
+
 
 // Create a client
 const queryClient = new QueryClient({
@@ -87,6 +89,7 @@ const router = createBrowserRouter([
       { path: 'system-logs', element: <AdminSystemLogs /> },
       { path: 'import-linkedin', element: <AdminLinkedInImport /> },
       { path: 'ai-cv', element: <AdminAiCv /> },
+      { path: 'reactive-resume', element: <AdminReactiveResume /> },
     ],
   },
 ]);
