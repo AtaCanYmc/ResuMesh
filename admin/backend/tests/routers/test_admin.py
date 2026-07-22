@@ -2,11 +2,11 @@ import pytest
 
 from app.main import app
 from app.schemas.system_log import SystemLogCreate
-from app.services.auth_service import get_current_admin
+from app.services.auth_service import SupabaseUser, get_current_admin
 
 
 async def override_get_current_admin():
-    return {"username": "admin", "role": "admin"}
+    return SupabaseUser(id="test-admin-uuid", email="admin@example.com", role="admin")
 
 
 @pytest.fixture

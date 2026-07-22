@@ -9,12 +9,12 @@ from app.schemas.article import ArticleCreate
 from app.schemas.certificate import CertificateCreate
 from app.schemas.experience import ExperienceCreate
 from app.schemas.project import ProjectCreate
-from app.services.auth_service import get_current_admin
+from app.services.auth_service import SupabaseUser, get_current_admin
 
 
 async def override_get_current_admin():
     """Mock admin user"""
-    return {"username": "admin", "role": "admin"}
+    return SupabaseUser(id="test-admin-uuid", email="admin@example.com", role="admin")
 
 
 @pytest.fixture

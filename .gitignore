@@ -21,6 +21,7 @@ backend/firebase-credentials.json
 admin/backend/firebase-credentials.json
 backend/alembic/versions/*
 admin/backend/alembic/versions/*
+supabase/*
 
 
 # Node / Frontend
