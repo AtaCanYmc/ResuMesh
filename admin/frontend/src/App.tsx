@@ -75,6 +75,7 @@ const router = createBrowserRouter([
 
 
 import { Analytics } from '@vercel/analytics/react';
+import ServerWakeupGate from './components/ServerWakeupGate';
 
 function App() {
   return (
@@ -93,7 +94,9 @@ function App() {
             }}
           />
           {/* Suspense is moved to MainLayout so layout stays intact during page loads */}
-          <RouterProvider router={router} />
+          <ServerWakeupGate>
+            <RouterProvider router={router} />
+          </ServerWakeupGate>
           <Analytics />
         </AuthProvider>
       </QueryClientProvider>
