@@ -1,20 +1,17 @@
-databases:
-  - name: resumesh-db
-    databaseName: resumesh
-    user: resumesh
-
 services:
   - type: web
-    name: resumesh-backend
+    name: resumesh-admin-backend
     runtime: docker
     dockerContext: ./
     dockerfilePath: ./Dockerfile
     healthCheckPath: /api/v1/health
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: resumesh-db
-          property: connectionString
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
       - key: LLM_PROVIDER
         value: groq
       - key: GROQ_API_KEY
@@ -27,11 +24,19 @@ services:
         sync: false
       - key: GITHUB_USERNAME
         sync: false
+      - key: GITHUB_PAT
+        sync: false
       - key: MEDIUM_USERNAME
         sync: false
       - key: DEVTO_USERNAME
         sync: false
       - key: ENABLE_ADMIN_WORKSPACE
-        value: "false"
+        value: "true"
       - key: ENABLE_CRON_JOBS
-        value: "false"
+        value: "true"
+      - key: REACTIVE_RESUME_URL
+        sync: false
+      - key: REACTIVE_RESUME_API_KEY
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
