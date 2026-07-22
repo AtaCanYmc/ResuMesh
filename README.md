@@ -25,29 +25,30 @@ It features:
 - ✨ **AI CV Tailoring**: Groq/OpenAI integration for real-time, tailored PDF resume generation based on specific job descriptions.
 - 🔄 **Continuous Sync**: Automatically aggregates your digital footprint into a single unified database.
 
+---
+
 ## 📂 Project Structure & Component READMEs
 
-- [/backend](./backend): FastAPI architecture, Database providers, Alembic migrations, AI CV Generator, and Pytest suite.
-- [/frontend](./frontend): React + TypeScript client, Vite configuration, Tailwind CSS design system, Storybook component documentation, and Oxlint rules.
-- [/database](./database): Local PostgreSQL Docker Compose configuration and quickstart database guides.
+- [/backend](./backend): Public read-only portfolio FastAPI service (Port 8000).
+- [/frontend](./frontend): Public visitor-facing React + TypeScript portfolio UI (Port 80).
+- [/admin](./admin): Dedicated administration panel folder containing:
+  - [/admin/backend](./admin/backend): Private administrative FastAPI service (Port 8001).
+  - [/admin/frontend](./admin/frontend): Private React administration client (Port 8081).
 
 ---
 
 ## 🏗️ System Architecture
 
+ResuMesh isolates administrative modifications and AI CV generation operations from visitor-facing portfolio pages to ensure optimal security and resource limits.
+
 ```mermaid
 graph TD
-    subgraph Frontend [Vite + React Client]
-        UI[User Interface]
-        Admin[Admin Dashboard]
-        Search[Global Search Bar]
+    subgraph Visitor View [Public Portal]
+        UI[frontend on Port 80] -->|Public API Calls| API[backend on Port 8000]
     end
 
-    subgraph API [FastAPI Backend]
-        Auth[JWT Auth]
-        Ingest[Ingestion Service]
-        AI[CV Generator Service]
-        Logs[System Logs]
+    subgraph Admin View [Admin Portal]
+        AdminUI[admin/frontend on Port 8081] -->|Admin API Calls| AdminAPI[admin/backend on Port 8001]
     end
 
     subgraph LLM [AI Providers]
@@ -64,12 +65,14 @@ graph TD
     end
 
     subgraph DB [Database Layer]
-        PG[(PostgreSQL / Supabase)]
+        PG[(Remote Supabase / Postgres)]
     end
 
-    UI --> API
-    Admin --> Auth
-    Search --> PG
+    API --> PG
+    AdminAPI --> Auth[JWT Auth]
+    AdminAPI --> Ingest[Ingestion Service]
+    AdminAPI --> AI[CV Generator Service]
+    AdminAPI --> Logs[System Logs]
 
     Ingest --> GH
     Ingest --> Med
@@ -79,7 +82,6 @@ graph TD
     AI --> LLM
     AI --> PG
 
-    API --> Logs
     Logs --> PG
 ```
 
@@ -95,20 +97,20 @@ Architecture decisions in ResuMesh are documented and justified to maintain a cl
 
 ## 🔄 Product Flow: How it Works
 
-1. **Continuous Aggregation**: You enter your developer handles (GitHub, Medium, Dev.to). The backend scrapers ingest all your projects, posts, and articles in the background.
+1. **Continuous Aggregation**: You enter your developer handles (GitHub, Medium, Dev.to). The admin backend scrapers ingest all your projects, posts, and articles in the background.
 2. **Context-Driven Search**: Recruiters search your profile through the lightning-fast, fuzzy-matching search bar.
-3. **AI CV Generation**: You provide a target Job Description URL. The system gathers all your DB records, constructs a context-rich prompt, feeds it to the LLM (Groq/OpenAI), and renders a tailored Markdown/PDF CV.
+3. **AI CV Generation**: You provide a target Job Description URL. The admin system gathers all your DB records, constructs a context-rich prompt, feeds it to the LLM (Groq/OpenAI), and renders a tailored Markdown/PDF CV.
 
 ---
 
 ## ⚙️ Quick Start with Mock Mode (API Key Free)
 
-You can experience and test ResuMesh locally **without any OpenAI/Groq API keys** or active databases:
-1. In `backend/.env` (or `docker-compose.yml`), set the LLM provider to mock:
+You can experience and test ResuMesh locally **without any OpenAI/Groq API keys**:
+1. In `admin/backend/.env` (or `docker-compose.yml`), set the LLM provider to mock:
    ```env
    LLM_PROVIDER=mock
    ```
-2. Spin up the containers (fallback databases will run automatically). The application will generate mock CVs instantly without consuming any API quota!
+2. Spin up the containers. The application will generate mock CVs instantly without consuming any API quota!
 
 ---
 
@@ -126,26 +128,28 @@ You can experience and test ResuMesh locally **without any OpenAI/Groq API keys*
    Copy the example `.env` files and fill in your credentials.
    ```bash
    cp frontend/.env.example frontend/.env
-   # Add your API keys to the backend environment variables or docker-compose.yml
+   cp admin/frontend/.env.example admin/frontend/.env
+   cp backend/.env.example backend/.env
+   cp admin/backend/.env.example admin/backend/.env
    ```
 
 3. **Run with Docker Compose:**
-   **Run with PostgreSQL database:**
    ```bash
-   docker compose --profile postgres up --build -d
+   docker compose up --build -d
    ```
 
    Once running:
-   - **Frontend UI**: `http://localhost:3000`
-   - **Backend API**: `http://localhost:8000`
+   - **Visitor UI**: `http://localhost`
+   - **Admin UI**: `http://localhost:8081`
+   - **Public Backend API**: `http://localhost:8000`
+   - **Admin Backend API**: `http://localhost:8001`
    - **Interactive API Documentation (Swagger)**: `http://localhost:8000/docs`
-   - **Alternative API Documentation (ReDoc)**: `http://localhost:8000/redoc`
 
 ---
 
 ## 🌍 Cloud Deployment
 
-Looking to deploy ResuMesh for free using Vercel (Frontend), Render (Backend), and remote PostgreSQL (Supabase)?
+Looking to deploy ResuMesh using Vercel (Frontend), Render (Backend), and remote PostgreSQL (Supabase)?
 
 Read our comprehensive guide here: **[DEPLOYMENT.md](docs/DEPLOYMENT.md)**
 
@@ -153,10 +157,10 @@ Read our comprehensive guide here: **[DEPLOYMENT.md](docs/DEPLOYMENT.md)**
 
 ## 🗄️ Database Migrations (Alembic)
 
-This project uses [Alembic](https://alembic.sqlalchemy.org/) to handle PostgreSQL database migrations (Infrastructure as Code).
+This project uses [Alembic](https://alembic.sqlalchemy.org/) to handle Supabase/PostgreSQL database migrations (Infrastructure as Code).
 
 ### Setting up Supabase / Remote DB
-1. In `backend/.env`, set your pooler connection string (e.g., Supabase Port 6543):
+1. In `backend/.env` and `admin/backend/.env`, set your connection string:
    ```env
    DATABASE_URL=postgresql://[user]:[password]@[host]:6543/postgres
    ```
@@ -181,8 +185,7 @@ docker compose run --rm backend alembic upgrade head
 Before submitting a pull request, make sure to install the **pre-commit** hooks to ensure consistent code styling.
 *(Not: Bu proje hem Python hem de Node.js standartlarını korumak için pre-commit kullanır. Sadece frontend tarafına katkı yapacak olsanız bile sisteminizde Python kurulu olduğundan emin olun.)*
 ```bash
-pip install pre-commit
-pre-commit install
+dev-commit install
 ```
 This will automatically check linting rules on every commit.
 

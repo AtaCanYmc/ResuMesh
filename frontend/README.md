@@ -1,9 +1,12 @@
-# 🖥️ ResuMesh - Client Dashboard
+# 🖥️ ResuMesh - Visitor Portfolio UI
 
-This is the frontend user interface for ResuMesh, designed as a modern dark-themed single-page application (SPA) using **React**, **Vite**, and **TypeScript**.
+This is the public visitor-facing frontend interface for ResuMesh. It is designed as a modern dark-themed single-page application (SPA) using **React**, **Vite**, and **TypeScript** for recruiters to view skills, projects, and articles.
+
+> [!NOTE]
+> All administrative control panel dashboards and forms (login, CV generation, scrapers, LinkedIn imports) have been separated and moved to the administrative frontend located under [admin/frontend](../admin/frontend).
 
 ## 🛠️ Tech Stack & Tooling
-- **Build Tool:** Vite (Ultra-fast Hot Module Replacement)
+- **Build Tool:** Vite
 - **Language:** TypeScript (`StrictMode` enforced)
 - **Styling:** Tailwind CSS + Lucide React Icons
 - **Linter:** Oxlint (High-performance JS/TS linter)
@@ -11,8 +14,7 @@ This is the frontend user interface for ResuMesh, designed as a modern dark-them
 ## 🚀 Local Development Setup
 
 ### Prerequisites
-- Node.js 18+
-- npm or yarn
+- Node.js 20+
 
 ### Installation Steps
 1. Navigate to the frontend directory:
@@ -27,64 +29,30 @@ This is the frontend user interface for ResuMesh, designed as a modern dark-them
 
 3. Create your local configuration by copying `.env.example`:
    ```bash
-   cp .env.example .env.local
+   cp .env.example .env
    ```
-   *(Kopyaladıktan sonra `VITE_API_URL=http://localhost:8000/api/v1` değerini kontrol ederek backend URL'nizle eşleştiğinden emin olun.)*
 
 4. Start the Vite development server:
    ```bash
-   npm run dev
+   npm run dev -- --port 3000
    ```
 
-Open `http://localhost:5173` in your browser.
+Open `http://localhost:3000` in your browser.
 
-## 📂 Codebase Architecture
-
-* `/src/components`: Atomic and reusable UI primitives (e.g., `SearchBar.tsx`).
-* `/src/pages`: Higher-level views and route components (e.g., `AdminDashboard.tsx`).
-* `/src/assets`: Static visuals and global design vectors.
+---
 
 ## 📚 Component Documentation & Testing
 
-We believe in Component-Driven Development and high code coverage for crucial user flows.
-
-### 🎨 Isolated UI Primitive Catalog (Storybook)
-Storybook is integrated to build, inspect, and document UI components in isolation, independent of backend status:
+Storybook is integrated to document and develop UI components in isolation:
 - **Run Storybook Server**:
   ```bash
   npm run storybook
   ```
   *Opens the interactive sandbox catalog at `http://localhost:6006`.*
-- **Build Storybook Build Bundle**:
-  ```bash
-  npm run build-storybook
-  ```
 
-### 🧪 Frontend Test Execution (Vitest & RTL)
-We use **Vitest** + **React Testing Library** for fast, reliable unit/integration checks and Storybook interaction testing:
+### 🧪 Frontend Test Execution (Vitest)
+We use **Vitest** + **React Testing Library** for unit checks:
 - **Run all tests (headless)**:
   ```bash
   npm run test
   ```
-- **Run tests in interactive watch mode**:
-  ```bash
-  npm run test:watch
-  ```
-
-## 🧹 Linting and Formatting
-
-To maintain optimal code quality and lightning-fast static analysis, we use **Oxlint**. You can audit the codebase by running:
-
-```bash
-npx oxlint
-```
-
-## 🤝 Contributing & Code Quality
-Before submitting a pull request, make sure to install the **pre-commit** hooks to ensure consistent code styling:
-```bash
-pip install pre-commit
-pre-commit install
-```
-This will automatically check linting rules on every commit.
-
-*(Eğer sadece Node tabanlı araçlarla çalışmak isterseniz, ileride `husky` ve `lint-staged` entegre edilerek `npm run lint` süreçleri otomatize edilebilir. Şimdilik root dizinindeki pre-commit zorunludur.)*
