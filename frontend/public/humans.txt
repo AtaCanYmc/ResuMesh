@@ -1,0 +1,16 @@
+/* TEAM */
+Founder & Developer: Ata Can Yaymacı
+GitHub: https://github.com/AtaCanYmc
+Location: İzmir, Turkey
+
+/* THANKS */
+Google DeepMind Team
+FastAPI and Uvicorn developers
+Vite & React Community
+Supabase Team
+
+/* SITE */
+Last update: 2026-07-22
+Technologies: HTML5, TypeScript, React 18, Tailwind CSS, Vite, FastAPI, PostgreSQL, Supabase, Docker
+License: Apache License 2.0
+Source Code: https://github.com/AtaCanYmc/ResuMesh

@@ -1,4 +1,9 @@
 {
+  "wakeup": {
+    "title": "Waking up the server",
+    "description": "ResuMesh automatically spins up cloud resources. This process can take around 30-50 seconds if the server is starting for the first time.",
+    "status": "Waiting for session..."
+  },
   "nav": {
     "about": "About",
     "experiences": "Experiences",
