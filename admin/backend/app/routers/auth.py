@@ -1,5 +1,6 @@
 import os
 
+import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from slowapi import Limiter
@@ -38,19 +39,62 @@ async def login_for_access_token(
             ),
         )
 
-    user = db.query(User).filter(User.username == form_data.username).first()
-    if not user or not SecurityUtils.verify_password(
-        form_data.password, user.password_hash
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+    # In test mode or fallback
+    # when Supabase URL/Key is not set, allow checking the database
+    supabase_url = os.getenv("SUPABASE_URL")
+    supabase_key = os.getenv("SUPABASE_KEY")
 
-    access_token = SecurityUtils.create_access_token(
-        data={"sub": user.username, "role": user.role}
-    )
+    if not supabase_url or not supabase_key:
+        user = db.query(User).filter(User.username == form_data.username).first()
+        if not user or not SecurityUtils.verify_password(
+            form_data.password, user.password_hash
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        access_token = SecurityUtils.create_access_token(
+            data={"sub": user.username, "role": user.role}
+        )
+    else:
+        # Proxy token request directly to Supabase Auth
+        async with httpx.AsyncClient() as client:
+            try:
+                res = await client.post(
+                    f"{supabase_url}/auth/v1/token?grant_type=password",
+                    json={"email": form_data.username, "password": form_data.password},
+                    headers={
+                        "apikey": supabase_key,
+                        "Content-Type": "application/json",
+                    },
+                )
+                if res.status_code != 200:
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Incorrect username or password",
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
+                data = res.json()
+                access_token = data.get("access_token")
+            except Exception as e:
+                # If Supabase connection fails
+                # but username matches local DB / test settings
+                user = (
+                    db.query(User).filter(User.username == form_data.username).first()
+                )
+                if user and SecurityUtils.verify_password(
+                    form_data.password, user.password_hash
+                ):
+                    access_token = SecurityUtils.create_access_token(
+                        data={"sub": user.username, "role": user.role}
+                    )
+                else:
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail=f"Supabase login failed: {str(e)}",
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
 
     # Set HTTPOnly secure cookie
     response.set_cookie(

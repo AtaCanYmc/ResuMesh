@@ -7,10 +7,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import toast from 'react-hot-toast';
+import { supabase } from '../services/supabase';
 
 // Zod Schema for validation
 const loginSchema = z.object({
-  username: z.string().min(1, 'Kullanıcı adı boş bırakılamaz.'),
+  username: z.string().min(1, 'Kullanıcı adı veya E-posta boş bırakılamaz.'),
   password: z.string().min(6, 'Şifre en az 6 karakter olmalıdır.'),
 });
 
@@ -32,30 +33,59 @@ const AdminLogin: React.FC = () => {
   const onSubmit = async (data: LoginFormValues) => {
     setError(null);
 
-    try {
-      const apiUrl = import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001';
-      const formData = new URLSearchParams();
-      formData.append('username', data.username);
-      formData.append('password', data.password);
+    // Fallback: if Supabase config is missing, fall back to backend login (useful for tests)
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+    if (!supabaseUrl) {
+      try {
+        const apiUrl = import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001';
+        const formData = new URLSearchParams();
+        formData.append('username', data.username);
+        formData.append('password', data.password);
 
-      const response = await axios.post(`${apiUrl}/api/v1/auth/login`, formData, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        const response = await axios.post(`${apiUrl}/api/v1/auth/login`, formData, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        });
+
+        login(response.data.access_token);
+        toast.success('Başarıyla giriş yapıldı!');
+        navigate('/admin');
+        return;
+      } catch (err: any) {
+        console.error(err);
+        if (err.response?.status === 401) {
+          setError('Kullanıcı adı veya şifre hatalı.');
+          toast.error('Kullanıcı adı veya şifre hatalı.');
+        } else {
+          setError('Giriş yapılırken bir hata oluştu.');
+          toast.error('Giriş yapılırken bir hata oluştu.');
+        }
+        return;
+      }
+    }
+
+    try {
+      const { data: authData, error: authErr } = await supabase.auth.signInWithPassword({
+        email: data.username,
+        password: data.password,
       });
 
-      login(response.data.access_token);
-      toast.success('Başarıyla giriş yapıldı!');
-      navigate('/admin');
+      if (authErr) {
+        throw authErr;
+      }
+
+      if (authData.session) {
+        login(authData.session.access_token);
+        toast.success('Başarıyla giriş yapıldı!');
+        navigate('/admin');
+      } else {
+        throw new Error('Giriş başarısız.');
+      }
     } catch (err: any) {
       console.error(err);
-      if (err.response?.status === 401) {
-        setError('Kullanıcı adı veya şifre hatalı.');
-        toast.error('Kullanıcı adı veya şifre hatalı.');
-      } else {
-        setError('Giriş yapılırken bir hata oluştu.');
-        toast.error('Giriş yapılırken bir hata oluştu.');
-      }
+      setError(err.message || 'Kullanıcı adı veya şifre hatalı.');
+      toast.error(err.message || 'Kullanıcı adı veya şifre hatalı.');
     }
   };
 
@@ -80,7 +110,7 @@ const AdminLogin: React.FC = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-400 mb-1">
-              Kullanıcı Adı
+              Kullanıcı Adı veya E-posta
             </label>
             <input
               type="text"
@@ -88,7 +118,7 @@ const AdminLogin: React.FC = () => {
               className={`w-full px-4 py-2 bg-white dark:bg-neutral-900 border ${
                 errors.username ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:border-blue-500 focus:ring-blue-500'
               } rounded-lg focus:outline-none focus:ring-1 text-neutral-900 dark:text-neutral-100 transition-colors`}
-              placeholder="admin"
+              placeholder="admin@example.com"
             />
             {errors.username && (
               <p className="text-red-500 text-xs mt-1 font-medium">{errors.username.message}</p>
