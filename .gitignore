@@ -7,6 +7,8 @@
 # Python / Backend
 backend/.venv/
 backend/venv/
+admin/backend/.venv/
+admin/backend/venv/
 __pycache__/
 *.py[cod]
 *$py.class
@@ -14,8 +16,12 @@ __pycache__/
 .coverage
 htmlcov/
 backend/.env
+admin/backend/.env
 backend/firebase-credentials.json
+admin/backend/firebase-credentials.json
 backend/alembic/versions/*
+admin/backend/alembic/versions/*
+
 
 # Node / Frontend
 node_modules/
@@ -25,8 +31,13 @@ build/
 .eslintcache
 frontend/.env
 frontend/.env.local
+admin/frontend/.env
+admin/frontend/.env.local
 frontend/public/images/*
 frontend/public/resumes/*
+admin/frontend/public/images/*
+admin/frontend/public/resumes/*
+
 
 # OS Files
 .DS_Store

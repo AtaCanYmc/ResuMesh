@@ -15,7 +15,7 @@ jobs:
         image: postgres:15-alpine
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: resumesh_dev_password_987
           POSTGRES_DB: resumesh
         ports:
           - 5432:5432
@@ -61,7 +61,70 @@ jobs:
     - name: Run Tests with Pytest
       working-directory: ./backend
       env:
-        POSTGRE_URL: postgresql://postgres:postgres@localhost:5432/resumesh
+        POSTGRE_URL: postgresql://postgres:resumesh_dev_password_987@localhost:5432/resumesh
+        MONGO_URL: mongodb://localhost:27017
+        MONGO_DB_NAME: resumesh
+        LLM_PROVIDER: mock
+        JWT_SECRET_KEY: test-secret
+        ENABLE_ADMIN_WORKSPACE: "true"
+      run: |
+        PYTHONPATH=. pytest tests -v
+
+  admin-backend-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: resumesh_dev_password_987
+          POSTGRES_DB: resumesh
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      mongo:
+        image: mongo:6-jammy
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "echo 'db.runCommand(\"ping\").ok' | mongosh localhost:27017/test --quiet"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v6
+      with:
+        python-version: "3.11"
+        cache: 'pip'
+
+    - name: Install Dependencies
+      working-directory: ./admin/backend
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Lint with Flake8
+      working-directory: ./admin/backend
+      run: |
+        pip install flake8 black isort
+        black --check app
+        isort --check-only app
+        flake8 app
+
+    - name: Run Tests with Pytest
+      working-directory: ./admin/backend
+      env:
+        POSTGRE_URL: postgresql://postgres:resumesh_dev_password_987@localhost:5432/resumesh
         MONGO_URL: mongodb://localhost:27017
         MONGO_DB_NAME: resumesh
         LLM_PROVIDER: mock
@@ -100,11 +163,42 @@ jobs:
       working-directory: ./frontend
       run: npm run build
 
+  admin-frontend-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Use Node.js 20
+      uses: actions/setup-node@v6
+      with:
+        node-version: 20
+        cache: 'npm'
+        cache-dependency-path: admin/frontend/package-lock.json
+
+    - name: Install dependencies
+      working-directory: ./admin/frontend
+      run: npm ci
+
+    - name: Lint
+      working-directory: ./admin/frontend
+      run: npm run lint
+
+    - name: Run Vitest Tests
+      working-directory: ./admin/frontend
+      run: |
+        npx playwright install chromium
+        npm run test
+
+    - name: Build
+      working-directory: ./admin/frontend
+      run: npm run build
+
   # ─── Auto-Deploy to Render ───
   deploy:
-    needs: [backend-tests, frontend-build]
+    needs: [backend-tests, admin-backend-tests, frontend-build, admin-frontend-build]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
 
     steps:
     - name: Trigger Render Deploy Hook

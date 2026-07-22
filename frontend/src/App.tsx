@@ -3,8 +3,6 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import MainLayout from './components/MainLayout';
-import ProtectedRoute from './components/ProtectedRoute';
-import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 import { HelmetProvider } from 'react-helmet-async';
@@ -18,21 +16,6 @@ const Skills = React.lazy(() => import('./pages/Skills'));
 const Projects = React.lazy(() => import('./pages/Projects'));
 const Articles = React.lazy(() => import('./pages/Articles'));
 const Certificates = React.lazy(() => import('./pages/Certificates'));
-const AdminLogin = React.lazy(() => import('./pages/AdminLogin'));
-
-// Admin Workspace Pages
-const AdminLayout = React.lazy(() => import('./layouts/AdminLayout'));
-const AdminOverview = React.lazy(() => import('./pages/admin/AdminOverview'));
-const AdminProjects = React.lazy(() => import('./pages/admin/AdminProjects'));
-const AdminArticles = React.lazy(() => import('./pages/admin/AdminArticles'));
-const AdminExperiences = React.lazy(() => import('./pages/admin/AdminExperiences'));
-const AdminEducations = React.lazy(() => import('./pages/admin/AdminEducations'));
-const AdminSkills = React.lazy(() => import('./pages/admin/AdminSkills'));
-const AdminCertificates = React.lazy(() => import('./pages/admin/AdminCertificates'));
-const AdminSystemLogs = React.lazy(() => import('./pages/admin/AdminSystemLogs'));
-const AdminLinkedInImport = React.lazy(() => import('./pages/admin/AdminLinkedInImport'));
-const AdminAiCv = React.lazy(() => import('./pages/admin/AdminAiCv'));
-const AdminReactiveResume = React.lazy(() => import('./pages/admin/AdminReactiveResume'));
 
 
 // Create a client
@@ -65,33 +48,6 @@ const router = createBrowserRouter([
       { path: '/certificates', element: <Certificates /> },
     ],
   },
-  {
-    path: '/admin/login',
-    element: <AdminLogin />,
-    errorElement: <ErrorBoundary />,
-  },
-  {
-    path: '/admin',
-    element: (
-      <ProtectedRoute>
-        <AdminLayout />
-      </ProtectedRoute>
-    ),
-    errorElement: <ErrorBoundary />,
-    children: [
-      { index: true, element: <AdminOverview /> },
-      { path: 'projects', element: <AdminProjects /> },
-      { path: 'articles', element: <AdminArticles /> },
-      { path: 'experiences', element: <AdminExperiences /> },
-      { path: 'educations', element: <AdminEducations /> },
-      { path: 'skills', element: <AdminSkills /> },
-      { path: 'certificates', element: <AdminCertificates /> },
-      { path: 'system-logs', element: <AdminSystemLogs /> },
-      { path: 'import-linkedin', element: <AdminLinkedInImport /> },
-      { path: 'ai-cv', element: <AdminAiCv /> },
-      { path: 'reactive-resume', element: <AdminReactiveResume /> },
-    ],
-  },
 ]);
 
 import { Analytics } from '@vercel/analytics/react';
@@ -101,7 +57,6 @@ function App() {
     <HelmetProvider>
       <ThemeProvider>
         <QueryClientProvider client={queryClient}>
-        <AuthProvider>
           <Toaster
             position="top-right"
             toastOptions={{
@@ -115,7 +70,6 @@ function App() {
           {/* Suspense is moved to MainLayout so layout stays intact during page loads */}
           <RouterProvider router={router} />
           <Analytics />
-        </AuthProvider>
       </QueryClientProvider>
       </ThemeProvider>
     </HelmetProvider>
