@@ -28,3 +28,13 @@ jobs:
       run: |
         cd backend
         PYTHONPATH=. pytest -v
+
+    - name: Install admin dependencies
+      run: |
+        cd admin/backend
+        pip install -r requirements.txt
+
+    - name: Run Admin Tests with Pytest
+      run: |
+        cd admin/backend
+        PYTHONPATH=. pytest -v

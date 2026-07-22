@@ -31,8 +31,13 @@ build/
 .eslintcache
 frontend/.env
 frontend/.env.local
+admin/frontend/.env
+admin/frontend/.env.local
 frontend/public/images/*
 frontend/public/resumes/*
+admin/frontend/public/images/*
+admin/frontend/public/resumes/*
+
 
 # OS Files
 .DS_Store
