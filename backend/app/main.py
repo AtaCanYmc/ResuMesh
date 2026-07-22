@@ -36,27 +36,14 @@ from app.routers import (
     seo,
     skills,
 )
-from app.schedulers.sync_scheduler import scheduler, start_scheduler
 
 limiter = Limiter(key_func=get_remote_address)
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    start_scheduler()
-    yield
-    try:
-        if scheduler.running:
-            scheduler.shutdown(wait=False)
-    except Exception as e:
-        logger.error(f"Error occurred during scheduler shutdown: {e}")
 
 
 app = FastAPI(
     title="ResuMesh API",
     description="Open Source Intelligent Portfolio and CV Management System",
     version="1.0.0",
-    lifespan=lifespan,
     docs_url="/api/v1/docs",
     redoc_url="/api/v1/redoc",
     openapi_url="/api/v1/openapi.json",
