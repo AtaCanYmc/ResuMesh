@@ -25,8 +25,7 @@ import json
 import os
 
 from dotenv import load_dotenv
-
-from app.services.scrapers.github_scraper import GitHubScraperService
+from resumesh_scrapers import GitHubScraperService
 
 load_dotenv()
 
