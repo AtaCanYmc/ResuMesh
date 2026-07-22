@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { SystemLog } from '../types';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001';
 
 export const fetchSystemLogs = async (
   token: string,

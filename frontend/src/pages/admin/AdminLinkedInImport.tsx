@@ -19,7 +19,7 @@ export default function AdminLinkedInImport() {
     formData.append('file', selectedFile);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/admin/import/linkedin-pdf`, formData, {
+      const response = await axios.post(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/admin/import/linkedin-pdf`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`

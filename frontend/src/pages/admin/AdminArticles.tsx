@@ -22,14 +22,14 @@ export default function AdminArticles() {
   const { data: articles = [], isLoading } = useQuery<Article[]>({
     queryKey: ['admin-articles'],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/articles/`);
+      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/articles/`);
       return res.data;
     }
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/articles/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/articles/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
     },
@@ -52,12 +52,12 @@ export default function AdminArticles() {
 
       await Promise.all([
         axios.post(
-          `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/articles/refresh`,
+          `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/articles/refresh`,
           { username: devtoUser, platform: 'devto' },
           { headers: { Authorization: `Bearer ${token}` } }
         ),
         axios.post(
-          `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/articles/refresh`,
+          `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/articles/refresh`,
           { username: mediumUser, platform: 'medium' },
           { headers: { Authorization: `Bearer ${token}` } }
         )

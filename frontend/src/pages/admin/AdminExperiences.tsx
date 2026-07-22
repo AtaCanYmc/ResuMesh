@@ -22,14 +22,14 @@ export default function AdminExperiences() {
   const { data: experiences = [], isLoading } = useQuery<Experience[]>({
     queryKey: ['admin-experiences'],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/experiences/`);
+      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/experiences/`);
       return res.data;
     }
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/experiences/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/experiences/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
     },

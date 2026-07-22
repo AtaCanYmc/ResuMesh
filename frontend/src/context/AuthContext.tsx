@@ -22,7 +22,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const checkAuth = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/auth/verify`);
+      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/auth/verify`);
       if (res.status === 200) {
         setIsAuthenticated(true);
         setToken('session-cookie-active');
@@ -54,7 +54,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsAuthenticated(false);
     localStorage.removeItem('isLoggedIn');
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/auth/logout`);
+      await axios.post(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/auth/logout`);
     } catch (err) {
       console.error('Logout request failed', err);
     }

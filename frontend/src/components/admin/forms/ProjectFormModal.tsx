@@ -56,8 +56,8 @@ export default function ProjectFormModal({ isOpen, onClose, project }: ProjectFo
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
       const url = project
-        ? `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/projects/${project.id}`
-        : `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/projects/`;
+        ? `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/projects/${project.id}`
+        : `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/projects/`;
       const method = project ? 'put' : 'post';
       await axios({
         method,

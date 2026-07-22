@@ -57,8 +57,8 @@ export default function CertificateFormModal({ isOpen, onClose, certificate }: C
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
       const url = certificate
-        ? `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/certificates/${certificate.id}`
-        : `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/certificates/`;
+        ? `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/certificates/${certificate.id}`
+        : `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/certificates/`;
       const method = certificate ? 'put' : 'post';
       await axios({
         method,

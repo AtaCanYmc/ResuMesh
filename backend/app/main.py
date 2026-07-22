@@ -26,15 +26,12 @@ try:
 except ImportError:
     pass
 from app.routers import (
-    admin,
     articles,
-    auth,
     certificates,
     cv,
     educations,
     experiences,
     projects,
-    rxresume,
     search,
     seo,
     skills,
@@ -77,9 +74,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth.router, prefix="/api/v1")
 app.include_router(projects.router, prefix="/api/v1")
-app.include_router(admin.router, prefix="/api/v1")
 app.include_router(search.router, prefix="/api/v1")
 app.include_router(articles.router, prefix="/api/v1")
 app.include_router(educations.router, prefix="/api/v1")
@@ -88,7 +83,6 @@ app.include_router(skills.router, prefix="/api/v1")
 app.include_router(certificates.router, prefix="/api/v1")
 app.include_router(seo.router, prefix="/api/v1/seo")
 app.include_router(cv.router, prefix="/api/v1")
-app.include_router(rxresume.router, prefix="/api/v1")
 
 
 @app.get("/api/v1/")

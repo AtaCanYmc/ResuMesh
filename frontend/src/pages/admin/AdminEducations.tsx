@@ -22,14 +22,14 @@ export default function AdminEducations() {
   const { data: educations = [], isLoading } = useQuery<Education[]>({
     queryKey: ['admin-educations'],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/educations/`);
+      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/educations/`);
       return res.data;
     }
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/educations/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/educations/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
     },

@@ -79,8 +79,8 @@ export default function EducationFormModal({ isOpen, onClose, education }: Educa
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
       const url = education
-        ? `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/educations/${education.id}`
-        : `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/educations/`;
+        ? `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/educations/${education.id}`
+        : `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/educations/`;
       const method = education ? 'put' : 'post';
       await axios({
         method,

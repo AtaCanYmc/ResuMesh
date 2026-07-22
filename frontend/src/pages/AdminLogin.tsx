@@ -33,7 +33,7 @@ const AdminLogin: React.FC = () => {
     setError(null);
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const apiUrl = import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001';
       const formData = new URLSearchParams();
       formData.append('username', data.username);
       formData.append('password', data.password);

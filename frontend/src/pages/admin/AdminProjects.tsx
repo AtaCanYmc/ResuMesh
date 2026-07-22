@@ -23,7 +23,7 @@ export default function AdminProjects() {
   const { data: projects = [], isLoading } = useQuery<Project[]>({
     queryKey: ['admin-projects'],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/projects/`);
+      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/projects/`);
       return res.data;
     }
   });
@@ -31,7 +31,7 @@ export default function AdminProjects() {
   // Delete Mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/projects/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/projects/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
     },
@@ -51,7 +51,7 @@ export default function AdminProjects() {
     mutationFn: async () => {
       const username = import.meta.env.VITE_GITHUB_USERNAME || 'AtaCanYmc';
       await axios.post(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/projects/refresh`,
+        `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/projects/refresh`,
         { username, include_forks: false },
         { headers: { Authorization: `Bearer ${token}` } }
       );

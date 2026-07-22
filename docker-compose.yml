@@ -26,6 +26,34 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  admin-backend:
+    build:
+      context: ./admin/backend
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"
+    env_file:
+      - ./admin/backend/.env
+    environment:
+      - POSTGRE_URL=postgresql://postgres:postgres@db:5432/resumesh
+      - MONGO_URL=mongodb://mongo:27017
+      - MONGO_DB_NAME=resumesh
+    depends_on:
+      db:
+        condition: service_healthy
+        required: false
+      mongo:
+        condition: service_healthy
+        required: false
+    networks:
+      - resumesh-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+
   frontend:
     build:
       context: ./frontend

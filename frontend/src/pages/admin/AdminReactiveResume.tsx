@@ -100,7 +100,7 @@ export default function AdminReactiveResume() {
   const { data: stats, isLoading: isLoadingStats } = useQuery({
     queryKey: ['admin-rxresume-stats'],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/admin/rxresume/statistics`, {
+      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/admin/rxresume/statistics`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       return res.data.statistics;
@@ -110,7 +110,7 @@ export default function AdminReactiveResume() {
   const { data: resumes = [], isLoading: isLoadingResumes, error: errorResumes, refetch: refetchResumes } = useQuery<Resume[]>({
     queryKey: ['admin-rxresume-resumes'],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/admin/rxresume/resumes`, {
+      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/admin/rxresume/resumes`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       return res.data.resumes;
@@ -121,7 +121,7 @@ export default function AdminReactiveResume() {
   const { data: versions = [], isLoading: isLoadingVersions } = useQuery<ResumeVersion[]>({
     queryKey: ['admin-rxresume-versions', viewingVersionsId],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/admin/rxresume/resume/${viewingVersionsId}/versions`, {
+      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/admin/rxresume/resume/${viewingVersionsId}/versions`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       return res.data.versions;
@@ -132,7 +132,7 @@ export default function AdminReactiveResume() {
   const { data: applications = [], isLoading: isLoadingApps, error: errorApps, refetch: refetchApps } = useQuery<Application[]>({
     queryKey: ['admin-rxresume-applications'],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/admin/rxresume/applications`, {
+      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/admin/rxresume/applications`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       return res.data.applications;
@@ -143,7 +143,7 @@ export default function AdminReactiveResume() {
   const { data: agentThreads = [], isLoading: isLoadingThreads, error: errorThreads, refetch: refetchThreads } = useQuery<AgentThread[]>({
     queryKey: ['admin-rxresume-agent-threads'],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/admin/rxresume/agent/threads`, {
+      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/admin/rxresume/agent/threads`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       return res.data.threads;
@@ -154,7 +154,7 @@ export default function AdminReactiveResume() {
   const { data: providers = [], isLoading: isLoadingProviders, error: errorProviders, refetch: refetchProviders } = useQuery<AiProvider[]>({
     queryKey: ['admin-rxresume-ai-providers'],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/admin/rxresume/ai-providers`, {
+      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/admin/rxresume/ai-providers`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       return res.data.providers;
@@ -166,7 +166,7 @@ export default function AdminReactiveResume() {
   const syncMutation = useMutation({
     mutationFn: async (resumeId: string) => {
       setSyncingId(resumeId);
-      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/admin/rxresume/resume/${resumeId}/sync`, {}, {
+      await axios.post(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/admin/rxresume/resume/${resumeId}/sync`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
     },
@@ -185,7 +185,7 @@ export default function AdminReactiveResume() {
     mutationFn: async ({ resumeId, newWindow }: { resumeId: string; newWindow: Window | null }) => {
       setDownloadingId(resumeId);
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/admin/rxresume/resume/${resumeId}/pdf`, {
+        const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/admin/rxresume/resume/${resumeId}/pdf`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const url = res.data.url;
@@ -207,7 +207,7 @@ export default function AdminReactiveResume() {
   const analyzeMutation = useMutation({
     mutationFn: async (resumeId: string) => {
       setAnalyzingId(resumeId);
-      const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/admin/rxresume/resume/${resumeId}/analyze`, {}, {
+      const res = await axios.post(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/admin/rxresume/resume/${resumeId}/analyze`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       return res.data.analysis;
@@ -239,7 +239,7 @@ export default function AdminReactiveResume() {
 
   const viewAnalysisMutation = useMutation({
     mutationFn: async (resumeId: string) => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/admin/rxresume/resume/${resumeId}/analysis`, {
+      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/admin/rxresume/resume/${resumeId}/analysis`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       return res.data.analysis;

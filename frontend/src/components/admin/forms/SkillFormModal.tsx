@@ -50,8 +50,8 @@ export default function SkillFormModal({ isOpen, onClose, skill }: SkillFormModa
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
       const url = skill
-        ? `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/skills/${skill.id}`
-        : `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/skills/`;
+        ? `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/skills/${skill.id}`
+        : `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/skills/`;
       const method = skill ? 'put' : 'post';
       await axios({
         method,

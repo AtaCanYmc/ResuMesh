@@ -12,7 +12,7 @@ export default function AdminOverview() {
 
   const refreshMutation = useMutation({
     mutationFn: async () => {
-      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/admin/refresh-data`, {}, {
+      await axios.post(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/admin/refresh-data`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
     },

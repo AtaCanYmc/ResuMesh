@@ -68,8 +68,8 @@ export default function ExperienceFormModal({ isOpen, onClose, experience }: Exp
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
       const url = experience
-        ? `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/experiences/${experience.id}`
-        : `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/experiences/`;
+        ? `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/experiences/${experience.id}`
+        : `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/experiences/`;
       const method = experience ? 'put' : 'post';
       await axios({
         method,

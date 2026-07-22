@@ -22,14 +22,14 @@ export default function AdminSkills() {
   const { data: skills = [], isLoading } = useQuery<Skill[]>({
     queryKey: ['admin-skills'],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/skills/`);
+      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/skills/`);
       return res.data;
     }
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/skills/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/skills/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
     },

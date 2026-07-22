@@ -64,8 +64,8 @@ export default function ArticleFormModal({ isOpen, onClose, article }: ArticleFo
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
       const url = article
-        ? `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/articles/${article.id}`
-        : `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/articles/`;
+        ? `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/articles/${article.id}`
+        : `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/articles/`;
       const method = article ? 'put' : 'post';
       await axios({
         method,
