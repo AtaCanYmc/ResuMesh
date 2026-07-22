@@ -10,6 +10,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 import Footer from './Footer';
 import { useContentConfig } from '../hooks/useHomeData';
+import posthog from 'posthog-js';
 
 const MainLayout: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -26,6 +27,11 @@ const MainLayout: React.FC = () => {
       mainRef.current.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [location.pathname]);
+
+  // PostHog PageView capturing on route change
+  useEffect(() => {
+    posthog.capture('$pageview');
+  }, [location]);
 
   const toggleTheme = () => {
     if (theme === 'dark') setTheme('light');
