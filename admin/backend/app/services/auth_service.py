@@ -1,23 +1,36 @@
 import os
+from dataclasses import dataclass
 
 import jwt
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import Session
 
 from app.config.security import ALGORITHM, SECRET_KEY
-from app.db.dependencies import get_db
-from app.models.user import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login", auto_error=False)
+
+
+@dataclass
+class SupabaseUser:
+    """Lightweight user representation extracted from a Supabase JWT."""
+
+    id: str
+    email: str
+    role: str
 
 
 async def get_current_admin(
     request: Request,
     token_from_header: str = Depends(oauth2_scheme),
-    db: Session = Depends(get_db),
 ):
-    """Checks if the request has a valid Supabase Auth admin token."""
+    """Validates a Supabase Auth JWT and ensures the user has admin privileges.
+
+    Extracts user info directly from the JWT payload — no local database lookup.
+    The admin role is determined from (in priority order):
+      1. app_metadata.role
+      2. user_metadata.role
+      3. top-level 'role' claim
+    """
     enabled = os.getenv("ENABLE_ADMIN_WORKSPACE", "false").lower() in (
         "true",
         "1",
@@ -41,7 +54,6 @@ async def get_current_admin(
         )
     try:
         # Supabase JWTs are signed with HS256 using the Supabase JWT Secret.
-        # They typically have the audience set to "authenticated".
         payload = jwt.decode(
             token,
             SECRET_KEY,
@@ -51,7 +63,7 @@ async def get_current_admin(
             },  # verify_aud False to simplify mock test runs
         )
         sub: str = payload.get("sub")
-        email: str = payload.get("email")
+        email: str = payload.get("email", "")
 
         if sub is None:
             raise HTTPException(
@@ -60,41 +72,25 @@ async def get_current_admin(
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
-        # Look up by Supabase user ID (sub) or email/username
-        user = (
-            db.query(User)
-            .filter(
-                (User.id == sub) | (User.username == email) | (User.username == sub)
-            )
-            .first()
+        # Determine role from Supabase JWT metadata
+        # Supabase stores custom claims in app_metadata or user_metadata
+        app_metadata = payload.get("app_metadata", {})
+        user_metadata = payload.get("user_metadata", {})
+
+        role = (
+            app_metadata.get("role")
+            or user_metadata.get("role")
+            or payload.get("role", "authenticated")
         )
 
-        # Fallback to trust valid token matching the configured ADMIN_USERNAME
-        if not user:
-            admin_username = os.getenv("ADMIN_USERNAME", "atacanymc")
-            if email == admin_username or sub == admin_username:
-                user = User(id=sub, username=email or sub, role="admin", is_active=True)
-
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="User not found in local records.",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-
-        if not user.is_active:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="User account is inactive.",
-            )
-
-        if user.role != "admin":
+        if role != "admin":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Admin privileges are required for this operation.",
             )
 
-        return user
+        return SupabaseUser(id=sub, email=email, role=role)
+
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
