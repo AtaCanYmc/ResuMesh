@@ -8,7 +8,7 @@ import App from './App.tsx'
 if (import.meta.env.VITE_POSTHOG_API_KEY && import.meta.env.MODE !== 'development') {
   posthog.init(import.meta.env.VITE_POSTHOG_API_KEY, {
     api_host: import.meta.env.VITE_POSTHOG_HOST || 'https://us.i.posthog.com',
-    autocapture: false,
+    autocapture: true,
     capture_pageview: true,
     persistence: 'localStorage',
     sanitize_properties: (properties) => {
