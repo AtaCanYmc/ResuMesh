@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
+import { supabase } from '../services/supabase';
 
 axios.defaults.withCredentials = true;
 
@@ -16,31 +17,38 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return localStorage.getItem('isLoggedIn') === 'true';
   });
-  const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem('isLoggedIn') === 'true' ? 'session-cookie-active' : null;
-  });
-
-  const checkAuth = async () => {
-    try {
-      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/auth/verify`);
-      if (res.status === 200) {
-        setIsAuthenticated(true);
-        setToken('session-cookie-active');
-        localStorage.setItem('isLoggedIn', 'true');
-      } else {
-        setIsAuthenticated(false);
-        setToken(null);
-        localStorage.removeItem('isLoggedIn');
-      }
-    } catch (err) {
-      setIsAuthenticated(false);
-      setToken(null);
-      localStorage.removeItem('isLoggedIn');
-    }
-  };
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    checkAuth();
+    // Check active session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setToken(session.access_token);
+        setIsAuthenticated(true);
+        localStorage.setItem('isLoggedIn', 'true');
+      } else {
+        setToken(null);
+        setIsAuthenticated(false);
+        localStorage.removeItem('isLoggedIn');
+      }
+    });
+
+    // Listen to authentication state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        setToken(session.access_token);
+        setIsAuthenticated(true);
+        localStorage.setItem('isLoggedIn', 'true');
+      } else {
+        setToken(null);
+        setIsAuthenticated(false);
+        localStorage.removeItem('isLoggedIn');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = (newToken: string) => {
@@ -54,14 +62,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsAuthenticated(false);
     localStorage.removeItem('isLoggedIn');
     try {
-      await axios.post(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/auth/logout`);
+      await supabase.auth.signOut();
     } catch (err) {
       console.error('Logout request failed', err);
     }
   };
 
   useEffect(() => {
-    const interceptor = axios.interceptors.response.use(
+    // Request interceptor to automatically add Authorization Header
+    const requestInterceptor = axios.interceptors.request.use(
+      (config) => {
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
+
+    // Response interceptor to handle session expiration (401/403)
+    const responseInterceptor = axios.interceptors.response.use(
       (response) => response,
       (error) => {
         if (error.response && (error.response.status === 401 || error.response.status === 403)) {
@@ -72,9 +92,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     );
 
     return () => {
-      axios.interceptors.response.eject(interceptor);
+      axios.interceptors.request.eject(requestInterceptor);
+      axios.interceptors.response.eject(responseInterceptor);
     };
-  }, []);
+  }, [token]);
 
   return (
     <AuthContext.Provider value={{ token, login, logout, isAuthenticated }}>

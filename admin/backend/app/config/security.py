@@ -7,9 +7,9 @@ from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-SECRET_KEY = os.getenv("JWT_SECRET_KEY")
-if not SECRET_KEY:
-    raise ValueError("FATAL ERROR: JWT_SECRET_KEY environment variable is not set!")
+SECRET_KEY = os.getenv(
+    "SUPABASE_JWT_SECRET", os.getenv("JWT_SECRET_KEY", "test-secret-key")
+)
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
