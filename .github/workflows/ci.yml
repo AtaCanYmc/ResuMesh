@@ -15,7 +15,7 @@ jobs:
         image: postgres:15-alpine
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: resumesh_dev_password_987
           POSTGRES_DB: resumesh
         ports:
           - 5432:5432
@@ -61,7 +61,7 @@ jobs:
     - name: Run Tests with Pytest
       working-directory: ./backend
       env:
-        POSTGRE_URL: postgresql://postgres:postgres@localhost:5432/resumesh
+        POSTGRE_URL: postgresql://postgres:resumesh_dev_password_987@localhost:5432/resumesh
         MONGO_URL: mongodb://localhost:27017
         MONGO_DB_NAME: resumesh
         LLM_PROVIDER: mock
@@ -78,7 +78,7 @@ jobs:
         image: postgres:15-alpine
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: resumesh_dev_password_987
           POSTGRES_DB: resumesh
         ports:
           - 5432:5432
@@ -124,7 +124,7 @@ jobs:
     - name: Run Tests with Pytest
       working-directory: ./admin/backend
       env:
-        POSTGRE_URL: postgresql://postgres:postgres@localhost:5432/resumesh
+        POSTGRE_URL: postgresql://postgres:resumesh_dev_password_987@localhost:5432/resumesh
         MONGO_URL: mongodb://localhost:27017
         MONGO_DB_NAME: resumesh
         LLM_PROVIDER: mock

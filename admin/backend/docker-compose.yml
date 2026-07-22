@@ -5,7 +5,7 @@ services:
     image: postgres:15
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: resumesh_dev_password_987
       POSTGRES_DB: resumesh
     ports:
       - "5432:5432"
