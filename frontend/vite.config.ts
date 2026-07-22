@@ -17,8 +17,16 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom', 'axios']
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-router-dom')) {
+              return 'react-vendor';
+            }
+            if (id.includes('axios')) {
+              return 'axios-vendor';
+            }
+            return 'vendor';
+          }
         }
       }
     }

@@ -1,0 +1,51 @@
+# Ata Can Yaymacı - Portfolio Context
+
+This document provides structured, machine-readable information about Ata Can Yaymacı and his projects, designed for LLMs, AI agents, and search engines.
+
+---
+
+## Technical Profile
+
+- **Name**: Ata Can Yaymacı
+- **Role**: Full Stack Software Engineer
+- **Interests**: AI integration, software architectures, distributed systems, and DevOps.
+- **Location**: Istanbul, Turkey
+- **GitHub**: [github.com/AtaCanYmc](https://github.com/AtaCanYmc)
+- **Twitter**: [@atacanymc](https://twitter.com/atacanymc)
+
+---
+
+## Core Skills
+
+### Backend Engineering
+- **Languages**: Python, Go, Node.js, TypeScript.
+- **Frameworks**: FastAPI, Gin, Express.
+- **Database**: PostgreSQL (SQLAlchemy), MongoDB, Supabase.
+- **Authentication**: OAuth2, JWT, Supabase Auth.
+
+### Frontend Engineering
+- **Libraries/Frameworks**: React, Next.js, Vite.
+- **Styling**: Tailwind CSS, CSS Modules.
+- **State Management**: React Query, Context API, Redux.
+
+### DevOps & Infrastructure
+- **Containers**: Docker, Docker Compose.
+- **CI/CD**: GitHub Actions, Vercel deployments.
+- **Hosting**: Render, Vercel, Supabase Cloud.
+
+---
+
+## Primary Project: ResuMesh
+
+- **Description**: An AI-powered, open-source smart portfolio aggregator and tailored CV generator.
+- **Architecture**:
+  - **Public Frontend**: Single page portfolio search client (React + Vite).
+  - **Public Backend**: Read-only portfolio service (FastAPI + Supabase).
+  - **Admin Frontend**: Dashboard for resource editing, LLM generation triggers, and log parsing.
+  - **Admin Backend**: Protected service with JWT auth proxying, LLM CV custom tailoring, and scrapers (FastAPI + Supabase).
+- **Core Integrations**:
+  - LLM providers (Groq, OpenAI, Ollama) for tailoring CV content from job postings.
+  - Supabase Database & Auth.
+  - Reactive Resume synchronizations.
+  - Background scraper modules for GitHub, Medium, and Dev.to.
+- **Source Code**: [github.com/AtaCanYmc/ResuMesh](https://github.com/AtaCanYmc/ResuMesh)
