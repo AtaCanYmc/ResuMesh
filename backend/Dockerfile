@@ -5,11 +5,6 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Configure Playwright browser path to be globally accessible and install dependencies
-ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
-RUN mkdir -p /ms-playwright && \
-    playwright install --with-deps chromium && \
-    chmod -R 777 /ms-playwright
 
 COPY . .
 
