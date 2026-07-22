@@ -9,9 +9,8 @@ This document provides structured, machine-readable information about Ata Can Ya
 - **Name**: Ata Can Yaymacı
 - **Role**: Full Stack Software Engineer
 - **Interests**: AI integration, software architectures, distributed systems, and DevOps.
-- **Location**: Istanbul, Turkey
+- **Location**: İzmir, Turkey
 - **GitHub**: [github.com/AtaCanYmc](https://github.com/AtaCanYmc)
-- **Twitter**: [@atacanymc](https://twitter.com/atacanymc)
 
 ---
 

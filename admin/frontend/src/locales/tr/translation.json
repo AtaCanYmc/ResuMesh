@@ -1,4 +1,9 @@
 {
+  "wakeup": {
+    "title": "Sunucu Uyandırılıyor",
+    "description": "ResuMesh bulut kaynaklarını otomatik olarak başlatıyor. Sunucu ilk kez açılırken bu işlem yaklaşık 30-50 saniye sürebilir.",
+    "status": "Oturum Bekleniyor..."
+  },
   "nav": {
     "about": "Hakkımda",
     "experiences": "Deneyimler",
