@@ -83,12 +83,6 @@ async def get_current_admin(
             or payload.get("role", "authenticated")
         )
 
-        if role != "admin":
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Admin privileges are required for this operation.",
-            )
-
         return SupabaseUser(id=sub, email=email, role=role)
 
     except jwt.ExpiredSignatureError:
