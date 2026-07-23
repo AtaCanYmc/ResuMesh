@@ -2,11 +2,7 @@
   "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/((?!assets/|static/|favicon.ico|robots.txt|sitemap.xml).*\\.[a-zA-Z0-9]+)$",
-      "destination": "/404"
-    },
-    {
-      "source": "/((?!assets/|static/|favicon.ico|robots.txt|sitemap.xml).*)$",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
