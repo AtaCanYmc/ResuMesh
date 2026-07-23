@@ -1,15 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from reactive_resume.models import Basics
 
-from app.db.base import (
-    IArticleRepository,
-    ICertificateRepository,
-    IEducationRepository,
-    IExperienceRepository,
-    IProjectRepository,
-    ISkillRepository,
-    ISystemLogRepository,
-)
 from app.db.dependencies import (
     get_article_repo,
     get_certificate_repo,
@@ -18,6 +9,15 @@ from app.db.dependencies import (
     get_project_repo,
     get_skill_repo,
     get_system_log_repo,
+)
+from app.db.repositories import (
+    IArticleRepository,
+    ICertificateRepository,
+    IEducationRepository,
+    IExperienceRepository,
+    IProjectRepository,
+    ISkillRepository,
+    ISystemLogRepository,
 )
 from app.services.auth_service import get_current_admin
 from app.services.mappers.reactive_resume_mapper import ReactiveResumeMapper

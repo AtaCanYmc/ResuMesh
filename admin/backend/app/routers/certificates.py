@@ -2,8 +2,8 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.db.base import ICertificateRepository
 from app.db.dependencies import get_certificate_repo
+from app.db.repositories import ICertificateRepository
 from app.schemas.certificate import (
     CertificateCreate,
     CertificateResponse,

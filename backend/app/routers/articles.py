@@ -2,8 +2,8 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.db.base import IArticleRepository
 from app.db.dependencies import get_article_repo
+from app.db.repositories import IArticleRepository
 from app.schemas.article import ArticleResponse
 
 router = APIRouter(prefix="/articles", tags=["articles"])

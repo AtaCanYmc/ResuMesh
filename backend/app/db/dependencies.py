@@ -2,7 +2,8 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from app.config.database import SessionLocal
-from app.db.base import (
+from app.db.factory import RepositoryFactory
+from app.db.repositories import (
     IArticleRepository,
     ICertificateRepository,
     IEducationRepository,
@@ -12,13 +13,9 @@ from app.db.base import (
     ISkillRepository,
     ISystemLogRepository,
 )
-from app.db.factory import RepositoryFactory
 
 
 def get_db():
-    """Dependency to get a database session.
-    Centralized here to respect DRY across routers.
-    """
     db = SessionLocal()
     try:
         yield db
@@ -51,12 +48,12 @@ def get_search_repo() -> ISearchRepository:
 
 
 def get_education_repo(db: Session = Depends(get_db)) -> IEducationRepository:
-    from app.db.providers.sqlalchemy_provider import SQLAlchemyEducationRepository
+    from app.db.providers.sqlalchemy import SQLAlchemyEducationRepository
 
     return SQLAlchemyEducationRepository(db)
 
 
 def get_skill_repo(db: Session = Depends(get_db)) -> ISkillRepository:
-    from app.db.providers.sqlalchemy_provider import SQLAlchemySkillRepository
+    from app.db.providers.sqlalchemy import SQLAlchemySkillRepository
 
     return SQLAlchemySkillRepository(db)

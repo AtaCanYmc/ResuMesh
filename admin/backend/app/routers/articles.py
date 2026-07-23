@@ -4,8 +4,8 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel
 from resumesh_scrapers import DevToScraper, MediumScraper
 
-from app.db.base import IArticleRepository
 from app.db.dependencies import get_article_repo
+from app.db.repositories import IArticleRepository
 from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate
 from app.services.auth_service import get_current_admin
 from app.services.ingestion_service import IngestionService

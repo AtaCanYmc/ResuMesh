@@ -1,6 +1,6 @@
 import asyncio
 
-from app.db.base import (
+from app.db.repositories import (
     IArticleRepository,
     ICertificateRepository,
     IExperienceRepository,

@@ -2,8 +2,8 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.db.base import IEducationRepository
 from app.db.dependencies import get_education_repo
+from app.db.repositories import IEducationRepository
 from app.schemas.education import EducationCreate, EducationResponse, EducationUpdate
 from app.services.auth_service import get_current_admin
 from app.services.telemetry_service import get_telemetry_data, telemetry

@@ -4,8 +4,8 @@ from typing import List
 from fastapi import APIRouter, Depends, Response
 
 from app.config.settings import settings
-from app.db.base import IProjectRepository
 from app.db.dependencies import get_project_repo
+from app.db.repositories import IProjectRepository
 from app.schemas.project import ProjectResponse
 
 router = APIRouter(tags=["seo"])

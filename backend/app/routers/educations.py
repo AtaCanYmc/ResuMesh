@@ -2,8 +2,8 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.db.base import IEducationRepository
 from app.db.dependencies import get_education_repo
+from app.db.repositories import IEducationRepository
 from app.schemas.education import EducationResponse
 
 router = APIRouter(prefix="/educations", tags=["Educations"])

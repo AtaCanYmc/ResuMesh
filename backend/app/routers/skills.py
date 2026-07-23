@@ -2,8 +2,8 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.db.base import ISkillRepository
 from app.db.dependencies import get_skill_repo
+from app.db.repositories import ISkillRepository
 from app.schemas.skill import SkillResponse
 
 router = APIRouter(prefix="/skills", tags=["Skills"])

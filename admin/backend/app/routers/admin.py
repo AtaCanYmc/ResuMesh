@@ -15,14 +15,6 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 
 from app.config.settings import settings
-from app.db.base import (
-    IArticleRepository,
-    ICertificateRepository,
-    IExperienceRepository,
-    IProjectRepository,
-    ISkillRepository,
-    ISystemLogRepository,
-)
 from app.db.dependencies import (
     get_article_repo,
     get_certificate_repo,
@@ -30,6 +22,14 @@ from app.db.dependencies import (
     get_project_repo,
     get_skill_repo,
     get_system_log_repo,
+)
+from app.db.repositories import (
+    IArticleRepository,
+    ICertificateRepository,
+    IExperienceRepository,
+    IProjectRepository,
+    ISkillRepository,
+    ISystemLogRepository,
 )
 from app.llm.factory import get_llm_provider
 from app.services.auth_service import get_current_admin
