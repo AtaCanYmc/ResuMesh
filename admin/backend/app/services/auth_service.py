@@ -1,3 +1,4 @@
+import logging
 import os
 from dataclasses import dataclass
 
@@ -7,6 +8,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 from app.config.security import ALGORITHM, SECRET_KEY
 
+logger = logging.getLogger("auth")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login", auto_error=False)
 
 
@@ -26,10 +28,6 @@ async def get_current_admin(
     """Validates a Supabase Auth JWT and ensures the user has admin privileges.
 
     Extracts user info directly from the JWT payload — no local database lookup.
-    The admin role is determined from (in priority order):
-      1. app_metadata.role
-      2. user_metadata.role
-      3. top-level 'role' claim
     """
     enabled = os.getenv("ENABLE_ADMIN_WORKSPACE", "false").lower() in (
         "true",
@@ -47,11 +45,19 @@ async def get_current_admin(
 
     token = request.cookies.get("access_token") or token_from_header
     if not token:
+        logger.warning(
+            "Authentication failed: Missing token in cookies or authorization header."
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Missing credentials.",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    logger.info(
+        f"Auth attempt: JWT token prefix={token[:15]}... "
+        f"Key length={len(SECRET_KEY) if SECRET_KEY else 0}"
+    )
     try:
         # Supabase JWTs are signed with HS256 using the Supabase JWT Secret.
         payload = jwt.decode(
@@ -66,32 +72,39 @@ async def get_current_admin(
         email: str = payload.get("email", "")
 
         if sub is None:
+            logger.warning("Authentication failed: Token missing 'sub' claim.")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid token details.",
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
-        # Determine role from Supabase JWT metadata
-        # Supabase stores custom claims in app_metadata or user_metadata
         app_metadata = payload.get("app_metadata", {})
         user_metadata = payload.get("user_metadata", {})
-
         role = (
             app_metadata.get("role")
             or user_metadata.get("role")
             or payload.get("role", "authenticated")
         )
 
+        logger.info(
+            f"Authentication successful for sub={sub}, email={email}, role={role}"
+        )
         return SupabaseUser(id=sub, email=email, role=role)
 
-    except jwt.ExpiredSignatureError:
+    except jwt.ExpiredSignatureError as e:
+        logger.error(f"Authentication failed: Token signature expired. Error: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token has expired.",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    except jwt.InvalidTokenError:
+    except jwt.InvalidTokenError as e:
+        prefix = SECRET_KEY[:4] if SECRET_KEY else "None"
+        logger.error(
+            f"Authentication failed: Invalid signature or token format. "
+            f"Secret key prefix used={prefix}. Error: {str(e)}"
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials.",
