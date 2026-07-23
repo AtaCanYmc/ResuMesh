@@ -101,9 +101,14 @@ async def get_current_admin(
         )
     except jwt.InvalidTokenError as e:
         prefix = SECRET_KEY[:4] if SECRET_KEY else "None"
+        try:
+            unverified_header = jwt.get_unverified_header(token)
+            alg = unverified_header.get("alg")
+        except Exception:
+            alg = "unknown"
         logger.error(
             f"Authentication failed: Invalid signature or token format. "
-            f"Secret key prefix used={prefix}. Error: {str(e)}"
+            f"Secret key prefix used={prefix}. Token alg={alg}. Error: {str(e)}"
         )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
