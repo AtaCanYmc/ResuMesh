@@ -33,10 +33,6 @@ class Settings(BaseSettings):
     ENABLE_ADMIN_WORKSPACE: bool = False
     ENABLE_CRON_JOBS: bool = True
 
-    # PostHog Telemetry
-    POSTHOG_API_KEY: str = ""
-    POSTHOG_HOST: str = "https://us.i.posthog.com"
-
     # Sentry Telemetry
     SENTRY_DSN: str = ""
 

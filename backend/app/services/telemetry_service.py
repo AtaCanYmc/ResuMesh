@@ -1,50 +1,19 @@
 import logging
 
 from fastapi import BackgroundTasks, Request
-from posthog import Posthog
-
-from app.config.settings import settings
 
 logger = logging.getLogger("ResuMesh")
 
 
 class TelemetryService:
     def __init__(self):
-        self.api_key = settings.POSTHOG_API_KEY
-        self.host = settings.POSTHOG_HOST
-        self.client = None
-        self.is_development = settings.ENVIRONMENT.lower() == "development"
-
-        if self.is_development:
-            logger.info(
-                "[TELEMETRY] Environment is development. PostHog telemetry is disabled."
-            )
-        elif self.api_key:
-            try:
-                self.client = Posthog(project_api_key=self.api_key, host=self.host)
-                logger.info("[TELEMETRY] PostHog telemetry initialized successfully.")
-            except Exception as e:
-                logger.error(f"[TELEMETRY] Failed to initialize PostHog: {str(e)}")
-        else:
-            logger.warning(
-                "[TELEMETRY] PostHog API Key not set. Telemetry is disabled."
-            )
+        logger.info("[TELEMETRY] Local logging telemetry service initialized.")
 
     def capture_event(self, distinct_id: str, event_name: str, properties: dict = None):
-        if self.client:
-            try:
-                self.client.capture(
-                    distinct_id=distinct_id,
-                    event=event_name,
-                    properties=properties or {},
-                )
-            except Exception as e:
-                logger.error(
-                    f"[TELEMETRY] Failed to capture event '{event_name}': {str(e)}"
-                )
-        else:
-            # Silent fallback when not configured
-            pass
+        logger.info(
+            f"[TELEMETRY EVENT] distinct_id={distinct_id},"
+            f" event={event_name}, properties={properties or {}}"
+        )
 
 
 # Singleton instance
