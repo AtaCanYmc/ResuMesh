@@ -1,12 +1,13 @@
 import pytest
 
+from app.config.settings import settings
 from app.services.supabase_storage import SupabaseStorageService
 
 
 @pytest.fixture(autouse=True)
 def mock_supabase_env(monkeypatch):
-    monkeypatch.setenv("SUPABASE_URL", "https://mock.supabase.co")
-    monkeypatch.setenv("SUPABASE_KEY", "mock_key")
+    monkeypatch.setattr(settings, "SUPABASE_URL", "https://mock.supabase.co")
+    monkeypatch.setattr(settings, "SUPABASE_KEY", "mock_key")
 
 
 @pytest.mark.asyncio
