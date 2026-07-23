@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.11.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.10.0...v1.11.0) (2026-07-23)
+
+
+### Features
+
+* add detailed logging inside get_current_admin auth dependency ([3ed8fdc](https://github.com/AtaCanYmc/ResuMesh/commit/3ed8fdc5f1146da9749eb15895c434c511b02aa0))
+* enable autocapture for PostHog analytics in main.tsx ([fb92b18](https://github.com/AtaCanYmc/ResuMesh/commit/fb92b1815dfcd27e668f889abd0fac303b590518))
+* enhance error logging for JWT authentication failures ([6405c06](https://github.com/AtaCanYmc/ResuMesh/commit/6405c063b61f2c9b0d98b20c311b37f59b531e09))
+* enhance README with architectural features and key decisions for backend API ([2151fa5](https://github.com/AtaCanYmc/ResuMesh/commit/2151fa5fffc6f162f2fd8e0173a2cf0859759f40))
+* implement repository pattern for education and skill management ([d020018](https://github.com/AtaCanYmc/ResuMesh/commit/d02001821c0a7ef86faf463ba41cbed9df08da9f))
+* implement SQLAlchemy repositories for education, experience, article, and system log ([558127a](https://github.com/AtaCanYmc/ResuMesh/commit/558127a0fbec7fc59f9e426aa5dc16bde93ddb39))
+* improve JWT authentication handling and error logging ([d944292](https://github.com/AtaCanYmc/ResuMesh/commit/d9442921076d6c17abeb6de0d334e553a6fc7830))
+* refactor authentication to use Supabase JWT and update admin us… ([a61ad62](https://github.com/AtaCanYmc/ResuMesh/commit/a61ad62640e630bf08180970d0cab1e419c68da1))
+* refactor authentication to use Supabase JWT and update admin user handling ([b900600](https://github.com/AtaCanYmc/ResuMesh/commit/b9006001b6cd6fb4179e6312d8fce17b8fc43781))
+* remove admin role check requirement from auth service ([59c80fc](https://github.com/AtaCanYmc/ResuMesh/commit/59c80fc93d249fcff0b863dcf047b15a3985909e))
+* remove IUserRepository and related user repository logic ([22ce804](https://github.com/AtaCanYmc/ResuMesh/commit/22ce80426f85796c4dc49f7d19c26836ec5a5d6d))
+* remove PostHog telemetry integration and related configurations ([a1c1189](https://github.com/AtaCanYmc/ResuMesh/commit/a1c1189366a604a471e6ae28d638d056e8f73ebc))
+* remove unused education and skill CRUD operations ([360d644](https://github.com/AtaCanYmc/ResuMesh/commit/360d64431aa9c2b5063463d9e7c2bffe9b07150f))
+* remove unused files ([a8e1617](https://github.com/AtaCanYmc/ResuMesh/commit/a8e1617d9d9e5590fa9bac660ee2d9c0dc2a7110))
+* remove unused files ([c52821a](https://github.com/AtaCanYmc/ResuMesh/commit/c52821a0bbca6006b1855503f7cb14c86f319ee3))
+* rename sqlalchemy_provider.py to education.py and remove unused skill repository ([a8347da](https://github.com/AtaCanYmc/ResuMesh/commit/a8347da857f8985c4bbe08afda0b7f9d09db61fa))
+* replace os.getenv with settings for environment variable access ([0321129](https://github.com/AtaCanYmc/ResuMesh/commit/0321129bb3b7b7ff57179f7e960d7f1887dab189))
+* set PYTHONUNBUFFERED environment variable in Dockerfile ([91cd8f0](https://github.com/AtaCanYmc/ResuMesh/commit/91cd8f0560657b6e6618f28f52de0e6c3547330c))
+* simplify Vercel rewrites for improved routing ([fbc95cc](https://github.com/AtaCanYmc/ResuMesh/commit/fbc95cc372cde3cb0d97411f5e29d65681575e2f))
+* update CORS settings and mock environment variables in tests ([c8b8a15](https://github.com/AtaCanYmc/ResuMesh/commit/c8b8a150fa9befdc128a116b206b6431ea5bfc31))
+* update location from Istanbul to İzmir in llm.txt ([eedd0fa](https://github.com/AtaCanYmc/ResuMesh/commit/eedd0fa2e87dd7d0c9ad77f64823e4266db158fa))
+
+
+### Bug Fixes
+
+* load SUPABASE_JWT_SECRET from pydantic settings instead of raw os.getenv ([d8daff2](https://github.com/AtaCanYmc/ResuMesh/commit/d8daff2abae370eefbd5642104e3fac024ed5d55))
+
 ## [1.10.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.9.0...v1.10.0) (2026-07-22)
 
 
