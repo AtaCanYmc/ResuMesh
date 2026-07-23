@@ -1,5 +1,59 @@
 # Changelog
 
+## [1.10.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.9.0...v1.10.0) (2026-07-22)
+
+
+### Features
+
+* add comprehensive README for ResuMesh administrative workspace and restructure existing documentation ([c032572](https://github.com/AtaCanYmc/ResuMesh/commit/c03257292765b2057f110bc2d544f33e16512e01))
+* add created_at field to project model and scraper data ([efe53a3](https://github.com/AtaCanYmc/ResuMesh/commit/efe53a343e43e3e7380cf02e9191ab2d99ea0be7))
+* add created_at field to project model and scraper data ([0970ba4](https://github.com/AtaCanYmc/ResuMesh/commit/0970ba4e82b5fa5248c61985b53fdd59695b1d92))
+* add Docker troubleshooting guide for common build errors ([64807d1](https://github.com/AtaCanYmc/ResuMesh/commit/64807d1337feadf2964f5386424576dd7831d72f))
+* add initial project setup with configuration files, components, and testing utilities ([0332756](https://github.com/AtaCanYmc/ResuMesh/commit/0332756614d0b6c70a00adb8c6486846fd8c99cf))
+* add refresh functionality for articles and projects in admin panel ([566981c](https://github.com/AtaCanYmc/ResuMesh/commit/566981c070b5de6174b76458792e7353173a26b0))
+* add resume version history and AI analysis features with statistics display ([cd652fa](https://github.com/AtaCanYmc/ResuMesh/commit/cd652fa5d6774622f8a8cbc70e8ec0c16b0b1c42))
+* add rxresume-python package for Reactive Resume integration ([400054f](https://github.com/AtaCanYmc/ResuMesh/commit/400054f6ac2845caa44f5739cb0af26ad3a01920))
+* clean up requirements.txt by removing unused dependencies and reordering sections ([9b652bb](https://github.com/AtaCanYmc/ResuMesh/commit/9b652bb49ceb1dcb4b1b3f0d70d0d78e44242ea8))
+* conditionally enable PostHog telemetry based on environment mode ([0870e61](https://github.com/AtaCanYmc/ResuMesh/commit/0870e61b842c8cb6fb9b3ee9b624ff2f6d62e52d))
+* conditionally enable PostHog telemetry based on environment mode ([ba8b620](https://github.com/AtaCanYmc/ResuMesh/commit/ba8b620ce6ffb9ceb81943ba63659d65c7ac08d0))
+* configure manual chunking for vendor libraries in Vite build ([63d19f8](https://github.com/AtaCanYmc/ResuMesh/commit/63d19f872bdf11565e673e534448aed8696d96cd))
+* disable PostHog telemetry in development environment ([bf119ef](https://github.com/AtaCanYmc/ResuMesh/commit/bf119efdd207a062363d47a1088118c264f39661))
+* enhance PDF download functionality with new window support and error handling ([fc546e3](https://github.com/AtaCanYmc/ResuMesh/commit/fc546e3d3b151378a0122e73701684563fbb9a1e))
+* implement conditional upsert for projects and articles in Supabase ([ce6c699](https://github.com/AtaCanYmc/ResuMesh/commit/ce6c69906d1de73cb1e25af1f46fc7ca1f16ab9d))
+* implement Reactive Resume API endpoints for resumes, applications, agent threads, and AI providers ([c6120d4](https://github.com/AtaCanYmc/ResuMesh/commit/c6120d4487dcd14451a2fc33ad714f7e41603314))
+* implement Reactive Resume management with resume listing, syncing, and PDF export functionality ([2b93d21](https://github.com/AtaCanYmc/ResuMesh/commit/2b93d2131b09e43d70bc85fd4c961d4d534361a8))
+* integrate PostHog telemetry for CV download events ([53f05f4](https://github.com/AtaCanYmc/ResuMesh/commit/53f05f47c5f1efd33a32405e8c2328ab8e05b1d5))
+* integrate PostHog telemetry for CV download events ([19a3cfa](https://github.com/AtaCanYmc/ResuMesh/commit/19a3cfa6740e976fc8df06a4e1ef3599aea855ae))
+* integrate PostHog telemetry for CV upload and download events ([6cf0681](https://github.com/AtaCanYmc/ResuMesh/commit/6cf0681bf9c00d607324e6c3920d0d4340e02fe4))
+* integrate Reactive Resume SDK for resume mapping and API intera… ([043854f](https://github.com/AtaCanYmc/ResuMesh/commit/043854f3a877bf2fc49739332d30a9c6b18ab557))
+* integrate Reactive Resume SDK for resume mapping and API interactions ([255be80](https://github.com/AtaCanYmc/ResuMesh/commit/255be805cfd007c8bed84172653b6c8d7e390d9b))
+* integrate Supabase authentication and update environment config… ([7b9d696](https://github.com/AtaCanYmc/ResuMesh/commit/7b9d69667573d1ed9159c6b626ef1adce4e16d47))
+* integrate Supabase authentication and update environment configurations ([2ba9e00](https://github.com/AtaCanYmc/ResuMesh/commit/2ba9e00126c1fe70e3f40d3de04cd21dc1ad705c))
+* integrate telemetry events for CV, articles, certificates, experiences, educations, and skills management ([fe8c1e4](https://github.com/AtaCanYmc/ResuMesh/commit/fe8c1e4778b8ce9e39d55e83103d9a827e845634))
+* refactor ingestion service to use dynamic upsert method for providers ([afe39a6](https://github.com/AtaCanYmc/ResuMesh/commit/afe39a607650aadad44bc58fd1dcda6e02e65500))
+* refactor scraper imports to use resumesh-scrapers package and update requirements ([b215fb2](https://github.com/AtaCanYmc/ResuMesh/commit/b215fb2c0fe9b32bdc4b1364bf32dd58c9ef332f))
+* refactor scraper imports to use resumesh-scrapers package and update requirements ([2f5932f](https://github.com/AtaCanYmc/ResuMesh/commit/2f5932f5e8626b1fcc4f657b342c6992db97ad2a))
+* remove Playwright browser installation from Dockerfile ([be25d23](https://github.com/AtaCanYmc/ResuMesh/commit/be25d238f2f66a43c120daf26c9ac35b99bea526))
+* remove Playwright browser installation from Dockerfile ([8d2157a](https://github.com/AtaCanYmc/ResuMesh/commit/8d2157a4d2f327e60ef67eef473ef5da7120563b))
+* remove unused lifespan context manager and apscheduler dependency ([b8cefdc](https://github.com/AtaCanYmc/ResuMesh/commit/b8cefdc3e8188e87c035bc4395a8957d0d41b5c3))
+* remove unused lifespan context manager and apscheduler dependency ([233f8dc](https://github.com/AtaCanYmc/ResuMesh/commit/233f8dce0a344e0bc733fc27329765bc58f6489b))
+* restructure admin backend with new API endpoints and configuration files ([3507749](https://github.com/AtaCanYmc/ResuMesh/commit/3507749b86b9bfcd149bde9b29444081d2759fff))
+* update column accessor keys for certificates, educations, projects, and skills ([efc8ace](https://github.com/AtaCanYmc/ResuMesh/commit/efc8ace8faa50d91fe0b1f342c9209cd9dc435f0))
+* update CV generation to return structured resume data and improve template prompts ([82bb888](https://github.com/AtaCanYmc/ResuMesh/commit/82bb8888e4c42fcdac9ffb679121f31ccc93d0b5))
+* update location from Istanbul to İzmir in llm.txt ([51071ca](https://github.com/AtaCanYmc/ResuMesh/commit/51071ca6acbb55f44638c147a21d6c69d74597a8))
+* update PostgreSQL connection strings and refactor database provider handling ([834002f](https://github.com/AtaCanYmc/ResuMesh/commit/834002f1596c79f110299ef5bfd1f4dab72f2a0e))
+* update README for private admin backend and dashboard, enhancing clarity and setup instructions ([88831ef](https://github.com/AtaCanYmc/ResuMesh/commit/88831ef07f2d17d0c7f8cf859c0e8801d476a9ea))
+* update render.yaml to configure admin and public backend services with new environment variables ([a17c32b](https://github.com/AtaCanYmc/ResuMesh/commit/a17c32bad54b6b6d80e56cb4589aaaa7626fe2ce))
+* update rxresume-python package to version 0.5.0 ([f3a409c](https://github.com/AtaCanYmc/ResuMesh/commit/f3a409c98f22ed529c2dc3da24cf28cec19cb568))
+
+
+### Bug Fixes
+
+* ensure request URL is converted to string in telemetry service ([1add67c](https://github.com/AtaCanYmc/ResuMesh/commit/1add67cbe940d4b5ad3a24d3fc003a64da6ecd9f))
+* ensure request URL is converted to string in telemetry service ([a888cb7](https://github.com/AtaCanYmc/ResuMesh/commit/a888cb7e23942961baa60b205840e5be147b944e))
+* update accessor key for published date in AdminArticles component ([d0c5368](https://github.com/AtaCanYmc/ResuMesh/commit/d0c5368a280f69e7dac0479a84f35eb89a55e10d))
+* update model_dump calls to use json mode for project, article, experience, and certificate updates ([662c5ca](https://github.com/AtaCanYmc/ResuMesh/commit/662c5ca1400ec7296b2f4a6cd9a40bfa46591f90))
+
 ## [1.9.0](https://github.com/AtaCanYmc/ResuMesh/compare/v1.8.0...v1.9.0) (2026-07-11)
 
 
