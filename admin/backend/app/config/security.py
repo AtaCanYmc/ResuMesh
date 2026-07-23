@@ -1,6 +1,4 @@
-import os
+from app.config.settings import settings
 
-SECRET_KEY = os.getenv(
-    "SUPABASE_JWT_SECRET", os.getenv("JWT_SECRET_KEY", "test-secret-key")
-)
+SECRET_KEY = settings.SUPABASE_JWT_SECRET
 ALGORITHM = "HS256"

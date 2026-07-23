@@ -16,7 +16,8 @@ class Settings(BaseSettings):
     POSTHOG_HOST: str = "https://us.i.posthog.com"
     REACTIVE_RESUME_URL: str = "http://localhost:3000"
     REACTIVE_RESUME_API_KEY: str = ""
-    SUPABASE_JWT_SECRET: str = "test-secret-key"
+    JWT_SECRET_KEY: str = "test-secret-key"
+    SUPABASE_JWT_SECRET: str = ""
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
@@ -24,6 +25,8 @@ class Settings(BaseSettings):
 
     def __init__(self, **values):
         super().__init__(**values)
+        if not self.SUPABASE_JWT_SECRET:
+            self.SUPABASE_JWT_SECRET = self.JWT_SECRET_KEY
         if self.ENVIRONMENT.lower() != "development":
             self.CORS_ORIGINS = [
                 origin
