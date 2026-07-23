@@ -1,10 +1,9 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
 
-from app.db.dependencies import get_db
-from app.models.education import Education
+from app.db.base import IEducationRepository
+from app.db.dependencies import get_education_repo
 from app.schemas.education import EducationCreate, EducationResponse, EducationUpdate
 from app.services.auth_service import get_current_admin
 from app.services.telemetry_service import get_telemetry_data, telemetry
@@ -16,20 +15,17 @@ router = APIRouter(prefix="/educations", tags=["Educations"])
 def get_educations(
     skip: int = 0,
     limit: int = 100,
-    db: Session = Depends(get_db),
+    education_repo: IEducationRepository = Depends(get_education_repo),
 ):
-    return (
-        db.query(Education)
-        .order_by(Education.start_date.desc())
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
+    return education_repo.get_educations(skip=skip, limit=limit)
 
 
 @router.get("/{education_id}", response_model=EducationResponse)
-def get_education(education_id: str, db: Session = Depends(get_db)):
-    education = db.query(Education).filter(Education.id == education_id).first()
+def get_education(
+    education_id: str,
+    education_repo: IEducationRepository = Depends(get_education_repo),
+):
+    education = education_repo.get_education_by_id(education_id)
     if not education:
         raise HTTPException(status_code=404, detail="Education not found")
     return education
@@ -38,14 +34,11 @@ def get_education(education_id: str, db: Session = Depends(get_db)):
 @router.post("/", response_model=EducationResponse)
 def create_education(
     education: EducationCreate,
-    db: Session = Depends(get_db),
+    education_repo: IEducationRepository = Depends(get_education_repo),
     admin: dict = Depends(get_current_admin),
     telemetry_ctx: dict = Depends(get_telemetry_data),
 ):
-    db_education = Education(**education.model_dump())
-    db.add(db_education)
-    db.commit()
-    db.refresh(db_education)
+    db_education = education_repo.create_education(education)
     telemetry_ctx["background_tasks"].add_task(
         telemetry.capture_event,
         distinct_id=telemetry_ctx["ip"],
@@ -65,20 +58,14 @@ def create_education(
 def update_education(
     education_id: str,
     education: EducationUpdate,
-    db: Session = Depends(get_db),
+    education_repo: IEducationRepository = Depends(get_education_repo),
     admin: dict = Depends(get_current_admin),
     telemetry_ctx: dict = Depends(get_telemetry_data),
 ):
-    db_education = db.query(Education).filter(Education.id == education_id).first()
+    db_education = education_repo.update_education(education_id, education)
     if not db_education:
         raise HTTPException(status_code=404, detail="Education not found")
 
-    update_data = education.model_dump(exclude_unset=True)
-    for key, value in update_data.items():
-        setattr(db_education, key, value)
-
-    db.commit()
-    db.refresh(db_education)
     telemetry_ctx["background_tasks"].add_task(
         telemetry.capture_event,
         distinct_id=telemetry_ctx["ip"],
@@ -97,15 +84,17 @@ def update_education(
 @router.delete("/{education_id}")
 def delete_education(
     education_id: str,
-    db: Session = Depends(get_db),
+    education_repo: IEducationRepository = Depends(get_education_repo),
     admin: dict = Depends(get_current_admin),
     telemetry_ctx: dict = Depends(get_telemetry_data),
 ):
-    db_education = db.query(Education).filter(Education.id == education_id).first()
+    # Fetch education details for telemetry first before deleting
+    db_education = education_repo.get_education_by_id(education_id)
     if not db_education:
         raise HTTPException(status_code=404, detail="Education not found")
-    db.delete(db_education)
-    db.commit()
+
+    education_repo.delete_education(education_id)
+
     telemetry_ctx["background_tasks"].add_task(
         telemetry.capture_event,
         distinct_id=telemetry_ctx["ip"],

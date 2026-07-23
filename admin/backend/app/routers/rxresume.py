@@ -1,11 +1,24 @@
 from fastapi import APIRouter, Depends, HTTPException
 from reactive_resume.models import Basics
-from sqlalchemy.orm import Session
 
-from app.db.base import ISystemLogRepository
-from app.db.dependencies import get_db, get_system_log_repo
-from app.models.education import Education
-from app.models.skill import Skill
+from app.db.base import (
+    IArticleRepository,
+    ICertificateRepository,
+    IEducationRepository,
+    IExperienceRepository,
+    IProjectRepository,
+    ISkillRepository,
+    ISystemLogRepository,
+)
+from app.db.dependencies import (
+    get_article_repo,
+    get_certificate_repo,
+    get_education_repo,
+    get_experience_repo,
+    get_project_repo,
+    get_skill_repo,
+    get_system_log_repo,
+)
 from app.services.auth_service import get_current_admin
 from app.services.mappers.reactive_resume_mapper import ReactiveResumeMapper
 from app.services.reactive_resume_service import ReactiveResumeService
@@ -50,24 +63,24 @@ async def get_rxresume_pdf(
 @router.post("/resume/{resume_id}/sync")
 async def sync_rxresume(
     resume_id: str,
-    db: Session = Depends(get_db),
+    project_repo: IProjectRepository = Depends(get_project_repo),
+    experience_repo: IExperienceRepository = Depends(get_experience_repo),
+    certificate_repo: ICertificateRepository = Depends(get_certificate_repo),
+    article_repo: IArticleRepository = Depends(get_article_repo),
+    education_repo: IEducationRepository = Depends(get_education_repo),
+    skill_repo: ISkillRepository = Depends(get_skill_repo),
     admin=Depends(get_current_admin),
     log_repo: ISystemLogRepository = Depends(get_system_log_repo),
 ):
     try:
-        # Fetch all local database records
-        skills = db.query(Skill).all()
-        educations = db.query(Education).all()
+        # Fetch all database records using repositories
+        skills = skill_repo.get_skills(limit=1000)
+        educations = education_repo.get_educations(limit=1000)
 
-        from app.models.article import Article
-        from app.models.certificate import Certificate
-        from app.models.experience import Experience
-        from app.models.project import Project
-
-        db_projects = db.query(Project).all()
-        db_experiences = db.query(Experience).all()
-        db_certificates = db.query(Certificate).all()
-        db_articles = db.query(Article).all()
+        db_projects = await project_repo.get_projects(limit=1000)
+        db_experiences = await experience_repo.get_all_experiences(limit=1000)
+        db_certificates = await certificate_repo.get_all_certificates(limit=1000)
+        db_articles = await article_repo.get_all_articles(limit=1000)
 
         # Build Basics
         basics = Basics(

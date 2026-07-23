@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from slowapi import Limiter
 from slowapi.util import get_remote_address
-from sqlalchemy.orm import Session
 
 from app.config.security import SecurityUtils
 from app.config.settings import settings
-from app.db.dependencies import get_db
+from app.db.base import IUserRepository
+from app.db.dependencies import get_user_repo
 from app.models.user import User
 from app.services.auth_service import get_current_admin
 
@@ -21,7 +21,7 @@ async def login_for_access_token(
     request: Request,
     response: Response,
     form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db),
+    user_repo: IUserRepository = Depends(get_user_repo),
 ):
     if not settings.ENABLE_ADMIN_WORKSPACE:
         raise HTTPException(
@@ -32,7 +32,7 @@ async def login_for_access_token(
             ),
         )
 
-    user = db.query(User).filter(User.username == form_data.username).first()
+    user = user_repo.get_user_by_username(form_data.username)
     if not user or not SecurityUtils.verify_password(
         form_data.password, user.password_hash
     ):

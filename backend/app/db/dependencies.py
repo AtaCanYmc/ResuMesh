@@ -1,11 +1,17 @@
+from fastapi import Depends
+from sqlalchemy.orm import Session
+
 from app.config.database import SessionLocal
 from app.db.base import (
     IArticleRepository,
     ICertificateRepository,
+    IEducationRepository,
     IExperienceRepository,
     IProjectRepository,
     ISearchRepository,
+    ISkillRepository,
     ISystemLogRepository,
+    IUserRepository,
 )
 from app.db.factory import RepositoryFactory
 
@@ -43,3 +49,21 @@ def get_system_log_repo() -> ISystemLogRepository:
 
 def get_search_repo() -> ISearchRepository:
     return RepositoryFactory.get_search_repository()
+
+
+def get_education_repo(db: Session = Depends(get_db)) -> IEducationRepository:
+    from app.db.providers.sqlalchemy_provider import SQLAlchemyEducationRepository
+
+    return SQLAlchemyEducationRepository(db)
+
+
+def get_skill_repo(db: Session = Depends(get_db)) -> ISkillRepository:
+    from app.db.providers.sqlalchemy_provider import SQLAlchemySkillRepository
+
+    return SQLAlchemySkillRepository(db)
+
+
+def get_user_repo(db: Session = Depends(get_db)) -> IUserRepository:
+    from app.db.providers.sqlalchemy_provider import SQLAlchemyUserRepository
+
+    return SQLAlchemyUserRepository(db)

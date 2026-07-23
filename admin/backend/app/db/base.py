@@ -7,6 +7,7 @@ from app.schemas.certificate import (
     CertificateResponse,
     CertificateUpdate,
 )
+from app.schemas.education import EducationCreate, EducationResponse, EducationUpdate
 from app.schemas.experience import (
     ExperienceCreate,
     ExperienceResponse,
@@ -14,6 +15,7 @@ from app.schemas.experience import (
 )
 from app.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
 from app.schemas.search import GlobalSearchResponse
+from app.schemas.skill import SkillCreate, SkillResponse, SkillUpdate
 from app.schemas.system_log import SystemLogCreate, SystemLogResponse
 
 
@@ -152,4 +154,54 @@ class ISystemLogRepository(ABC):
 class ISearchRepository(ABC):
     @abstractmethod
     async def global_search(self, query: str) -> GlobalSearchResponse:
+        pass
+
+
+class IEducationRepository(ABC):
+    @abstractmethod
+    def get_educations(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[EducationResponse]:
+        pass
+
+    @abstractmethod
+    def get_education_by_id(self, education_id: str) -> Optional[EducationResponse]:
+        pass
+
+    @abstractmethod
+    def create_education(self, education: EducationCreate) -> EducationResponse:
+        pass
+
+    @abstractmethod
+    def update_education(
+        self, education_id: str, education: EducationUpdate
+    ) -> Optional[EducationResponse]:
+        pass
+
+    @abstractmethod
+    def delete_education(self, education_id: str) -> bool:
+        pass
+
+
+class ISkillRepository(ABC):
+    @abstractmethod
+    def get_skills(self, skip: int = 0, limit: int = 100) -> List[SkillResponse]:
+        pass
+
+    @abstractmethod
+    def get_skill_by_id(self, skill_id: str) -> Optional[SkillResponse]:
+        pass
+
+    @abstractmethod
+    def create_skill(self, skill: SkillCreate) -> SkillResponse:
+        pass
+
+    @abstractmethod
+    def update_skill(
+        self, skill_id: str, skill: SkillUpdate
+    ) -> Optional[SkillResponse]:
+        pass
+
+    @abstractmethod
+    def delete_skill(self, skill_id: str) -> bool:
         pass
