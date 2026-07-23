@@ -2,10 +2,9 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from app.db.base import IEducationRepository, ISkillRepository, IUserRepository
+from app.db.base import IEducationRepository, ISkillRepository
 from app.models.education import Education
 from app.models.skill import Skill
-from app.models.user import User
 from app.schemas.education import EducationCreate, EducationResponse, EducationUpdate
 from app.schemas.skill import SkillCreate, SkillResponse, SkillUpdate
 
@@ -104,11 +103,3 @@ class SQLAlchemySkillRepository(ISkillRepository):
         self.db.delete(db_skill)
         self.db.commit()
         return True
-
-
-class SQLAlchemyUserRepository(IUserRepository):
-    def __init__(self, db: Session):
-        self.db = db
-
-    def get_user_by_username(self, username: str) -> Optional[User]:
-        return self.db.query(User).filter(User.username == username).first()

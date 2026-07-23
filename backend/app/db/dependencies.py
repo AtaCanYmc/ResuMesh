@@ -11,7 +11,6 @@ from app.db.base import (
     ISearchRepository,
     ISkillRepository,
     ISystemLogRepository,
-    IUserRepository,
 )
 from app.db.factory import RepositoryFactory
 
@@ -61,9 +60,3 @@ def get_skill_repo(db: Session = Depends(get_db)) -> ISkillRepository:
     from app.db.providers.sqlalchemy_provider import SQLAlchemySkillRepository
 
     return SQLAlchemySkillRepository(db)
-
-
-def get_user_repo(db: Session = Depends(get_db)) -> IUserRepository:
-    from app.db.providers.sqlalchemy_provider import SQLAlchemyUserRepository
-
-    return SQLAlchemyUserRepository(db)

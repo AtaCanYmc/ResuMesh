@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from app.models.user import User
 from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate
 from app.schemas.certificate import (
     CertificateCreate,
@@ -205,10 +204,4 @@ class ISkillRepository(ABC):
 
     @abstractmethod
     def delete_skill(self, skill_id: str) -> bool:
-        pass
-
-
-class IUserRepository(ABC):
-    @abstractmethod
-    def get_user_by_username(self, username: str) -> Optional[User]:
         pass
