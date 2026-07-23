@@ -10,7 +10,7 @@ from typing import Any, Dict
 from resumesh_scrapers import IScraperService
 from resumesh_scrapers.exceptions import ScraperError
 
-from app.db.base import (
+from app.db.repositories import (
     IArticleRepository,
     ICertificateRepository,
     IExperienceRepository,

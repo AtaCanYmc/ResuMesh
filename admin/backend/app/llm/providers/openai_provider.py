@@ -1,4 +1,3 @@
-import os
 from typing import Type
 
 from langchain_core.prompts import PromptTemplate
@@ -6,18 +5,19 @@ from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 from tenacity import retry, stop_after_attempt, wait_exponential
 
+from app.config.settings import settings
 from app.llm.base import LLMProvider
 from app.services.template_service import TemplateService
 
 
 class OpenAIProvider(LLMProvider):
     def __init__(self):
-        api_key = os.getenv("OPENAI_API_KEY")
+        api_key = settings.OPENAI_API_KEY
         if not api_key:
             raise ValueError("OPENAI_API_KEY is not set.")
 
         self.llm = ChatOpenAI(
-            api_key=api_key, model=os.getenv("OPENAI_MODEL", "gpt-4o"), temperature=0.3
+            api_key=api_key, model=settings.OPENAI_MODEL, temperature=0.3
         )
 
         template_str = TemplateService.get_template_content(

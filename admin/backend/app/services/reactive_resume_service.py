@@ -2,7 +2,7 @@ from reactive_resume import AsyncRxResumeClient
 from reactive_resume.models import ResumeImportData
 
 from app.config.settings import settings
-from app.db.base import ISystemLogRepository
+from app.db.repositories import ISystemLogRepository
 from app.services.log_service import LogService
 
 

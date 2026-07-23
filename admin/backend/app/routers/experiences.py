@@ -2,8 +2,8 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.db.base import IExperienceRepository
 from app.db.dependencies import get_experience_repo
+from app.db.repositories import IExperienceRepository
 from app.schemas.experience import (
     ExperienceCreate,
     ExperienceResponse,

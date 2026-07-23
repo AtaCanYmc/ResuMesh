@@ -5,8 +5,8 @@ from pydantic import BaseModel
 from resumesh_scrapers import GitHubScraper
 
 from app.core.exceptions import ProjectNotFoundError
-from app.db.base import IProjectRepository
 from app.db.dependencies import get_project_repo
+from app.db.repositories import IProjectRepository
 from app.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
 from app.services.auth_service import get_current_admin
 from app.services.ingestion_service import IngestionService

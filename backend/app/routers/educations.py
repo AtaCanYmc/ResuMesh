@@ -1,10 +1,9 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
 
-from app.db.dependencies import get_db
-from app.models.education import Education
+from app.db.dependencies import get_education_repo
+from app.db.repositories import IEducationRepository
 from app.schemas.education import EducationResponse
 
 router = APIRouter(prefix="/educations", tags=["Educations"])
@@ -14,20 +13,17 @@ router = APIRouter(prefix="/educations", tags=["Educations"])
 def get_educations(
     skip: int = 0,
     limit: int = 100,
-    db: Session = Depends(get_db),
+    education_repo: IEducationRepository = Depends(get_education_repo),
 ):
-    return (
-        db.query(Education)
-        .order_by(Education.start_date.desc())
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
+    return education_repo.get_educations(skip=skip, limit=limit)
 
 
 @router.get("/{education_id}", response_model=EducationResponse)
-def get_education(education_id: str, db: Session = Depends(get_db)):
-    education = db.query(Education).filter(Education.id == education_id).first()
+def get_education(
+    education_id: str,
+    education_repo: IEducationRepository = Depends(get_education_repo),
+):
+    education = education_repo.get_education_by_id(education_id)
     if not education:
         raise HTTPException(status_code=404, detail="Education not found")
     return education

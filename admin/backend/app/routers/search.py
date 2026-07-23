@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, Query, Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from app.db.base import ISearchRepository
 from app.db.dependencies import get_search_repo
+from app.db.repositories import ISearchRepository
 from app.schemas.search import GlobalSearchResponse
 from app.services.telemetry_service import get_telemetry_data, telemetry
 

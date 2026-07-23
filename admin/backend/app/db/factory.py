@@ -1,4 +1,12 @@
-from app.db.base import (
+from app.db.providers.supabase import (
+    SupabaseArticleRepository,
+    SupabaseCertificateRepository,
+    SupabaseExperienceRepository,
+    SupabaseProjectRepository,
+    SupabaseSearchRepository,
+    SupabaseSystemLogRepository,
+)
+from app.db.repositories import (
     IArticleRepository,
     ICertificateRepository,
     IExperienceRepository,
@@ -6,40 +14,43 @@ from app.db.base import (
     ISearchRepository,
     ISystemLogRepository,
 )
-from app.db.providers.supabase_provider import SupabaseProvider
 
 
 class RepositoryFactory:
-    """Factory for instantiating Supabase domain repositories."""
-
     _instances = {}
 
     @classmethod
-    def _get_provider_instance(cls):
-        if SupabaseProvider not in cls._instances:
-            cls._instances[SupabaseProvider] = SupabaseProvider()
-        return cls._instances[SupabaseProvider]
-
-    @classmethod
     def get_project_repository(cls) -> IProjectRepository:
-        return cls._get_provider_instance()
+        if "project" not in cls._instances:
+            cls._instances["project"] = SupabaseProjectRepository()
+        return cls._instances["project"]
 
     @classmethod
     def get_article_repository(cls) -> IArticleRepository:
-        return cls._get_provider_instance()
+        if "article" not in cls._instances:
+            cls._instances["article"] = SupabaseArticleRepository()
+        return cls._instances["article"]
 
     @classmethod
     def get_experience_repository(cls) -> IExperienceRepository:
-        return cls._get_provider_instance()
+        if "experience" not in cls._instances:
+            cls._instances["experience"] = SupabaseExperienceRepository()
+        return cls._instances["experience"]
 
     @classmethod
     def get_certificate_repository(cls) -> ICertificateRepository:
-        return cls._get_provider_instance()
+        if "certificate" not in cls._instances:
+            cls._instances["certificate"] = SupabaseCertificateRepository()
+        return cls._instances["certificate"]
 
     @classmethod
     def get_system_log_repository(cls) -> ISystemLogRepository:
-        return cls._get_provider_instance()
+        if "system_log" not in cls._instances:
+            cls._instances["system_log"] = SupabaseSystemLogRepository()
+        return cls._instances["system_log"]
 
     @classmethod
     def get_search_repository(cls) -> ISearchRepository:
-        return cls._get_provider_instance()
+        if "search" not in cls._instances:
+            cls._instances["search"] = SupabaseSearchRepository()
+        return cls._instances["search"]

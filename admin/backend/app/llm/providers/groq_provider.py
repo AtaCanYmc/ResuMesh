@@ -1,4 +1,3 @@
-import os
 from typing import Type
 
 from langchain_core.prompts import PromptTemplate
@@ -6,19 +5,20 @@ from langchain_groq import ChatGroq
 from pydantic import BaseModel
 from tenacity import retry, stop_after_attempt, wait_exponential
 
+from app.config.settings import settings
 from app.llm.base import LLMProvider
 from app.services.template_service import TemplateService
 
 
 class GroqProvider(LLMProvider):
     def __init__(self):
-        api_key = os.getenv("GROQ_API_KEY")
+        api_key = settings.GROQ_API_KEY
         if not api_key:
             raise ValueError("GROQ_API_KEY is not set.")
 
         self.llm = ChatGroq(
             api_key=api_key,
-            model_name=os.getenv("GROQ_MODEL", "llama3-70b-8192"),
+            model_name=settings.GROQ_MODEL,
             temperature=0.3,
         )
 

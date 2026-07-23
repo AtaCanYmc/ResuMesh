@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Dict, Optional
 
-from app.db.base import ISystemLogRepository
+from app.db.repositories import ISystemLogRepository
 from app.schemas.system_log import SystemLogCreate
 
 logger = logging.getLogger("ResuMesh")

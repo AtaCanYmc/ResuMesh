@@ -13,14 +13,6 @@ import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 
-from app.db.base import (
-    IArticleRepository,
-    ICertificateRepository,
-    IExperienceRepository,
-    IProjectRepository,
-    ISearchRepository,
-    ISystemLogRepository,
-)
 from app.db.dependencies import (
     get_article_repo,
     get_certificate_repo,
@@ -28,6 +20,14 @@ from app.db.dependencies import (
     get_project_repo,
     get_search_repo,
     get_system_log_repo,
+)
+from app.db.repositories import (
+    IArticleRepository,
+    ICertificateRepository,
+    IExperienceRepository,
+    IProjectRepository,
+    ISearchRepository,
+    ISystemLogRepository,
 )
 from app.main import app, limiter
 from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate

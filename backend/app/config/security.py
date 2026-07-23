@@ -1,13 +1,14 @@
-import os
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import jwt
 from passlib.context import CryptContext
 
+from app.config.settings import settings
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+SECRET_KEY = settings.JWT_SECRET_KEY
 if not SECRET_KEY:
     raise ValueError("FATAL ERROR: JWT_SECRET_KEY environment variable is not set!")
 ALGORITHM = "HS256"

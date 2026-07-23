@@ -12,10 +12,55 @@ class Settings(BaseSettings):
     ]
     CORS_ALLOWED_ORIGINS: str = ""
     ENVIRONMENT: str = "development"
-    POSTHOG_API_KEY: str = ""
-    POSTHOG_HOST: str = "https://us.i.posthog.com"
-    REACTIVE_RESUME_URL: str = "http://localhost:3000"
+    DATABASE_URL: str = (
+        "postgresql://postgres:resumesh_dev_password_987@localhost:5432/resumesh"
+    )
+
+    # Supabase Settings
+    SUPABASE_URL: str = ""
+    SUPABASE_KEY: str = ""
+    SUPABASE_JWT_SECRET: str = ""
+    JWT_SECRET_KEY: str = "test-secret-key"
+
+    # Ingestion / Scraper Settings
+    GITHUB_USERNAME: str = ""
+    GITHUB_PAT: str = ""
+    MEDIUM_USERNAME: str = ""
+    DEVTO_USERNAME: str = ""
+    DEVTO_API_KEY: str = ""
+
+    # Admin Toggle
+    ENABLE_ADMIN_WORKSPACE: bool = False
+    ENABLE_CRON_JOBS: bool = True
+
+    # Sentry Telemetry
+    SENTRY_DSN: str = ""
+
+    # LLM Provider Setup
+    LLM_PROVIDER: str = "mock"
+
+    # OpenAI Settings
+    OPENAI_API_KEY: str = ""
+    OPENAI_MODEL: str = "gpt-4o"
+
+    # Groq Settings
+    GROQ_API_KEY: str = ""
+    GROQ_MODEL: str = "llama-3.3-70b-versatile"
+
+    # Ollama Settings
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+    OLLAMA_MODEL: str = "llama3"
+
+    # Reactive Resume Settings
+    REACTIVE_RESUME_URL: str = "https://rxresu.me"
     REACTIVE_RESUME_API_KEY: str = ""
+
+    # Frontend settings
+    FRONTEND_URL: str = "https://resumesh.dev"
+
+    # Seed Settings
+    ADMIN_USERNAME: str = "admin"
+    ADMIN_PASSWORD: str = "adminpass"
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
@@ -23,6 +68,8 @@ class Settings(BaseSettings):
 
     def __init__(self, **values):
         super().__init__(**values)
+        if not self.SUPABASE_JWT_SECRET:
+            self.SUPABASE_JWT_SECRET = self.JWT_SECRET_KEY
         if self.ENVIRONMENT.lower() != "development":
             self.CORS_ORIGINS = [
                 origin
