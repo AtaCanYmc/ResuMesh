@@ -1,7 +1,5 @@
 # flake8: noqa: E402
 import logging
-import os
-from contextlib import asynccontextmanager
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +15,7 @@ from app.core.handlers import setup_exception_handlers
 try:
     import sentry_sdk
 
-    sentry_dsn = os.getenv("SENTRY_DSN")
+    sentry_dsn = settings.SENTRY_DSN
     if sentry_dsn:
         sentry_sdk.init(
             dsn=sentry_dsn,

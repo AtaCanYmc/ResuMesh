@@ -1,16 +1,15 @@
-import os
-
 from langchain_community.chat_models import ChatOllama
 from langchain_core.prompts import PromptTemplate
 
+from app.config.settings import settings
 from app.llm.base import LLMProvider
 from app.services.template_service import TemplateService
 
 
 class OllamaProvider(LLMProvider):
     def __init__(self):
-        base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-        model = os.getenv("OLLAMA_MODEL", "llama3")
+        base_url = settings.OLLAMA_BASE_URL
+        model = settings.OLLAMA_MODEL
 
         self.llm = ChatOllama(base_url=base_url, model=model, temperature=0.3)
 

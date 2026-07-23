@@ -1,5 +1,4 @@
 import logging
-import os
 from dataclasses import dataclass
 
 import jwt
@@ -7,6 +6,7 @@ from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 
 from app.config.security import SECRET_KEY
+from app.config.settings import settings
 
 logger = logging.getLogger("auth")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login", auto_error=False)
@@ -29,12 +29,7 @@ async def get_current_admin(
 
     Extracts user info directly from the JWT payload — no local database lookup.
     """
-    enabled = os.getenv("ENABLE_ADMIN_WORKSPACE", "false").lower() in (
-        "true",
-        "1",
-        "yes",
-    )
-    if not enabled:
+    if not settings.ENABLE_ADMIN_WORKSPACE:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=(
@@ -75,7 +70,7 @@ async def get_current_admin(
         if alg == "ES256":
             from jwt import PyJWKClient
 
-            supabase_url = os.getenv("SUPABASE_URL", "").rstrip("/")
+            supabase_url = settings.SUPABASE_URL.rstrip("/")
             jwks_url = f"{supabase_url}/auth/v1/.well-known/jwks.json"
             jwks_client = PyJWKClient(jwks_url)
             signing_key = jwks_client.get_signing_key_from_jwt(token)

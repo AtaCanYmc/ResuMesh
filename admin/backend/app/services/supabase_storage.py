@@ -3,11 +3,13 @@ import os
 from supabase import AsyncClientOptions
 from supabase._async.client import AsyncClient
 
+from app.config.settings import settings
+
 
 class SupabaseStorageService:
     def __init__(self):
-        self.url = os.getenv("SUPABASE_URL")
-        self.key = os.getenv("SUPABASE_KEY")
+        self.url = settings.SUPABASE_URL
+        self.key = settings.SUPABASE_KEY
         if not self.url or not self.key:
             raise ValueError("SUPABASE_URL and SUPABASE_KEY must be defined")
 

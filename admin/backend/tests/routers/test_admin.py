@@ -68,9 +68,10 @@ async def test_generate_cv(client, monkeypatch, auth_override):
 
     # Force LLM Provider to be mock and reset cache
     import app.llm.factory as llm_factory
+    from app.config.settings import settings
 
     monkeypatch.setattr(llm_factory, "_provider_instance", None)
-    monkeypatch.setenv("LLM_PROVIDER", "mock")
+    monkeypatch.setattr(settings, "LLM_PROVIDER", "mock")
 
     response = await client.post(
         "/api/v1/admin/generate-cv", json={"job_url": "https://example.com/job"}

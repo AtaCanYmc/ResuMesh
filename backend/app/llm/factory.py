@@ -1,6 +1,6 @@
-import os
 from typing import Optional
 
+from app.config.settings import settings
 from app.llm.base import LLMProvider
 
 # Cache the provider instance
@@ -12,7 +12,7 @@ def get_llm_provider() -> LLMProvider:
     if _provider_instance is not None:
         return _provider_instance
 
-    provider_name = os.getenv("LLM_PROVIDER", "mock").lower()
+    provider_name = settings.LLM_PROVIDER.lower()
 
     if provider_name == "openai":
         from app.llm.providers.openai_provider import OpenAIProvider

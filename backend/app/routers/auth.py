@@ -1,5 +1,3 @@
-import os
-
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from slowapi import Limiter
@@ -7,6 +5,7 @@ from slowapi.util import get_remote_address
 from sqlalchemy.orm import Session
 
 from app.config.security import SecurityUtils
+from app.config.settings import settings
 from app.db.dependencies import get_db
 from app.models.user import User
 from app.services.auth_service import get_current_admin
@@ -24,12 +23,7 @@ async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
 ):
-    enabled = os.getenv("ENABLE_ADMIN_WORKSPACE", "false").lower() in (
-        "true",
-        "1",
-        "yes",
-    )
-    if not enabled:
+    if not settings.ENABLE_ADMIN_WORKSPACE:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=(

@@ -1,11 +1,10 @@
-import os
-
 import jwt
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 from app.config.security import ALGORITHM, SECRET_KEY
+from app.config.settings import settings
 from app.db.dependencies import get_db
 from app.models.user import User
 
@@ -18,12 +17,7 @@ async def get_current_admin(
     db: Session = Depends(get_db),
 ):
     """Checks if the request has a valid admin token."""
-    enabled = os.getenv("ENABLE_ADMIN_WORKSPACE", "false").lower() in (
-        "true",
-        "1",
-        "yes",
-    )
-    if not enabled:
+    if not settings.ENABLE_ADMIN_WORKSPACE:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=(

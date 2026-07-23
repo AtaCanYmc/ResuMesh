@@ -1,4 +1,3 @@
-import os
 from typing import Optional
 
 from fastapi import (
@@ -16,6 +15,7 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from sqlalchemy.orm import Session
 
+from app.config.settings import settings
 from app.db.base import (
     IArticleRepository,
     ICertificateRepository,
@@ -105,9 +105,9 @@ async def refresh_data(
 ):
     """Admin endpoint to manually trigger data scraping
     from platforms in the background."""
-    github_user = os.getenv("GITHUB_USERNAME")
-    medium_user = os.getenv("MEDIUM_USERNAME")
-    devto_user = os.getenv("DEVTO_USERNAME")
+    github_user = settings.GITHUB_USERNAME
+    medium_user = settings.MEDIUM_USERNAME
+    devto_user = settings.DEVTO_USERNAME
 
     ingestion = IngestionService(log_provider=log_repo)
     has_tasks = False

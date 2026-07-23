@@ -1,16 +1,16 @@
-import os
 from datetime import datetime
 from typing import List
 
 from fastapi import APIRouter, Depends, Response
 
+from app.config.settings import settings
 from app.db.base import IProjectRepository
 from app.db.dependencies import get_project_repo
 from app.schemas.project import ProjectResponse
 
 router = APIRouter(tags=["seo"])
 
-FRONTEND_URL = os.getenv("FRONTEND_URL", "https://resumesh.dev").rstrip("/")
+FRONTEND_URL = settings.FRONTEND_URL.rstrip("/")
 
 
 @router.get("/sitemap.xml", response_class=Response)

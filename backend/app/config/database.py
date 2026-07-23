@@ -1,16 +1,10 @@
-import os
-
-from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-load_dotenv()
+from app.config.settings import settings
 
-# We will use the connection string from .env, fallback to a default if not found
-SQLALCHEMY_DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql://postgres:resumesh_dev_password_987@localhost:5432/resumesh",
-)
+# We will use the connection string from settings
+SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
