@@ -6,7 +6,7 @@ import jwt
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 
-from app.config.security import ALGORITHM, SECRET_KEY
+from app.config.security import SECRET_KEY
 
 logger = logging.getLogger("auth")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login", auto_error=False)
@@ -54,16 +54,39 @@ async def get_current_admin(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    try:
+        unverified_header = jwt.get_unverified_header(token)
+        alg = unverified_header.get("alg", "HS256")
+    except Exception as e:
+        logger.error(
+            f"Authentication failed: Unable to parse token header. Error: {str(e)}"
+        )
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token format.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
     logger.info(
-        f"Auth attempt: JWT token prefix={token[:15]}... "
+        f"Auth attempt: JWT token prefix={token[:15]}... Token alg={alg}. "
         f"Key length={len(SECRET_KEY) if SECRET_KEY else 0}"
     )
     try:
-        # Supabase JWTs are signed with HS256 using the Supabase JWT Secret.
+        if alg == "ES256":
+            from jwt import PyJWKClient
+
+            supabase_url = os.getenv("SUPABASE_URL", "").rstrip("/")
+            jwks_url = f"{supabase_url}/auth/v1/.well-known/jwks.json"
+            jwks_client = PyJWKClient(jwks_url)
+            signing_key = jwks_client.get_signing_key_from_jwt(token)
+            key = signing_key.key
+        else:
+            key = SECRET_KEY
+
         payload = jwt.decode(
             token,
-            SECRET_KEY,
-            algorithms=[ALGORITHM],
+            key,
+            algorithms=[alg],
             options={
                 "verify_aud": False
             },  # verify_aud False to simplify mock test runs
@@ -101,11 +124,6 @@ async def get_current_admin(
         )
     except jwt.InvalidTokenError as e:
         prefix = SECRET_KEY[:4] if SECRET_KEY else "None"
-        try:
-            unverified_header = jwt.get_unverified_header(token)
-            alg = unverified_header.get("alg")
-        except Exception:
-            alg = "unknown"
         logger.error(
             f"Authentication failed: Invalid signature or token format. "
             f"Secret key prefix used={prefix}. Token alg={alg}. Error: {str(e)}"
