@@ -3,7 +3,19 @@
 This is the public, read-only API engine powering the visitor-facing ResuMesh portfolio application. It is built with **FastAPI** and **SQLAlchemy** to fetch and serve portfolio data securely.
 
 > [!NOTE]
-> All administrative operations (authentication, scraping, LinkedIn imports, and AI CV generation) have been separated and moved to the administrative backend located under [admin/backend](../admin/backend).
+> All administrative operations (authentication, scraping, LinkedIn imports, and AI CV generation) have been separated and moved to the administrative backend located under [admin/backend](../admin/backend). Unused libraries, templates, and LLM integrations have been completely removed from this service to optimize memory usage and container boot times.
+
+## 🏗️ Architectural Features
+
+1. **Modular Repository Pattern:**
+   This backend uses decoupled repository interfaces and concrete database providers:
+   - Interfaces are located in `app/db/repositories/` (e.g. `project.py`, `education.py`, etc.).
+   - Providers are located in `app/db/providers/` (e.g. `supabase/` and `sqlalchemy/`).
+   - Routers inject these repositories cleanly using FastAPI dependency injection (`app/db/dependencies.py`).
+2. **Centralized Configuration Layer:**
+   Environment variables are managed and validated globally using a single Pydantic settings class (`app/config/settings.py`).
+3. **Local Telemetry Fallback:**
+   Telemetry events (e.g., CV downloads, health checks) are tracked locally via the standard application logger, removing third-party SDK dependencies like PostHog.
 
 ## 🛠️ Tech Stack & Key Libraries
 - **Framework:** FastAPI (Asynchronous lifecycle)

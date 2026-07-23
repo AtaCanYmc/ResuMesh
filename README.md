@@ -22,8 +22,9 @@ ResuMesh is a self-hosted, dynamic portfolio hub designed for modern developers.
 
 It features:
 - ⚡ **Global Search Bar**: Lightning-fast filtering of your skills, projects, and articles for recruiters.
-- ✨ **AI CV Tailoring**: Groq/OpenAI integration for real-time, tailored PDF resume generation based on specific job descriptions.
-- 🔄 **Continuous Sync**: Automatically aggregates your digital footprint into a single unified database.
+- ✨ **AI CV Tailoring**: Groq/OpenAI/Ollama integration for real-time, tailored PDF resume generation based on specific job descriptions.
+- 🔄 **Continuous Ingestion**: Automatically aggregates your digital footprint into a single unified database.
+- 🔒 **Decoupled Architecture**: Strict separation between visitor-facing read-only APIs and administrative panels.
 
 ---
 
@@ -69,7 +70,7 @@ graph TD
     end
 
     API --> PG
-    AdminAPI --> Auth[JWT Auth]
+    AdminAPI --> Auth[JWT Auth - ES256 & HS256]
     AdminAPI --> Ingest[Ingestion Service]
     AdminAPI --> AI[CV Generator Service]
     AdminAPI --> Logs[System Logs]
@@ -84,6 +85,19 @@ graph TD
 
     Logs --> PG
 ```
+
+### 🛠️ Key Architectural Decisions
+
+1. **Strict Repository & Provider Isolation:**
+   All database and ORM operations follow clean dependency injection paradigms. Routers do not run raw SQL, SQLAlchemy queries, or direct Supabase client calls.
+   - **Repository Interfaces:** Defined modularly under `app/db/repositories/` (e.g. `project.py`, `education.py`, etc.).
+   - **Provider Implementations:** Decoupled into `app/db/providers/supabase/` and `app/db/providers/sqlalchemy/`.
+2. **Centralized Configuration Layer:**
+   Environment variables are managed globally through Pydantic `BaseSettings` (`app/config/settings.py`) with type enforcement and default fallbacks.
+3. **Local-First Telemetry:**
+   PostHog integration was replaced by an optimized local logging telemetry framework (`TelemetryService`), avoiding third-party analytics scripting and dependency overheads.
+4. **Token Verification Flexibility:**
+   The JWT auth dynamically reads incoming tokens and decodes them. If signed via asymmetric `ES256` (standard for Supabase local instances), it fetches public keys from the JWKS endpoint. If `HS256`, it decodes using the symmetric secret.
 
 ---
 
