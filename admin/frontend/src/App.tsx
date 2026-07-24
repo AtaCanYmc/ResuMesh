@@ -25,6 +25,9 @@ const AdminSystemLogs = React.lazy(() => import('./pages/admin/AdminSystemLogs')
 const AdminLinkedInImport = React.lazy(() => import('./pages/admin/AdminLinkedInImport'));
 const AdminAiCv = React.lazy(() => import('./pages/admin/AdminAiCv'));
 const AdminReactiveResume = React.lazy(() => import('./pages/admin/AdminReactiveResume'));
+const AdminPackages = React.lazy(() => import('./pages/admin/AdminPackages'));
+const AdminPosts = React.lazy(() => import('./pages/admin/AdminPosts'));
+const AdminVideos = React.lazy(() => import('./pages/admin/AdminVideos'));
 
 
 // Create a client
@@ -69,6 +72,9 @@ const router = createBrowserRouter([
       { path: 'import-linkedin', element: <AdminLinkedInImport /> },
       { path: 'ai-cv', element: <AdminAiCv /> },
       { path: 'reactive-resume', element: <AdminReactiveResume /> },
+      { path: 'packages', element: <AdminPackages /> },
+      { path: 'posts', element: <AdminPosts /> },
+      { path: 'videos', element: <AdminVideos /> },
     ],
   },
 ]);

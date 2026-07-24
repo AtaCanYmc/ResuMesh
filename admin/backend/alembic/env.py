@@ -27,9 +27,12 @@ from app.models.certificate import Certificate  # noqa: E402, F401
 from app.models.education import Education  # noqa: E402, F401
 from app.models.experience import Experience  # noqa: E402, F401
 from app.models.generated_cv import GeneratedCV  # noqa: E402, F401
+from app.models.package import Package  # noqa: E402, F401
+from app.models.post import Post  # noqa: E402, F401
 from app.models.project import Project  # noqa: E402, F401
 from app.models.skill import Skill  # noqa: E402, F401
 from app.models.system_log import SystemLog  # noqa: E402, F401
+from app.models.video import Video  # noqa: E402, F401
 
 target_metadata = Base.metadata
 config.set_main_option(
