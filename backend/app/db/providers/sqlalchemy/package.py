@@ -24,7 +24,7 @@ class SQLAlchemyPackageRepository(IPackageRepository):
         return self.db.query(Package).filter(Package.id == package_id).first()
 
     def create_package(self, package: PackageCreate) -> PackageResponse:
-        db_package = Package(**package.model_dump())
+        db_package = Package(**package.model_dump(mode="json"))
         self.db.add(db_package)
         self.db.commit()
         self.db.refresh(db_package)
@@ -39,7 +39,7 @@ class SQLAlchemyPackageRepository(IPackageRepository):
             .first()
         )
         if db_package:
-            update_data = package.model_dump(exclude_unset=True)
+            update_data = package.model_dump(mode="json", exclude_unset=True)
             for key, value in update_data.items():
                 setattr(db_package, key, value)
             self.db.commit()
@@ -53,7 +53,7 @@ class SQLAlchemyPackageRepository(IPackageRepository):
         db_package = self.get_package_by_id(package_id)
         if not db_package:
             return None
-        update_data = package.model_dump(exclude_unset=True)
+        update_data = package.model_dump(mode="json", exclude_unset=True)
         for key, value in update_data.items():
             setattr(db_package, key, value)
         self.db.commit()

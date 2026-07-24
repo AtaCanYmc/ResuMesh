@@ -89,6 +89,87 @@ async def test_fetch_pypi_packages_success(mock_provider):
 
 @pytest.mark.asyncio
 @respx.mock
+async def test_fetch_pypi_packages_dynamic_success(mock_provider):
+    # Mock the user profile page containing project links
+    user_profile_html = """
+    <html>
+        <body>
+            <a href="/project/dynamic-package-1/">pkg1</a>
+            <a href="/project/dynamic-package-2/">pkg2</a>
+        </body>
+    </html>
+    """
+    respx.get("https://pypi.org/user/test-user/").mock(
+        return_value=Response(200, text=user_profile_html)
+    )
+
+    mock_response_1 = {
+        "info": {
+            "name": "dynamic-package-1",
+            "summary": "Summary 1",
+            "description": "Desc 1",
+            "package_url": "https://pypi.org/project/dynamic-package-1",
+            "docs_url": None,
+            "keywords": None,
+            "version": "1.0.0",
+            "downloads": {
+                "last_day": 0,
+                "last_week": 0,
+                "last_month": 100,
+            },
+        },
+        "last_serial": 12345,
+        "ownership": {
+            "organization": None,
+            "roles": [{"role": "owner", "user": "test-user"}],
+        },
+        "releases": {},
+        "urls": [],
+    }
+    mock_response_2 = {
+        "info": {
+            "name": "dynamic-package-2",
+            "summary": "Summary 2",
+            "description": "Desc 2",
+            "package_url": "https://pypi.org/project/dynamic-package-2",
+            "docs_url": None,
+            "keywords": None,
+            "version": "2.0.0",
+            "downloads": {
+                "last_day": 0,
+                "last_week": 0,
+                "last_month": 200,
+            },
+        },
+        "last_serial": 12345,
+        "ownership": {
+            "organization": None,
+            "roles": [{"role": "owner", "user": "test-user"}],
+        },
+        "releases": {},
+        "urls": [],
+    }
+
+    respx.get("https://pypi.org/pypi/dynamic-package-1/json").mock(
+        return_value=Response(200, json=mock_response_1)
+    )
+    respx.get("https://pypi.org/pypi/dynamic-package-2/json").mock(
+        return_value=Response(200, json=mock_response_2)
+    )
+
+    scraper = PyPIScraperService()
+    service = IngestionService()
+    await service.fetch_pypi_packages(scraper, "test-user", mock_provider)
+
+    packages = await mock_provider.get_packages()
+    assert len(packages) == 2
+    titles = [p.title for p in packages]
+    assert "dynamic-package-1" in titles
+    assert "dynamic-package-2" in titles
+
+
+@pytest.mark.asyncio
+@respx.mock
 async def test_fetch_npm_packages_success(mock_provider):
     mock_response = {
         "objects": [

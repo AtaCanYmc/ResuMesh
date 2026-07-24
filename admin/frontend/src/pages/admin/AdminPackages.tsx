@@ -53,25 +53,19 @@ export default function AdminPackages() {
     mutationFn: async () => {
       const npmUser = import.meta.env.VITE_NPM_USERNAME || 'atacanymc';
       const pypiUser = import.meta.env.VITE_PYPI_USERNAME || 'atacanymc';
-      const pypiPackages = (import.meta.env.VITE_PYPI_PACKAGES || '').split(',').filter(Boolean);
 
       const promises = [
         axios.post(
           `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/packages/refresh`,
           { username: npmUser, platform: 'npm' },
           { headers: { Authorization: `Bearer ${token}` } }
+        ),
+        axios.post(
+          `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/packages/refresh`,
+          { username: pypiUser, platform: 'pypi' },
+          { headers: { Authorization: `Bearer ${token}` } }
         )
       ];
-
-      if (pypiPackages.length > 0) {
-        promises.push(
-          axios.post(
-            `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/packages/refresh`,
-            { username: pypiUser, platform: 'pypi', package_names: pypiPackages },
-            { headers: { Authorization: `Bearer ${token}` } }
-          )
-        );
-      }
 
       await Promise.all(promises);
     },

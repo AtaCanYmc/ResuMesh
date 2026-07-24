@@ -18,7 +18,7 @@ class SQLAlchemyPostRepository(IPostRepository):
         return self.db.query(Post).filter(Post.id == post_id).first()
 
     def create_post(self, post: PostCreate) -> PostResponse:
-        db_post = Post(**post.model_dump())
+        db_post = Post(**post.model_dump(mode="json"))
         self.db.add(db_post)
         self.db.commit()
         self.db.refresh(db_post)
@@ -31,7 +31,7 @@ class SQLAlchemyPostRepository(IPostRepository):
             .first()
         )
         if db_post:
-            update_data = post.model_dump(exclude_unset=True)
+            update_data = post.model_dump(mode="json", exclude_unset=True)
             for key, value in update_data.items():
                 setattr(db_post, key, value)
             self.db.commit()
@@ -43,7 +43,7 @@ class SQLAlchemyPostRepository(IPostRepository):
         db_post = self.get_post_by_id(post_id)
         if not db_post:
             return None
-        update_data = post.model_dump(exclude_unset=True)
+        update_data = post.model_dump(mode="json", exclude_unset=True)
         for key, value in update_data.items():
             setattr(db_post, key, value)
         self.db.commit()

@@ -103,14 +103,44 @@ class IngestionService:
             scraper, provider, "MEDIUM", username, "upsert_article"
         )
 
+    async def _get_pypi_user_packages(self, username: str) -> List[str]:
+        import httpx
+        from bs4 import BeautifulSoup
+
+        url = f"https://pypi.org/user/{username}/"
+        async with httpx.AsyncClient() as client:
+            try:
+                r = await client.get(url, timeout=10)
+                if r.status_code == 200:
+                    soup = BeautifulSoup(r.text, "html.parser")
+                    pkgs = []
+                    for a in soup.find_all("a", href=True):
+                        href = a["href"]
+                        if href.startswith("/project/"):
+                            parts = href.strip("/").split("/")
+                            if len(parts) >= 2 and parts[0] == "project":
+                                pkg_name = parts[1]
+                                if pkg_name not in pkgs:
+                                    pkgs.append(pkg_name)
+                    return pkgs
+            except Exception:
+                pass
+        return []
+
     async def fetch_pypi_packages(
         self,
         scraper: IScraperService,
         username: str,
         provider: IPackageRepository,
-        package_names: List[str],
+        package_names: List[str] = None,
     ):
         """Fetches PyPI packages and saves them via provider."""
+        if not package_names:
+            package_names = await self._get_pypi_user_packages(username)
+
+        if not package_names:
+            return
+
         try:
             items = await scraper.fetch_data(username, package_names=package_names)
             for item in items:
