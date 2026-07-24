@@ -98,3 +98,35 @@ export interface SystemLog {
   details?: Record<string, any>;
   created_at: string;
 }
+
+export interface Package {
+  id: string;
+  title: string;
+  description?: string;
+  platform: string;
+  url?: string;
+  docs_url?: string;
+  tags?: string;
+  version?: string;
+  last_month_downloads?: number;
+}
+
+export interface Post {
+  id: string;
+  title: string;
+  description?: string;
+  platform: string;
+  url?: string;
+  thumbnail?: string;
+  profile?: string;
+}
+
+export interface Video {
+  id: string;
+  title: string;
+  description?: string;
+  platform: string;
+  url: string;
+  thumbnail?: string;
+  profile: string;
+}

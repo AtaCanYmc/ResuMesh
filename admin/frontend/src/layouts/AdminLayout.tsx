@@ -14,7 +14,10 @@ import {
   Menu,
   X,
   GraduationCap,
-  Cloud
+  Cloud,
+  Box,
+  Share2,
+  Video
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import PageLoader from '../components/PageLoader';
@@ -34,6 +37,9 @@ export default function AdminLayout() {
     { path: '/admin', label: 'Overview', icon: <LayoutDashboard size={20} />, end: true },
     { path: '/admin/projects', label: 'Projects', icon: <FolderGit size={20} />, end: false },
     { path: '/admin/articles', label: 'Articles', icon: <BookOpen size={20} />, end: false },
+    { path: '/admin/packages', label: 'Packages', icon: <Box size={20} />, end: false },
+    { path: '/admin/posts', label: 'Social Posts', icon: <Share2 size={20} />, end: false },
+    { path: '/admin/videos', label: 'Videos', icon: <Video size={20} />, end: false },
     { path: '/admin/experiences', label: 'Experiences', icon: <Briefcase size={20} />, end: false },
     { path: '/admin/educations', label: 'Educations', icon: <GraduationCap size={20} />, end: false },
     { path: '/admin/skills', label: 'Skills', icon: <Wand2 size={20} />, end: false }, // Using Wand2 or create another icon for Skills
