@@ -8,6 +8,7 @@ from pydantic import BaseModel, HttpUrl
 class ArticlePlatform(str, Enum):
     MEDIUM = "MEDIUM"
     DEV_TO = "DEV_TO"
+    SUBSTACK = "SUBSTACK"
 
 
 class ArticleBase(BaseModel):

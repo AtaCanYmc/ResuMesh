@@ -11,6 +11,32 @@ class SupabaseProjectRepository(IProjectRepository):
 
     async def create_project(self, project: ProjectCreate) -> ProjectResponse:
         project_data = project.model_dump(mode="json")
+        if "title" not in project_data or not project_data["title"]:
+            project_data["title"] = getattr(project, "name", None) or getattr(
+                project, "title", ""
+            )
+        if "stars" not in project_data or not project_data["stars"]:
+            project_data["stars"] = getattr(project, "stargazers_count", 0)
+        if "watchers" not in project_data or not project_data["watchers"]:
+            project_data["watchers"] = getattr(project, "watchers_count", 0)
+        if "forks" not in project_data or not project_data["forks"]:
+            project_data["forks"] = getattr(project, "forks_count", 0)
+        if "github_url" in project_data and project_data["github_url"]:
+            project_data["github_url"] = str(project_data["github_url"])
+
+        valid_keys = {
+            "title",
+            "description",
+            "github_url",
+            "stars",
+            "watchers",
+            "forks",
+            "languages",
+            "tags",
+            "raw_github_data",
+        }
+        project_data = {k: v for k, v in project_data.items() if k in valid_keys}
+
         response = await self.client.table("projects").insert(project_data).execute()
         if not response.data:
             raise Exception("Failed to create project in Supabase.")
@@ -39,6 +65,32 @@ class SupabaseProjectRepository(IProjectRepository):
 
     async def upsert_project(self, project: ProjectCreate) -> ProjectResponse:
         project_data = project.model_dump(mode="json")
+        if "title" not in project_data or not project_data["title"]:
+            project_data["title"] = getattr(project, "name", None) or getattr(
+                project, "title", ""
+            )
+        if "stars" not in project_data or not project_data["stars"]:
+            project_data["stars"] = getattr(project, "stargazers_count", 0)
+        if "watchers" not in project_data or not project_data["watchers"]:
+            project_data["watchers"] = getattr(project, "watchers_count", 0)
+        if "forks" not in project_data or not project_data["forks"]:
+            project_data["forks"] = getattr(project, "forks_count", 0)
+        if "github_url" in project_data and project_data["github_url"]:
+            project_data["github_url"] = str(project_data["github_url"])
+
+        valid_keys = {
+            "title",
+            "description",
+            "github_url",
+            "stars",
+            "watchers",
+            "forks",
+            "languages",
+            "tags",
+            "raw_github_data",
+        }
+        project_data = {k: v for k, v in project_data.items() if k in valid_keys}
+
         existing = (
             await self.client.table("projects")
             .select("*")

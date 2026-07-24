@@ -8,10 +8,13 @@ from app.db.repositories import (
     ICertificateRepository,
     IEducationRepository,
     IExperienceRepository,
+    IPackageRepository,
+    IPostRepository,
     IProjectRepository,
     ISearchRepository,
     ISkillRepository,
     ISystemLogRepository,
+    IVideoRepository,
 )
 
 
@@ -45,6 +48,38 @@ def get_system_log_repo() -> ISystemLogRepository:
 
 def get_search_repo() -> ISearchRepository:
     return RepositoryFactory.get_search_repository()
+
+
+def get_package_repo(db: Session = Depends(get_db)) -> IPackageRepository:
+    # Since packages are read publically but managed by admin,
+    # let's load from database via SQLAlchemy
+    from app.db.providers.sqlalchemy import SQLAlchemyPackageRepository
+
+    return SQLAlchemyPackageRepository(db)
+
+
+def get_post_repo(db: Session = Depends(get_db)) -> IPostRepository:
+    from app.db.providers.sqlalchemy import SQLAlchemyPostRepository
+
+    return SQLAlchemyPostRepository(db)
+
+
+def get_video_repo(db: Session = Depends(get_db)) -> IVideoRepository:
+    from app.db.providers.sqlalchemy import SQLAlchemyVideoRepository
+
+    return SQLAlchemyVideoRepository(db)
+
+
+def get_package_supabase_repo() -> IPackageRepository:
+    return RepositoryFactory.get_package_repository()
+
+
+def get_post_supabase_repo() -> IPostRepository:
+    return RepositoryFactory.get_post_repository()
+
+
+def get_video_supabase_repo() -> IVideoRepository:
+    return RepositoryFactory.get_video_repository()
 
 
 def get_education_repo(db: Session = Depends(get_db)) -> IEducationRepository:

@@ -17,17 +17,23 @@ from app.db.dependencies import (
     get_article_repo,
     get_certificate_repo,
     get_experience_repo,
+    get_package_repo,
+    get_post_repo,
     get_project_repo,
     get_search_repo,
     get_system_log_repo,
+    get_video_repo,
 )
 from app.db.repositories import (
     IArticleRepository,
     ICertificateRepository,
     IExperienceRepository,
+    IPackageRepository,
+    IPostRepository,
     IProjectRepository,
     ISearchRepository,
     ISystemLogRepository,
+    IVideoRepository,
 )
 from app.main import app, limiter
 from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate
@@ -41,9 +47,12 @@ from app.schemas.experience import (
     ExperienceResponse,
     ExperienceUpdate,
 )
+from app.schemas.package import PackageCreate, PackageResponse, PackageUpdate
+from app.schemas.post import PostCreate, PostResponse, PostUpdate
 from app.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
 from app.schemas.search import GlobalSearchResponse, SearchResultItem
 from app.schemas.system_log import SystemLogCreate, SystemLogResponse
+from app.schemas.video import VideoCreate, VideoResponse, VideoUpdate
 
 limiter.enabled = False
 
@@ -54,6 +63,9 @@ MOCK_DB_STATE = {
     "experiences": [],
     "certificates": [],
     "logs": [],
+    "packages": [],
+    "posts": [],
+    "videos": [],
 }
 
 
@@ -72,6 +84,18 @@ class MockProjectRepository(IProjectRepository):
 
     async def create_project(self, project: ProjectCreate) -> ProjectResponse:
         data = project.model_dump()
+        if "title" not in data or not data["title"]:
+            data["title"] = getattr(project, "name", None) or getattr(
+                project, "title", ""
+            )
+        if "stars" not in data or not data["stars"]:
+            data["stars"] = getattr(project, "stargazers_count", 0)
+        if "watchers" not in data or not data["watchers"]:
+            data["watchers"] = getattr(project, "watchers_count", 0)
+        if "forks" not in data or not data["forks"]:
+            data["forks"] = getattr(project, "forks_count", 0)
+        if "github_url" in data and data["github_url"]:
+            data["github_url"] = str(data["github_url"])
         data["id"] = str(uuid.uuid4())
         data["created_at"] = datetime.now(timezone.utc)
         data["updated_at"] = datetime.now(timezone.utc)
@@ -80,9 +104,20 @@ class MockProjectRepository(IProjectRepository):
         return resp
 
     async def upsert_project(self, project: ProjectCreate) -> ProjectResponse:
+        title = getattr(project, "title", None) or getattr(project, "name", "")
         for i, p in enumerate(MOCK_DB_STATE["projects"]):
-            if p.title == project.title:
+            if p.title == title:
                 data = project.model_dump()
+                if "title" not in data or not data["title"]:
+                    data["title"] = title
+                if "stars" not in data or not data["stars"]:
+                    data["stars"] = getattr(project, "stargazers_count", 0)
+                if "watchers" not in data or not data["watchers"]:
+                    data["watchers"] = getattr(project, "watchers_count", 0)
+                if "forks" not in data or not data["forks"]:
+                    data["forks"] = getattr(project, "forks_count", 0)
+                if "github_url" in data and data["github_url"]:
+                    data["github_url"] = str(data["github_url"])
                 data["id"] = p.id
                 data["created_at"] = p.created_at
                 data["updated_at"] = datetime.now(timezone.utc)
@@ -98,6 +133,8 @@ class MockProjectRepository(IProjectRepository):
             if p.id == project_id:
                 data = p.model_dump()
                 for k, v in project_update.model_dump(exclude_unset=True).items():
+                    if k == "github_url" and v:
+                        v = str(v)
                     data[k] = v
                 data["updated_at"] = datetime.now(timezone.utc)
                 resp = ProjectResponse(**data)
@@ -108,14 +145,21 @@ class MockProjectRepository(IProjectRepository):
     async def delete_project(self, project_id: str) -> bool:
         for i, p in enumerate(MOCK_DB_STATE["projects"]):
             if p.id == project_id:
-                del MOCK_DB_STATE["projects"][i]
+                MOCK_DB_STATE["projects"].pop(i)
                 return True
         return False
 
 
 class MockArticleRepository(IArticleRepository):
+    async def get_all_articles(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[ArticleResponse]:
+        return MOCK_DB_STATE["articles"][skip : skip + limit]
+
     async def create_article(self, article: ArticleCreate) -> ArticleResponse:
         data = article.model_dump()
+        if "url" in data and data["url"]:
+            data["url"] = str(data["url"])
         data["id"] = str(uuid.uuid4())
         data["created_at"] = datetime.now(timezone.utc)
         data["updated_at"] = datetime.now(timezone.utc)
@@ -125,8 +169,10 @@ class MockArticleRepository(IArticleRepository):
 
     async def upsert_article(self, article: ArticleCreate) -> ArticleResponse:
         for i, a in enumerate(MOCK_DB_STATE["articles"]):
-            if a.url == article.url:
+            if a.url == str(article.url):
                 data = article.model_dump()
+                if "url" in data and data["url"]:
+                    data["url"] = str(data["url"])
                 data["id"] = a.id
                 data["created_at"] = a.created_at
                 data["updated_at"] = datetime.now(timezone.utc)
@@ -135,11 +181,6 @@ class MockArticleRepository(IArticleRepository):
                 return resp
         return await self.create_article(article)
 
-    async def get_all_articles(
-        self, skip: int = 0, limit: int = 100
-    ) -> List[ArticleResponse]:
-        return MOCK_DB_STATE["articles"][skip : skip + limit]
-
     async def update_article(
         self, article_id: str, article_update: ArticleUpdate
     ) -> Optional[ArticleResponse]:
@@ -147,6 +188,8 @@ class MockArticleRepository(IArticleRepository):
             if a.id == article_id:
                 data = a.model_dump()
                 for k, v in article_update.model_dump(exclude_unset=True).items():
+                    if k == "url" and v:
+                        v = str(v)
                     data[k] = v
                 data["updated_at"] = datetime.now(timezone.utc)
                 resp = ArticleResponse(**data)
@@ -157,12 +200,17 @@ class MockArticleRepository(IArticleRepository):
     async def delete_article(self, article_id: str) -> bool:
         for i, a in enumerate(MOCK_DB_STATE["articles"]):
             if a.id == article_id:
-                del MOCK_DB_STATE["articles"][i]
+                MOCK_DB_STATE["articles"].pop(i)
                 return True
         return False
 
 
 class MockExperienceRepository(IExperienceRepository):
+    async def get_all_experiences(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[ExperienceResponse]:
+        return MOCK_DB_STATE["experiences"][skip : skip + limit]
+
     async def create_experience(
         self, experience: ExperienceCreate
     ) -> ExperienceResponse:
@@ -174,17 +222,12 @@ class MockExperienceRepository(IExperienceRepository):
         MOCK_DB_STATE["experiences"].append(resp)
         return resp
 
-    async def get_all_experiences(
-        self, skip: int = 0, limit: int = 100
-    ) -> List[ExperienceResponse]:
-        return MOCK_DB_STATE["experiences"][skip : skip + limit]
-
     async def update_experience(
         self, experience_id: str, experience_update: ExperienceUpdate
     ) -> Optional[ExperienceResponse]:
-        for i, e in enumerate(MOCK_DB_STATE["experiences"]):
-            if e.id == experience_id:
-                data = e.model_dump()
+        for i, exp in enumerate(MOCK_DB_STATE["experiences"]):
+            if exp.id == experience_id:
+                data = exp.model_dump()
                 for k, v in experience_update.model_dump(exclude_unset=True).items():
                     data[k] = v
                 data["updated_at"] = datetime.now(timezone.utc)
@@ -194,18 +237,25 @@ class MockExperienceRepository(IExperienceRepository):
         return None
 
     async def delete_experience(self, experience_id: str) -> bool:
-        for i, e in enumerate(MOCK_DB_STATE["experiences"]):
-            if e.id == experience_id:
-                del MOCK_DB_STATE["experiences"][i]
+        for i, exp in enumerate(MOCK_DB_STATE["experiences"]):
+            if exp.id == experience_id:
+                MOCK_DB_STATE["experiences"].pop(i)
                 return True
         return False
 
 
 class MockCertificateRepository(ICertificateRepository):
+    async def get_all_certificates(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[CertificateResponse]:
+        return MOCK_DB_STATE["certificates"][skip : skip + limit]
+
     async def create_certificate(
         self, certificate: CertificateCreate
     ) -> CertificateResponse:
         data = certificate.model_dump()
+        if "credential_url" in data and data["credential_url"]:
+            data["credential_url"] = str(data["credential_url"])
         data["id"] = str(uuid.uuid4())
         data["created_at"] = datetime.now(timezone.utc)
         data["updated_at"] = datetime.now(timezone.utc)
@@ -213,18 +263,15 @@ class MockCertificateRepository(ICertificateRepository):
         MOCK_DB_STATE["certificates"].append(resp)
         return resp
 
-    async def get_all_certificates(
-        self, skip: int = 0, limit: int = 100
-    ) -> List[CertificateResponse]:
-        return MOCK_DB_STATE["certificates"][skip : skip + limit]
-
     async def update_certificate(
         self, certificate_id: str, certificate_update: CertificateUpdate
     ) -> Optional[CertificateResponse]:
-        for i, c in enumerate(MOCK_DB_STATE["certificates"]):
-            if c.id == certificate_id:
-                data = c.model_dump()
+        for i, cert in enumerate(MOCK_DB_STATE["certificates"]):
+            if cert.id == certificate_id:
+                data = cert.model_dump()
                 for k, v in certificate_update.model_dump(exclude_unset=True).items():
+                    if k == "credential_url" and v:
+                        v = str(v)
                     data[k] = v
                 data["updated_at"] = datetime.now(timezone.utc)
                 resp = CertificateResponse(**data)
@@ -233,9 +280,9 @@ class MockCertificateRepository(ICertificateRepository):
         return None
 
     async def delete_certificate(self, certificate_id: str) -> bool:
-        for i, c in enumerate(MOCK_DB_STATE["certificates"]):
-            if c.id == certificate_id:
-                del MOCK_DB_STATE["certificates"][i]
+        for i, cert in enumerate(MOCK_DB_STATE["certificates"]):
+            if cert.id == certificate_id:
+                MOCK_DB_STATE["certificates"].pop(i)
                 return True
         return False
 
@@ -259,24 +306,21 @@ class MockSystemLogRepository(ISystemLogRepository):
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
     ) -> List[SystemLogResponse]:
-        filtered = MOCK_DB_STATE["logs"]
+        filtered_logs = MOCK_DB_STATE["logs"]
         if level:
-            filtered = [log for log in filtered if log.level == level.upper()]
+            filtered_logs = [l for l in filtered_logs if l.level == level.upper()]
         if module:
-            filtered = [log for log in filtered if log.module == module.upper()]
+            filtered_logs = [l for l in filtered_logs if l.module == module.upper()]
         if search_query:
-            filtered = [
-                log for log in filtered if search_query.lower() in log.message.lower()
+            filtered_logs = [
+                l for l in filtered_logs if search_query.lower() in l.message.lower()
             ]
-        if start_date:
-            filtered = [log for log in filtered if log.created_at >= start_date]
-        if end_date:
-            filtered = [log for log in filtered if log.created_at <= end_date]
 
-        filtered.sort(key=lambda x: x.created_at, reverse=True)
-        start = (page - 1) * limit
-        end = start + limit
-        return filtered[start:end]
+        # Sorting desc
+        filtered_logs.sort(key=lambda x: x.created_at, reverse=True)
+
+        skip = (page - 1) * limit
+        return filtered_logs[skip : skip + limit]
 
     async def get_logs_count(
         self,
@@ -286,54 +330,40 @@ class MockSystemLogRepository(ISystemLogRepository):
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
     ) -> int:
-        filtered = MOCK_DB_STATE["logs"]
+        filtered_logs = MOCK_DB_STATE["logs"]
         if level:
-            filtered = [log for log in filtered if log.level == level.upper()]
+            filtered_logs = [l for l in filtered_logs if l.level == level.upper()]
         if module:
-            filtered = [log for log in filtered if log.module == module.upper()]
+            filtered_logs = [l for l in filtered_logs if l.module == module.upper()]
         if search_query:
-            filtered = [
-                log for log in filtered if search_query.lower() in log.message.lower()
+            filtered_logs = [
+                l for l in filtered_logs if search_query.lower() in l.message.lower()
             ]
-        if start_date:
-            filtered = [log for log in filtered if log.created_at >= start_date]
-        if end_date:
-            filtered = [log for log in filtered if log.created_at <= end_date]
-        return len(filtered)
+        return len(filtered_logs)
 
 
 class MockSearchRepository(ISearchRepository):
     async def global_search(self, query: str) -> GlobalSearchResponse:
         projects = []
-        articles = []
-        experiences = []
-        certificates = []
-
-        q = query.lower()
         for p in MOCK_DB_STATE["projects"]:
-            p_langs = " ".join(p.languages).lower() if p.languages else ""
-            p_tags = " ".join(p.tags).lower() if p.tags else ""
-
-            if (
-                q in p.title.lower()
-                or (p.description and q in p.description.lower())
-                or (q in p_langs)
-                or (q in p_tags)
+            if query.lower() in p.title.lower() or (
+                p.description and query.lower() in p.description.lower()
             ):
-                url_val = str(p.github_url) if p.github_url else None
                 projects.append(
                     SearchResultItem(
                         id=p.id,
                         title=p.title,
-                        subtitle=p.description[:100] if p.description else None,
-                        url=url_val,
-                        tags=(p.languages or []) + (p.tags or []),
-                        date=p.created_at.strftime("%Y-%m") if p.created_at else None,
+                        subtitle=(p.description[:100] if p.description else None),
+                        url=(str(p.github_url) if p.github_url else None),
+                        tags=p.languages + p.tags,
                     )
                 )
 
+        articles = []
         for a in MOCK_DB_STATE["articles"]:
-            if (q in a.title.lower()) or (a.summary and q in a.summary.lower()):
+            if query.lower() in a.title.lower() or (
+                a.summary and query.lower() in a.summary.lower()
+            ):
                 url_val = str(a.url) if a.url else None
                 articles.append(
                     SearchResultItem(
@@ -354,9 +384,200 @@ class MockSearchRepository(ISearchRepository):
             query=query,
             projects=projects,
             articles=articles,
-            experiences=experiences,
-            certificates=certificates,
+            experiences=[],
+            certificates=[],
         )
+
+
+class MockPackageRepository(IPackageRepository):
+    async def get_packages(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[PackageResponse]:
+        return MOCK_DB_STATE["packages"][skip : skip + limit]
+
+    async def get_package_by_id(self, package_id: str) -> Optional[PackageResponse]:
+        for p in MOCK_DB_STATE["packages"]:
+            if p.id == package_id:
+                return p
+        return None
+
+    async def create_package(self, package: PackageCreate) -> PackageResponse:
+        data = package.model_dump()
+        if "url" in data and data["url"]:
+            data["url"] = str(data["url"])
+        if "docs_url" in data and data["docs_url"]:
+            data["docs_url"] = str(data["docs_url"])
+        data["id"] = str(uuid.uuid4())
+        data["created_at"] = datetime.now(timezone.utc)
+        data["updated_at"] = datetime.now(timezone.utc)
+        resp = PackageResponse(**data)
+        MOCK_DB_STATE["packages"].append(resp)
+        return resp
+
+    async def upsert_package(self, package: PackageCreate) -> PackageResponse:
+        for i, p in enumerate(MOCK_DB_STATE["packages"]):
+            if p.title == package.title and p.platform == package.platform:
+                data = package.model_dump()
+                if "url" in data and data["url"]:
+                    data["url"] = str(data["url"])
+                if "docs_url" in data and data["docs_url"]:
+                    data["docs_url"] = str(data["docs_url"])
+                data["id"] = p.id
+                data["created_at"] = p.created_at
+                data["updated_at"] = datetime.now(timezone.utc)
+                resp = PackageResponse(**data)
+                MOCK_DB_STATE["packages"][i] = resp
+                return resp
+        return await self.create_package(package)
+
+    async def update_package(
+        self, package_id: str, package_update: PackageUpdate
+    ) -> Optional[PackageResponse]:
+        for i, p in enumerate(MOCK_DB_STATE["packages"]):
+            if p.id == package_id:
+                data = p.model_dump()
+                for k, v in package_update.model_dump(exclude_unset=True).items():
+                    if k in ("url", "docs_url") and v:
+                        v = str(v)
+                    data[k] = v
+                data["updated_at"] = datetime.now(timezone.utc)
+                resp = PackageResponse(**data)
+                MOCK_DB_STATE["packages"][i] = resp
+                return resp
+        return None
+
+    async def delete_package(self, package_id: str) -> bool:
+        for i, p in enumerate(MOCK_DB_STATE["packages"]):
+            if p.id == package_id:
+                MOCK_DB_STATE["packages"].pop(i)
+                return True
+        return False
+
+
+class MockPostRepository(IPostRepository):
+    async def get_posts(self, skip: int = 0, limit: int = 100) -> List[PostResponse]:
+        return MOCK_DB_STATE["posts"][skip : skip + limit]
+
+    async def get_post_by_id(self, post_id: str) -> Optional[PostResponse]:
+        for p in MOCK_DB_STATE["posts"]:
+            if p.id == post_id:
+                return p
+        return None
+
+    async def create_post(self, post: PostCreate) -> PostResponse:
+        data = post.model_dump()
+        if "url" in data and data["url"]:
+            data["url"] = str(data["url"])
+        if "thumbnail" in data and data["thumbnail"]:
+            data["thumbnail"] = str(data["thumbnail"])
+        data["id"] = str(uuid.uuid4())
+        data["created_at"] = datetime.now(timezone.utc)
+        data["updated_at"] = datetime.now(timezone.utc)
+        resp = PostResponse(**data)
+        MOCK_DB_STATE["posts"].append(resp)
+        return resp
+
+    async def upsert_post(self, post: PostCreate) -> PostResponse:
+        for i, p in enumerate(MOCK_DB_STATE["posts"]):
+            if p.url == str(post.url):
+                data = post.model_dump()
+                if "url" in data and data["url"]:
+                    data["url"] = str(data["url"])
+                if "thumbnail" in data and data["thumbnail"]:
+                    data["thumbnail"] = str(data["thumbnail"])
+                data["id"] = p.id
+                data["created_at"] = p.created_at
+                data["updated_at"] = datetime.now(timezone.utc)
+                resp = PostResponse(**data)
+                MOCK_DB_STATE["posts"][i] = resp
+                return resp
+        return await self.create_post(post)
+
+    async def update_post(
+        self, post_id: str, post_update: PostUpdate
+    ) -> Optional[PostResponse]:
+        for i, p in enumerate(MOCK_DB_STATE["posts"]):
+            if p.id == post_id:
+                data = p.model_dump()
+                for k, v in post_update.model_dump(exclude_unset=True).items():
+                    if k in ("url", "thumbnail") and v:
+                        v = str(v)
+                    data[k] = v
+                data["updated_at"] = datetime.now(timezone.utc)
+                resp = PostResponse(**data)
+                MOCK_DB_STATE["posts"][i] = resp
+                return resp
+        return None
+
+    async def delete_post(self, post_id: str) -> bool:
+        for i, p in enumerate(MOCK_DB_STATE["posts"]):
+            if p.id == post_id:
+                MOCK_DB_STATE["posts"].pop(i)
+                return True
+        return False
+
+
+class MockVideoRepository(IVideoRepository):
+    async def get_videos(self, skip: int = 0, limit: int = 100) -> List[VideoResponse]:
+        return MOCK_DB_STATE["videos"][skip : skip + limit]
+
+    async def get_video_by_id(self, video_id: str) -> Optional[VideoResponse]:
+        for v in MOCK_DB_STATE["videos"]:
+            if v.id == video_id:
+                return v
+        return None
+
+    async def create_video(self, video: VideoCreate) -> VideoResponse:
+        data = video.model_dump()
+        if "url" in data and data["url"]:
+            data["url"] = str(data["url"])
+        if "thumbnail" in data and data["thumbnail"]:
+            data["thumbnail"] = str(data["thumbnail"])
+        data["id"] = str(uuid.uuid4())
+        data["created_at"] = datetime.now(timezone.utc)
+        data["updated_at"] = datetime.now(timezone.utc)
+        resp = VideoResponse(**data)
+        MOCK_DB_STATE["videos"].append(resp)
+        return resp
+
+    async def upsert_video(self, video: VideoCreate) -> VideoResponse:
+        for i, v in enumerate(MOCK_DB_STATE["videos"]):
+            if v.url == str(video.url):
+                data = video.model_dump()
+                if "url" in data and data["url"]:
+                    data["url"] = str(data["url"])
+                if "thumbnail" in data and data["thumbnail"]:
+                    data["thumbnail"] = str(data["thumbnail"])
+                data["id"] = v.id
+                data["created_at"] = v.created_at
+                data["updated_at"] = datetime.now(timezone.utc)
+                resp = VideoResponse(**data)
+                MOCK_DB_STATE["videos"][i] = resp
+                return resp
+        return await self.create_video(video)
+
+    async def update_video(
+        self, video_id: str, video_update: VideoUpdate
+    ) -> Optional[VideoResponse]:
+        for i, v in enumerate(MOCK_DB_STATE["videos"]):
+            if v.id == video_id:
+                data = v.model_dump()
+                for k, v_val in video_update.model_dump(exclude_unset=True).items():
+                    if k in ("url", "thumbnail") and v_val:
+                        v_val = str(v_val)
+                    data[k] = v_val
+                data["updated_at"] = datetime.now(timezone.utc)
+                resp = VideoResponse(**data)
+                MOCK_DB_STATE["videos"][i] = resp
+                return resp
+        return None
+
+    async def delete_video(self, video_id: str) -> bool:
+        for i, v in enumerate(MOCK_DB_STATE["videos"]):
+            if v.id == video_id:
+                MOCK_DB_STATE["videos"].pop(i)
+                return True
+        return False
 
 
 # --- WRAPPER FOR BACKWARD COMPATIBILITY IN TESTS ---
@@ -370,6 +591,9 @@ class MockProviderWrapper:
         self.cert_repo = MockCertificateRepository()
         self.log_repo = MockSystemLogRepository()
         self.search_repo = MockSearchRepository()
+        self.package_repo = MockPackageRepository()
+        self.post_repo = MockPostRepository()
+        self.video_repo = MockVideoRepository()
 
     # Delegate methods to inner repos
     async def create_project(self, project):
@@ -390,6 +614,30 @@ class MockProviderWrapper:
     async def create_article(self, article):
         return await self.article_repo.create_article(article)
 
+    async def upsert_article(self, article):
+        return await self.article_repo.upsert_article(article)
+
+    async def get_all_articles(self):
+        return await self.article_repo.get_all_articles()
+
+    async def upsert_package(self, package):
+        return await self.package_repo.upsert_package(package)
+
+    async def get_packages(self):
+        return await self.package_repo.get_packages()
+
+    async def upsert_post(self, post):
+        return await self.post_repo.upsert_post(post)
+
+    async def get_posts(self):
+        return await self.post_repo.get_posts()
+
+    async def upsert_video(self, video):
+        return await self.video_repo.upsert_video(video)
+
+    async def get_videos(self):
+        return await self.video_repo.get_videos()
+
 
 @pytest.fixture(scope="session")
 def event_loop():
@@ -409,6 +657,9 @@ def clean_mock_state():
     MOCK_DB_STATE["experiences"].clear()
     MOCK_DB_STATE["certificates"].clear()
     MOCK_DB_STATE["logs"].clear()
+    MOCK_DB_STATE["packages"].clear()
+    MOCK_DB_STATE["posts"].clear()
+    MOCK_DB_STATE["videos"].clear()
 
 
 @pytest.fixture
@@ -433,8 +684,9 @@ async def client(mock_provider):
     app.dependency_overrides[get_certificate_repo] = lambda: mock_provider.cert_repo
     app.dependency_overrides[get_system_log_repo] = lambda: mock_provider.log_repo
     app.dependency_overrides[get_search_repo] = lambda: mock_provider.search_repo
-    # Güvenlik zafiyeti (global mock) kaldırıldı.
-    # Artık yetki gerektiren istekler 401/403 döner.
+    app.dependency_overrides[get_package_repo] = lambda: mock_provider.package_repo
+    app.dependency_overrides[get_post_repo] = lambda: mock_provider.post_repo
+    app.dependency_overrides[get_video_repo] = lambda: mock_provider.video_repo
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:

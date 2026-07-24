@@ -2,17 +2,23 @@ from app.db.providers.supabase import (
     SupabaseArticleRepository,
     SupabaseCertificateRepository,
     SupabaseExperienceRepository,
+    SupabasePackageRepository,
+    SupabasePostRepository,
     SupabaseProjectRepository,
     SupabaseSearchRepository,
     SupabaseSystemLogRepository,
+    SupabaseVideoRepository,
 )
 from app.db.repositories import (
     IArticleRepository,
     ICertificateRepository,
     IExperienceRepository,
+    IPackageRepository,
+    IPostRepository,
     IProjectRepository,
     ISearchRepository,
     ISystemLogRepository,
+    IVideoRepository,
 )
 
 
@@ -54,3 +60,21 @@ class RepositoryFactory:
         if "search" not in cls._instances:
             cls._instances["search"] = SupabaseSearchRepository()
         return cls._instances["search"]
+
+    @classmethod
+    def get_package_repository(cls) -> IPackageRepository:
+        if "package" not in cls._instances:
+            cls._instances["package"] = SupabasePackageRepository()
+        return cls._instances["package"]
+
+    @classmethod
+    def get_post_repository(cls) -> IPostRepository:
+        if "post" not in cls._instances:
+            cls._instances["post"] = SupabasePostRepository()
+        return cls._instances["post"]
+
+    @classmethod
+    def get_video_repository(cls) -> IVideoRepository:
+        if "video" not in cls._instances:
+            cls._instances["video"] = SupabaseVideoRepository()
+        return cls._instances["video"]

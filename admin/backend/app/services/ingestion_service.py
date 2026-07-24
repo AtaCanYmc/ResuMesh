@@ -5,7 +5,7 @@ Orchestrates platform scraper services and saves the fetched data
 to the database via the repository layer.
 """
 
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from resumesh_scrapers import IScraperService
 from resumesh_scrapers.exceptions import ScraperError
@@ -14,9 +14,13 @@ from app.db.repositories import (
     IArticleRepository,
     ICertificateRepository,
     IExperienceRepository,
+    IPackageRepository,
     IProjectRepository,
     ISystemLogRepository,
 )
+from app.schemas.article import ArticleCreate
+from app.schemas.package import PackageCreate
+from app.schemas.project import ProjectCreate
 from app.services.log_service import LogService
 from app.services.mappers.linkedin_mapper import LinkedInDataMapper
 
@@ -98,6 +102,150 @@ class IngestionService:
         await self._execute_scraper(
             scraper, provider, "MEDIUM", username, "upsert_article"
         )
+
+    async def fetch_pypi_packages(
+        self,
+        scraper: IScraperService,
+        username: str,
+        provider: IPackageRepository,
+        package_names: List[str],
+    ):
+        """Fetches PyPI packages and saves them via provider."""
+        try:
+            items = await scraper.fetch_data(username, package_names=package_names)
+            for item in items:
+                info = item.info
+                pkg = PackageCreate(
+                    title=info.name,
+                    description=info.summary or info.description,
+                    platform="pypi",
+                    url=info.package_url,
+                    docs_url=info.docs_url,
+                    tags=info.keywords or "",
+                    version=info.version,
+                    last_month_downloads=(
+                        info.downloads.last_month if info.downloads else 0
+                    ),
+                )
+                await provider.upsert_package(pkg)
+        except ScraperError as exc:
+            log_repo = self.log_provider or provider
+            await LogService.warning(
+                log_repo,
+                "PYPI",
+                f"PYPI scraper error: {exc}",
+                {"username": username},
+            )
+
+    async def fetch_npm_packages(
+        self,
+        scraper: IScraperService,
+        username: str,
+        provider: IPackageRepository,
+    ):
+        """Fetches NPM packages and saves them via provider."""
+        try:
+            results = await scraper.fetch_data(username)
+            if not results:
+                return
+            result = results[0]
+            for obj in result.objects:
+                pkg_info = obj.package
+                pkg = PackageCreate(
+                    title=pkg_info.name,
+                    description=pkg_info.description,
+                    platform="npm",
+                    url=pkg_info.links.npm if pkg_info.links else None,
+                    docs_url=pkg_info.links.homepage if pkg_info.links else None,
+                    tags=",".join(pkg_info.keywords) if pkg_info.keywords else "",
+                    version=pkg_info.version,
+                    last_month_downloads=obj.downloads.monthly if obj.downloads else 0,
+                )
+                await provider.upsert_package(pkg)
+        except ScraperError as exc:
+            log_repo = self.log_provider or provider
+            await LogService.warning(
+                log_repo,
+                "NPM",
+                f"NPM scraper error: {exc}",
+                {"username": username},
+            )
+
+    async def fetch_substack_articles(
+        self,
+        scraper: IScraperService,
+        username: str,
+        provider: IArticleRepository,
+    ):
+        """Fetches Substack articles and saves them via provider."""
+        try:
+            items = await scraper.fetch_data(username)
+            for item in items:
+                from datetime import datetime, timezone
+                from email.utils import parsedate_to_datetime
+
+                try:
+                    pub_date = (
+                        parsedate_to_datetime(item.published)
+                        if item.published
+                        else None
+                    )
+                except Exception:
+                    pub_date = datetime.now(timezone.utc)
+                art = ArticleCreate(
+                    title=item.title,
+                    summary=item.summary,
+                    platform="SUBSTACK",
+                    url=item.link,
+                    published_at=pub_date,
+                )
+                await provider.upsert_article(art)
+        except ScraperError as exc:
+            log_repo = self.log_provider or provider
+            await LogService.warning(
+                log_repo,
+                "SUBSTACK",
+                f"SUBSTACK scraper error: {exc}",
+                {"username": username},
+            )
+
+    async def fetch_behance_projects(
+        self,
+        scraper: IScraperService,
+        username: str,
+        provider: IProjectRepository,
+        api_key: str | None = None,
+    ):
+        """Fetches Behance projects and saves them via provider."""
+        try:
+            items = await scraper.fetch_data(username, api_key=api_key)
+            for item in items:
+                proj = ProjectCreate(
+                    title=item.name,
+                    description=(
+                        f"Behance Project. Views: {item.stats_views}, "
+                        f"Appreciations: {item.stats_appreciations}"
+                    ),
+                    github_url=None,
+                    stars=item.stats_appreciations,
+                    watchers=item.stats_views,
+                    forks=0,
+                    languages=[],
+                    tags=item.tags or [],
+                    raw_github_data={
+                        "behance_id": item.id,
+                        "covers_url": item.covers_url,
+                    },
+                )
+                await provider.upsert_project(proj)
+        except ScraperError as exc:
+            log_repo = self.log_provider or provider
+            await LogService.warning(
+                log_repo,
+                "BEHANCE",
+                f"BEHANCE scraper error: {exc}",
+                {"username": username},
+            )
 
     async def import_linkedin_data(
         self,
