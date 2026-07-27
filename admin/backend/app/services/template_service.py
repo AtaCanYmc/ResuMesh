@@ -20,17 +20,6 @@ class TemplateService:
         return cls._env
 
     @classmethod
-    def get_template_content(cls, template_path: str) -> str:
-        """
-        Reads a jinja2 template file and returns its raw string content.
-        This is useful for LangChain PromptTemplate since it expects a string.
-        """
-        env = cls.get_env()
-        # Read the raw source code of the template
-        source, _, _ = env.loader.get_source(env, template_path)
-        return source
-
-    @classmethod
     def render_template(cls, template_path: str, **kwargs) -> str:
         """
         Renders a jinja2 template directly with given variables.
