@@ -4,18 +4,23 @@ import axios from 'axios';
 import { Loader2, Briefcase } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useTranslation } from 'react-i18next';
+import { Navigate } from 'react-router-dom';
+import { useAppSettings } from '../hooks/useHomeData';
+import { ENV } from '../config/env';
 
 import { TimelineSkeleton } from '../components/ui/Skeletons';
 
 export default function Experiences() {
+  const { data: settings } = useAppSettings();
   const { t } = useTranslation();
+
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchExperiences = async () => {
       try {
-        const res = await axios.get<Experience[]>(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/experiences/`);
+        const res = await axios.get<Experience[]>(`${ENV.API_URL}/api/v1/experiences/`);
         setExperiences(res.data);
       } catch (error) {
         console.error('Failed to fetch experiences', error);
@@ -25,6 +30,10 @@ export default function Experiences() {
     };
     fetchExperiences();
   }, []);
+
+  if (settings && settings.show_experiences === false) {
+    return <Navigate to="/" replace />;
+  }
 
   if (loading) {
     return <TimelineSkeleton />;

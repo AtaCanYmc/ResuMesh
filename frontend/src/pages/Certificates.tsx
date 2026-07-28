@@ -4,18 +4,23 @@ import axios from 'axios';
 import { Loader2, Award, ExternalLink, Calendar } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useTranslation } from 'react-i18next';
+import { Navigate } from 'react-router-dom';
+import { useAppSettings } from '../hooks/useHomeData';
+import { ENV } from '../config/env';
 
 import { ListSkeleton } from '../components/ui/Skeletons';
 
 export default function Certificates() {
+  const { data: settings } = useAppSettings();
   const { t } = useTranslation();
+
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCertificates = async () => {
       try {
-        const res = await axios.get<Certificate[]>(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/certificates/`);
+        const res = await axios.get<Certificate[]>(`${ENV.API_URL}/api/v1/certificates/`);
         setCertificates(res.data);
       } catch (error) {
         console.error('Failed to fetch certificates', error);
@@ -25,6 +30,10 @@ export default function Certificates() {
     };
     fetchCertificates();
   }, []);
+
+  if (settings && settings.show_certificates === false) {
+    return <Navigate to="/" replace />;
+  }
 
   if (loading) {
     return <ListSkeleton />;

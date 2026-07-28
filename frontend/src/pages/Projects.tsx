@@ -9,9 +9,14 @@ import { ContentCardSkeleton } from '../components/ui/ContentCardSkeleton';
 import SEO from '../components/SEO';
 import EmptyState from '../components/ui/EmptyState';
 import { useTranslation } from 'react-i18next';
+import { Navigate } from 'react-router-dom';
+import { useAppSettings } from '../hooks/useHomeData';
+import { ENV } from '../config/env';
 
 export default function Projects() {
+  const { data: settings } = useAppSettings();
   const { t } = useTranslation();
+
   const [filter, setFilter] = useState('All');
   const [sortBy, setSortBy] = useState<'stars' | 'forks' | 'date_desc' | 'date_asc' | 'alphabetical'>('stars');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -20,10 +25,14 @@ export default function Projects() {
   const { data: projects = [], isLoading, isError, error } = useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
-      const res = await axios.get<Project[]>(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/projects/`);
+      const res = await axios.get<Project[]>(`${ENV.API_URL}/api/v1/projects/`);
       return res.data;
     }
   });
+
+  if (settings && settings.show_projects === false) {
+    return <Navigate to="/" replace />;
+  }
 
   if (isError) {
     return (

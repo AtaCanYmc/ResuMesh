@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import HeroSection from '../components/home/HeroSection';
 import SEO from '../components/SEO';
 import InfiniteMarquee from '../components/ui/InfiniteMarquee';
-import { useContentConfig } from '../hooks/useHomeData';
+import { useContentConfig, useAppSettings } from '../hooks/useHomeData';
 
 const QuickMetrics = lazy(() => import('../components/home/QuickMetrics'));
 const FeaturedProjects = lazy(() => import('../components/home/FeaturedProjects'));
@@ -24,6 +24,7 @@ const containerVariants = {
 const Home: React.FC = () => {
   const { i18n } = useTranslation();
   const { data: config } = useContentConfig(i18n.language);
+  const { data: settings } = useAppSettings();
 
   return (
     <>
@@ -54,9 +55,9 @@ const Home: React.FC = () => {
 
         <Suspense fallback={<div className="h-40 flex items-center justify-center opacity-50">Yükleniyor...</div>}>
           <QuickMetrics />
-          <Timeline />
+          {settings?.show_experiences !== false && <Timeline />}
           <SkillsMarquee />
-          <FeaturedProjects />
+          {settings?.show_projects !== false && <FeaturedProjects />}
           <RecentArticles />
         </Suspense>
       </motion.div>

@@ -3,6 +3,8 @@ import axios from 'axios';
 import { Loader2, Server } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import { ENV } from '../config/env';
+
 interface ServerWakeupGateProps {
   children: React.ReactNode;
 }
@@ -13,7 +15,7 @@ const ServerWakeupGate: React.FC<ServerWakeupGateProps> = ({ children }) => {
   const [dots, setDots] = useState<string>('');
   const { t } = useTranslation();
 
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  const apiUrl = ENV.API_URL;
 
   useEffect(() => {
     let intervalId: any;
