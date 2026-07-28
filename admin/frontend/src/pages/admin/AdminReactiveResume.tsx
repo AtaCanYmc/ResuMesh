@@ -634,7 +634,7 @@ export default function AdminReactiveResume() {
               </h3>
               <button
                 onClick={() => setViewingVersionsId(null)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1.5 hover:bg-gray-50 dark:hover:bg-gray-850 rounded-lg transition-colors"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1.5 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
               >
                 <X size={20} />
               </button>
@@ -670,7 +670,7 @@ export default function AdminReactiveResume() {
               )}
             </div>
 
-            <div className="px-6 py-4 bg-gray-50 dark:bg-gray-850 border-t border-gray-100 dark:border-gray-800 flex justify-end">
+            <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-800 flex justify-end">
               <button
                 onClick={() => setViewingVersionsId(null)}
                 className="px-4 py-2 text-sm font-semibold border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-700 dark:text-gray-200 transition-colors"
@@ -693,7 +693,7 @@ export default function AdminReactiveResume() {
               </h3>
               <button
                 onClick={() => setActiveAnalysis(null)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1.5 hover:bg-gray-50 dark:hover:bg-gray-850 rounded-lg transition-colors"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1.5 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
               >
                 <X size={20} />
               </button>
@@ -743,7 +743,7 @@ export default function AdminReactiveResume() {
               )}
             </div>
 
-            <div className="px-6 py-4 bg-gray-50 dark:bg-gray-850 border-t border-gray-100 dark:border-gray-800 flex justify-end">
+            <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-800 flex justify-end">
               <button
                 onClick={() => setActiveAnalysis(null)}
                 className="px-4 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
