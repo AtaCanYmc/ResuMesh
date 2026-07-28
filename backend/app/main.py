@@ -37,6 +37,7 @@ from app.routers import (
     skills,
     videos,
 )
+from app.routers.app_settings import router as settings_router
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -58,7 +59,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["GET"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
@@ -74,6 +75,7 @@ app.include_router(cv.router, prefix="/api/v1")
 app.include_router(packages.router, prefix="/api/v1")
 app.include_router(posts.router, prefix="/api/v1")
 app.include_router(videos.router, prefix="/api/v1")
+app.include_router(settings_router, prefix="/api/v1")
 
 
 @app.get("/api/v1/")

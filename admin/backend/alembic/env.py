@@ -22,6 +22,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 load_dotenv()
 
 from app.config.database import Base  # noqa: E402
+from app.models.app_settings import AppSettings  # noqa: E402, F401
 from app.models.article import Article  # noqa: E402, F401
 from app.models.certificate import Certificate  # noqa: E402, F401
 from app.models.education import Education  # noqa: E402, F401

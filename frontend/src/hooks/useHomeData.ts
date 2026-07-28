@@ -106,3 +106,21 @@ export const useArticles = (limit?: number) => {
     },
   });
 };
+
+export interface AppSettings {
+  show_projects: boolean;
+  show_certificates: boolean;
+  show_videos: boolean;
+  show_experiences: boolean;
+}
+
+export const useAppSettings = () => {
+  return useQuery<AppSettings>({
+    queryKey: ['appSettings'],
+    queryFn: async () => {
+      const response = await axios.get(`${API_URL}/api/v1/settings/`);
+      return response.data;
+    },
+    staleTime: 60000,
+  });
+};

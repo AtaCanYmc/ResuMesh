@@ -9,9 +9,17 @@ import { ContentCardSkeleton } from '../components/ui/ContentCardSkeleton';
 import SEO from '../components/SEO';
 import EmptyState from '../components/ui/EmptyState';
 import { useTranslation } from 'react-i18next';
+import { Navigate } from 'react-router-dom';
+import { useAppSettings } from '../hooks/useHomeData';
 
 export default function Projects() {
+  const { data: settings } = useAppSettings();
   const { t } = useTranslation();
+
+  if (settings && settings.show_projects === false) {
+    return <Navigate to="/" replace />;
+  }
+
   const [filter, setFilter] = useState('All');
   const [sortBy, setSortBy] = useState<'stars' | 'forks' | 'date_desc' | 'date_asc' | 'alphabetical'>('stars');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);

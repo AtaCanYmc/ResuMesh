@@ -4,11 +4,19 @@ import axios from 'axios';
 import { Loader2, Award, ExternalLink, Calendar } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useTranslation } from 'react-i18next';
+import { Navigate } from 'react-router-dom';
+import { useAppSettings } from '../hooks/useHomeData';
 
 import { ListSkeleton } from '../components/ui/Skeletons';
 
 export default function Certificates() {
+  const { data: settings } = useAppSettings();
   const { t } = useTranslation();
+
+  if (settings && settings.show_certificates === false) {
+    return <Navigate to="/" replace />;
+  }
+
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState(true);
 

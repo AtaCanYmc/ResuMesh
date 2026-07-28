@@ -28,6 +28,7 @@ const AdminReactiveResume = React.lazy(() => import('./pages/admin/AdminReactive
 const AdminPackages = React.lazy(() => import('./pages/admin/AdminPackages'));
 const AdminPosts = React.lazy(() => import('./pages/admin/AdminPosts'));
 const AdminVideos = React.lazy(() => import('./pages/admin/AdminVideos'));
+const AdminAppSettings = React.lazy(() => import('./pages/admin/AdminAppSettings'));
 
 
 // Create a client
@@ -75,6 +76,7 @@ const router = createBrowserRouter([
       { path: 'packages', element: <AdminPackages /> },
       { path: 'posts', element: <AdminPosts /> },
       { path: 'videos', element: <AdminVideos /> },
+      { path: 'settings', element: <AdminAppSettings /> },
     ],
   },
 ]);

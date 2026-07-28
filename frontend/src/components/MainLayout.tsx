@@ -9,7 +9,7 @@ import PageLoader from './PageLoader';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 import Footer from './Footer';
-import { useContentConfig } from '../hooks/useHomeData';
+import { useContentConfig, useAppSettings } from '../hooks/useHomeData';
 import posthog from 'posthog-js';
 
 const MainLayout: React.FC = () => {
@@ -20,6 +20,7 @@ const MainLayout: React.FC = () => {
   const mainRef = useRef<HTMLElement>(null);
   const { t, i18n } = useTranslation();
   const { data: config } = useContentConfig(i18n.language);
+  const { data: settings } = useAppSettings();
 
   // Scroll Restoration on route change
   useEffect(() => {
@@ -44,13 +45,13 @@ const MainLayout: React.FC = () => {
 
   const navItems = [
     { path: '/', label: t('nav.about'), icon: <User size={20} aria-hidden="true" /> },
-    { path: '/experiences', label: t('nav.experiences'), icon: <Briefcase size={20} aria-hidden="true" /> },
+    { path: '/experiences', label: t('nav.experiences'), icon: <Briefcase size={20} aria-hidden="true" />, visible: settings?.show_experiences !== false },
     { path: '/educations', label: t('nav.educations'), icon: <GraduationCap size={20} aria-hidden="true" /> },
     { path: '/skills', label: t('nav.skills'), icon: <Wand2 size={20} aria-hidden="true" /> },
-    { path: '/projects', label: t('nav.projects'), icon: <FolderGit size={20} aria-hidden="true" /> },
+    { path: '/projects', label: t('nav.projects'), icon: <FolderGit size={20} aria-hidden="true" />, visible: settings?.show_projects !== false },
     { path: '/articles', label: t('nav.articles'), icon: <BookOpen size={20} aria-hidden="true" /> },
-    { path: '/certificates', label: t('nav.certificates'), icon: <Award size={20} aria-hidden="true" /> },
-  ];
+    { path: '/certificates', label: t('nav.certificates'), icon: <Award size={20} aria-hidden="true" />, visible: settings?.show_certificates !== false },
+  ].filter(item => item.visible !== false);
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 

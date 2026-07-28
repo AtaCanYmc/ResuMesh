@@ -4,11 +4,19 @@ import axios from 'axios';
 import { Loader2, Briefcase } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useTranslation } from 'react-i18next';
+import { Navigate } from 'react-router-dom';
+import { useAppSettings } from '../hooks/useHomeData';
 
 import { TimelineSkeleton } from '../components/ui/Skeletons';
 
 export default function Experiences() {
+  const { data: settings } = useAppSettings();
   const { t } = useTranslation();
+
+  if (settings && settings.show_experiences === false) {
+    return <Navigate to="/" replace />;
+  }
+
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [loading, setLoading] = useState(true);
 
