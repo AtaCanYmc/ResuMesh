@@ -1,63 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { Eye, Globe, Share2, Check, Bot, Eye as EyeIcon, EyeOff } from 'lucide-react';
+import { Eye, Globe, Share2, Check } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
-
-interface SocialLink {
-  id: string;
-  platform: string;
-  url: string;
-  label: string;
-}
-
-interface HeroConfig {
-  name: string;
-  fullName: string;
-  avatarSubtitle: string;
-  avatarImage: string;
-  title: string;
-  description: string;
-  resumeLink: string;
-}
-
-interface MetricItem {
-  id: number;
-  icon: string;
-  value: string;
-  label: string;
-  color: string;
-}
-
-interface LanguageContent {
-  hero: HeroConfig;
-  metrics: MetricItem[];
-}
-
-interface LLMConfig {
-  llm_provider: string;
-  openai_api_key: string;
-  openai_model: string;
-  groq_api_key: string;
-  groq_model: string;
-  ollama_base_url: string;
-  ollama_model: string;
-}
-
-interface AppSettings {
-  show_projects: boolean;
-  show_certificates: boolean;
-  show_videos: boolean;
-  show_experiences: boolean;
-  socials: SocialLink[];
-  footer: { email: string };
-  marquee: string[];
-  en: LanguageContent;
-  tr: LanguageContent;
-  llm_config: LLMConfig;
-}
+import { AppSettings, HeroContent, MetricItem, SectionVisibility } from "../../types";
+import { useEnv } from "../../hooks/env.ts";
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -86,47 +35,21 @@ const ToggleSwitch = ({ label, description, isChecked, onChange }: { label: stri
 const inputCls = 'w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500';
 const labelCls = 'block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2';
 
-/** Password-style field with show/hide toggle */
-const SecretInput = ({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) => {
-  const [show, setShow] = useState(false);
-  const isMasked = value === '***';
-  return (
-    <div className="relative">
-      <input
-        type={show ? 'text' : 'password'}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder ?? 'Enter API key…'}
-        className={`${inputCls} pr-10`}
-      />
-      {!isMasked && (
-        <button
-          type="button"
-          onClick={() => setShow((s) => !s)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-          tabIndex={-1}
-        >
-          {show ? <EyeOff size={16} /> : <EyeIcon size={16} />}
-        </button>
-      )}
-    </div>
-  );
-};
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function AdminAppSettings() {
   const { token } = useAuth();
   const queryClient = useQueryClient();
-  const API_URL = import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001';
+  const { ADMIN_API_URL } = useEnv();
 
-  const [activeTab, setActiveTab] = useState<'visibility' | 'socials' | 'content_en' | 'content_tr' | 'ai'>('visibility');
+  const [activeTab, setActiveTab] = useState<'visibility' | 'socials' | 'content_en' | 'content_tr'>('visibility');
   const [formData, setFormData] = useState<AppSettings | null>(null);
 
   const { data: settings, isLoading } = useQuery<AppSettings>({
     queryKey: ['admin-app-settings'],
     queryFn: async () => {
-      const res = await axios.get(`${API_URL}/api/v1/settings/`, {
+      const res = await axios.get(`${ADMIN_API_URL}/api/v1/settings/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       return res.data;
@@ -141,10 +64,7 @@ export default function AdminAppSettings() {
 
   const updateMutation = useMutation({
     mutationFn: async (updatedData: AppSettings) => {
-      // Flatten llm_config into the root payload for the backend PATCH
-      const { llm_config, ...rest } = updatedData;
-      const payload = { ...rest, ...llm_config };
-      const res = await axios.patch(`${API_URL}/api/v1/settings/`, payload, {
+      const res = await axios.patch(`${ADMIN_API_URL}/api/v1/settings/`, updatedData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       return res.data;
@@ -171,46 +91,39 @@ export default function AdminAppSettings() {
     updateMutation.mutate(formData);
   };
 
-  const updateVisibility = (key: keyof AppSettings) => {
+  const updateVisibility = (key: keyof SectionVisibility) => {
     setFormData((prev) => {
       if (!prev) return null;
-      return { ...prev, [key]: !prev[key] };
+      return { ...prev, sections: { ...prev.sections, [key]: !prev.sections?.[key] } };
     });
   };
 
   const updateSocialUrl = (index: number, url: string) => {
     setFormData((prev) => {
       if (!prev) return null;
-      const newSocials = [...prev.socials];
-      newSocials[index].url = url;
+      const newSocials = [...(prev.socials ?? [])];
+      newSocials[index] = { ...newSocials[index], url };
       return { ...prev, socials: newSocials };
     });
   };
 
-  const handleHeroChange = (lang: 'en' | 'tr', field: keyof HeroConfig, value: string) => {
+  const handleHeroChange = (lang: 'en' | 'tr', field: keyof HeroContent, value: string) => {
     setFormData((prev) => {
       if (!prev) return null;
       const langContent = { ...prev[lang] };
-      langContent.hero = { ...langContent.hero, [field]: value };
+      langContent.hero = { ...langContent.hero, [field]: value } as HeroContent;
       return { ...prev, [lang]: langContent };
     });
   };
 
-  const handleMetricChange = (lang: 'en' | 'tr', index: number, field: keyof MetricItem, value: any) => {
+  const handleMetricChange = (lang: 'en' | 'tr', index: number, field: keyof MetricItem, value: string | number) => {
     setFormData((prev) => {
       if (!prev) return null;
       const langContent = { ...prev[lang] };
-      const newMetrics = [...langContent.metrics];
+      const newMetrics = [...(langContent.metrics ?? [])];
       newMetrics[index] = { ...newMetrics[index], [field]: value };
       langContent.metrics = newMetrics;
       return { ...prev, [lang]: langContent };
-    });
-  };
-
-  const updateLlm = (field: keyof LLMConfig, value: string) => {
-    setFormData((prev) => {
-      if (!prev) return null;
-      return { ...prev, llm_config: { ...prev.llm_config, [field]: value } };
     });
   };
 
@@ -221,7 +134,6 @@ export default function AdminAppSettings() {
         : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'
     }`;
 
-  const provider = formData.llm_config?.llm_provider ?? 'mock';
 
   return (
     <div className="space-y-6 max-w-5xl">
@@ -266,12 +178,6 @@ export default function AdminAppSettings() {
             <span>Turkish Content</span>
           </div>
         </button>
-        <button onClick={() => setActiveTab('ai')} className={tabCls('ai')}>
-          <div className="flex items-center gap-2">
-            <Bot size={16} />
-            <span>AI / LLM</span>
-          </div>
-        </button>
       </div>
 
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm overflow-hidden p-6">
@@ -285,26 +191,26 @@ export default function AdminAppSettings() {
                 <ToggleSwitch
                   label="Projects Section"
                   description="Show or hide your projects page on the public site."
-                  isChecked={formData.show_projects}
-                  onChange={() => updateVisibility('show_projects')}
+                  isChecked={formData.sections?.projects ?? true}
+                  onChange={() => updateVisibility('projects')}
                 />
                 <ToggleSwitch
                   label="Certificates Section"
                   description="Show or hide your certificates page on the public site."
-                  isChecked={formData.show_certificates}
-                  onChange={() => updateVisibility('show_certificates')}
+                  isChecked={formData.sections?.certificates ?? true}
+                  onChange={() => updateVisibility('certificates')}
                 />
                 <ToggleSwitch
                   label="Videos Section"
                   description="Show or hide your videos page on the public site."
-                  isChecked={formData.show_videos}
-                  onChange={() => updateVisibility('show_videos')}
+                  isChecked={formData.sections?.videos ?? true}
+                  onChange={() => updateVisibility('videos')}
                 />
                 <ToggleSwitch
                   label="Experiences Section"
                   description="Show or hide your experiences page on the public site."
-                  isChecked={formData.show_experiences}
-                  onChange={() => updateVisibility('show_experiences')}
+                  isChecked={formData.sections?.experiences ?? true}
+                  onChange={() => updateVisibility('experiences')}
                 />
               </div>
             </div>
@@ -369,6 +275,7 @@ export default function AdminAppSettings() {
         {(activeTab === 'content_en' || activeTab === 'content_tr') && (() => {
           const lang = activeTab === 'content_en' ? 'en' : 'tr';
           const content = formData[lang];
+          if (!content) return <p className="text-sm text-gray-500">No content available for {lang.toUpperCase()}.</p>;
           return (
             <div className="space-y-6">
               <div>
@@ -478,153 +385,7 @@ export default function AdminAppSettings() {
           );
         })()}
 
-        {/* Tab 5: AI / LLM Configuration */}
-        {activeTab === 'ai' && (
-          <div className="space-y-6">
-            {/* Provider Selector */}
-            <div>
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4">AI Provider</h3>
-              <div className="max-w-xs">
-                <label className={labelCls}>LLM Provider</label>
-                <select
-                  value={provider}
-                  onChange={(e) => updateLlm('llm_provider', e.target.value)}
-                  className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="mock">Mock (Testing)</option>
-                  <option value="openai">OpenAI</option>
-                  <option value="groq">Groq</option>
-                  <option value="ollama">Ollama (Self-hosted)</option>
-                </select>
-              </div>
-              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                {provider === 'mock' && 'Mock provider returns placeholder responses. No API key required.'}
-                {provider === 'openai' && 'Uses the OpenAI API (GPT models). Requires a valid API key.'}
-                {provider === 'groq' && 'Uses the Groq API (fast inference for open-source models). Requires a valid API key.'}
-                {provider === 'ollama' && 'Uses a locally running Ollama instance. No API key required.'}
-              </p>
-            </div>
-
-            <hr className="border-gray-200 dark:border-gray-800" />
-
-            {/* OpenAI Settings */}
-            {provider === 'openai' && (
-              <div>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-                  <span className="inline-block w-2 h-2 bg-green-500 rounded-full"></span>
-                  OpenAI Configuration
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
-                  <div className="md:col-span-2">
-                    <label className={labelCls}>
-                      API Key
-                      {formData.llm_config?.openai_api_key === '***' && (
-                        <span className="ml-2 normal-case text-green-600 dark:text-green-400 font-normal">● Key is set</span>
-                      )}
-                    </label>
-                    <SecretInput
-                      value={formData.llm_config?.openai_api_key ?? ''}
-                      onChange={(v) => updateLlm('openai_api_key', v)}
-                      placeholder={formData.llm_config?.openai_api_key === '***' ? 'Leave blank to keep existing key' : 'sk-…'}
-                    />
-                    <p className="mt-1 text-xs text-gray-400">Leave blank to keep the existing stored key. Clear it to remove it.</p>
-                  </div>
-                  <div>
-                    <label className={labelCls}>Model</label>
-                    <input
-                      type="text"
-                      value={formData.llm_config?.openai_model ?? 'gpt-4o'}
-                      onChange={(e) => updateLlm('openai_model', e.target.value)}
-                      placeholder="gpt-4o"
-                      className={inputCls}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Groq Settings */}
-            {provider === 'groq' && (
-              <div>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-                  <span className="inline-block w-2 h-2 bg-orange-500 rounded-full"></span>
-                  Groq Configuration
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
-                  <div className="md:col-span-2">
-                    <label className={labelCls}>
-                      API Key
-                      {formData.llm_config?.groq_api_key === '***' && (
-                        <span className="ml-2 normal-case text-green-600 dark:text-green-400 font-normal">● Key is set</span>
-                      )}
-                    </label>
-                    <SecretInput
-                      value={formData.llm_config?.groq_api_key ?? ''}
-                      onChange={(v) => updateLlm('groq_api_key', v)}
-                      placeholder={formData.llm_config?.groq_api_key === '***' ? 'Leave blank to keep existing key' : 'gsk_…'}
-                    />
-                    <p className="mt-1 text-xs text-gray-400">Leave blank to keep the existing stored key. Clear it to remove it.</p>
-                  </div>
-                  <div>
-                    <label className={labelCls}>Model</label>
-                    <input
-                      type="text"
-                      value={formData.llm_config?.groq_model ?? 'llama-3.3-70b-versatile'}
-                      onChange={(e) => updateLlm('groq_model', e.target.value)}
-                      placeholder="llama-3.3-70b-versatile"
-                      className={inputCls}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Ollama Settings */}
-            {provider === 'ollama' && (
-              <div>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-                  <span className="inline-block w-2 h-2 bg-purple-500 rounded-full"></span>
-                  Ollama Configuration
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
-                  <div>
-                    <label className={labelCls}>Base URL</label>
-                    <input
-                      type="url"
-                      value={formData.llm_config?.ollama_base_url ?? 'http://localhost:11434'}
-                      onChange={(e) => updateLlm('ollama_base_url', e.target.value)}
-                      placeholder="http://localhost:11434"
-                      className={inputCls}
-                    />
-                  </div>
-                  <div>
-                    <label className={labelCls}>Model</label>
-                    <input
-                      type="text"
-                      value={formData.llm_config?.ollama_model ?? 'llama3'}
-                      onChange={(e) => updateLlm('ollama_model', e.target.value)}
-                      placeholder="llama3"
-                      className={inputCls}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Mock notice */}
-            {provider === 'mock' && (
-              <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-xl">
-                <Bot size={20} className="text-blue-500 mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-sm font-semibold text-blue-800 dark:text-blue-300">Mock Mode Active</p>
-                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
-                    The AI CV Builder and other LLM features will return placeholder data. Switch to OpenAI, Groq, or Ollama to enable real AI responses.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+        {/* Tab 5: AI / LLM Configuration - removed (llm_config no longer exists) */}
       </div>
     </div>
   );
