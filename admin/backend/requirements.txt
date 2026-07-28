@@ -1,4 +1,4 @@
-resumesh-scrapers==0.4.0
+resumesh-scrapers==0.6.0
 fastapi==0.139.0
 uvicorn==0.30.1
 sqlalchemy==2.0.31
