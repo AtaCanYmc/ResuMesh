@@ -49,7 +49,7 @@ interface AppSettings {
 }
 
 const ToggleSwitch = ({ label, description, isChecked, onChange }: { label: string; description: string; isChecked: boolean; onChange: () => void }) => (
-  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-850/50 rounded-xl border border-gray-150 dark:border-gray-800">
+  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-800">
     <div className="space-y-1">
       <span className="text-sm font-semibold text-gray-900 dark:text-white block">{label}</span>
       <span className="text-xs text-gray-500 dark:text-gray-400 block">{description}</span>
@@ -113,7 +113,7 @@ export default function AdminAppSettings() {
   if (isLoading || !formData) {
     return (
       <div className="space-y-6 animate-pulse">
-        <div className="h-10 w-48 bg-gray-250 dark:bg-gray-800 rounded"></div>
+        <div className="h-10 w-48 bg-gray-300 dark:bg-gray-800 rounded"></div>
         <div className="h-64 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
       </div>
     );
@@ -238,7 +238,7 @@ export default function AdminAppSettings() {
         {activeTab === 'visibility' && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-sm font-bold text-gray-850 dark:text-white uppercase tracking-wider mb-4">Module Visibility</h3>
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Module Visibility</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <ToggleSwitch
                   label="Projects Section"
@@ -270,14 +270,14 @@ export default function AdminAppSettings() {
             <hr className="border-gray-200 dark:border-gray-800" />
 
             <div>
-              <h3 className="text-sm font-bold text-gray-850 dark:text-white uppercase tracking-wider mb-4">Global Footer</h3>
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Global Footer</h3>
               <div className="max-w-xl">
                 <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Contact Email</label>
                 <input
                   type="email"
                   value={formData.footer?.email || ''}
                   onChange={(e) => setFormData((prev) => prev ? { ...prev, footer: { email: e.target.value } } : null)}
-                  className="w-full bg-gray-50 dark:bg-gray-850 border border-gray-300 dark:border-gray-800 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -285,14 +285,14 @@ export default function AdminAppSettings() {
             <hr className="border-gray-200 dark:border-gray-800" />
 
             <div>
-              <h3 className="text-sm font-bold text-gray-850 dark:text-white uppercase tracking-wider mb-4">Marquee Skills</h3>
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Marquee Skills</h3>
               <div>
                 <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Skills List (comma separated)</label>
                 <textarea
                   value={formData.marquee?.join(', ') || ''}
                   onChange={(e) => setFormData((prev) => prev ? { ...prev, marquee: e.target.value.split(',').map((s) => s.trim()) } : null)}
                   rows={4}
-                  className="w-full bg-gray-50 dark:bg-gray-850 border border-gray-300 dark:border-gray-800 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -302,10 +302,10 @@ export default function AdminAppSettings() {
         {/* Tab 2: Social Links */}
         {activeTab === 'socials' && (
           <div className="space-y-6">
-            <h3 className="text-sm font-bold text-gray-850 dark:text-white uppercase tracking-wider">Social Media Accounts</h3>
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Social Media Accounts</h3>
             <div className="space-y-4 max-w-2xl">
               {formData.socials?.map((social, index) => (
-                <div key={social.id} className="p-4 bg-gray-50 dark:bg-gray-850/50 rounded-xl border border-gray-150 dark:border-gray-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div key={social.id} className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="space-y-0.5">
                     <span className="text-sm font-semibold text-gray-900 dark:text-white block">{social.label}</span>
                     <span className="text-xs text-gray-500 dark:text-gray-400 block">Configure URL link for {social.platform}.</span>
@@ -330,7 +330,7 @@ export default function AdminAppSettings() {
           return (
             <div className="space-y-6">
               <div>
-                <h3 className="text-sm font-bold text-gray-850 dark:text-white uppercase tracking-wider mb-4">Hero Information ({lang.toUpperCase()})</h3>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Hero Information ({lang.toUpperCase()})</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Display Name</label>
@@ -338,7 +338,7 @@ export default function AdminAppSettings() {
                       type="text"
                       value={content.hero.name}
                       onChange={(e) => handleHeroChange(lang, 'name', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-gray-850 border border-gray-300 dark:border-gray-800 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none"
+                      className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
@@ -347,7 +347,7 @@ export default function AdminAppSettings() {
                       type="text"
                       value={content.hero.fullName}
                       onChange={(e) => handleHeroChange(lang, 'fullName', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-gray-850 border border-gray-300 dark:border-gray-800 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none"
+                      className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
@@ -356,7 +356,7 @@ export default function AdminAppSettings() {
                       type="text"
                       value={content.hero.avatarSubtitle}
                       onChange={(e) => handleHeroChange(lang, 'avatarSubtitle', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-gray-850 border border-gray-300 dark:border-gray-800 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none"
+                      className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
@@ -365,7 +365,7 @@ export default function AdminAppSettings() {
                       type="text"
                       value={content.hero.avatarImage}
                       onChange={(e) => handleHeroChange(lang, 'avatarImage', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-gray-850 border border-gray-300 dark:border-gray-800 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none"
+                      className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
@@ -374,7 +374,7 @@ export default function AdminAppSettings() {
                       type="text"
                       value={content.hero.resumeLink}
                       onChange={(e) => handleHeroChange(lang, 'resumeLink', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-gray-850 border border-gray-300 dark:border-gray-800 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none"
+                      className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                 </div>
@@ -385,7 +385,7 @@ export default function AdminAppSettings() {
                     type="text"
                     value={content.hero.title}
                     onChange={(e) => handleHeroChange(lang, 'title', e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-gray-850 border border-gray-300 dark:border-gray-800 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none"
+                    className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
@@ -395,7 +395,7 @@ export default function AdminAppSettings() {
                     value={content.hero.description}
                     onChange={(e) => handleHeroChange(lang, 'description', e.target.value)}
                     rows={4}
-                    className="w-full bg-gray-50 dark:bg-gray-850 border border-gray-300 dark:border-gray-800 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none"
+                    className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -403,10 +403,10 @@ export default function AdminAppSettings() {
               <hr className="border-gray-200 dark:border-gray-800" />
 
               <div>
-                <h3 className="text-sm font-bold text-gray-850 dark:text-white uppercase tracking-wider mb-4">Metrics Cards</h3>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Metrics Cards</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {content.metrics.map((metric, index) => (
-                    <div key={metric.id} className="p-4 bg-gray-50 dark:bg-gray-850/50 rounded-xl border border-gray-150 dark:border-gray-800 space-y-3">
+                    <div key={metric.id} className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-800 space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-blue-500 uppercase tracking-wider">Metric #{metric.id}</span>
                       </div>
@@ -416,7 +416,7 @@ export default function AdminAppSettings() {
                           type="text"
                           value={metric.value}
                           onChange={(e) => handleMetricChange(lang, index, 'value', e.target.value)}
-                          className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg px-3 py-1.5 text-sm text-gray-900 dark:text-white focus:outline-none"
+                          className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                       <div>
@@ -425,7 +425,7 @@ export default function AdminAppSettings() {
                           type="text"
                           value={metric.label}
                           onChange={(e) => handleMetricChange(lang, index, 'label', e.target.value)}
-                          className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg px-3 py-1.5 text-sm text-gray-900 dark:text-white focus:outline-none"
+                          className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                     </div>
