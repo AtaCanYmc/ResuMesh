@@ -62,6 +62,9 @@ class Settings(BaseSettings):
     ADMIN_USERNAME: str = "admin"
     ADMIN_PASSWORD: str = "adminpass"
 
+    # Redeploy Webhook Settings
+    DEPLOY_WEBHOOK_URL: str = ""
+
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )

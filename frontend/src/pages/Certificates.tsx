@@ -6,6 +6,7 @@ import SEO from '../components/SEO';
 import { useTranslation } from 'react-i18next';
 import { Navigate } from 'react-router-dom';
 import { useAppSettings } from '../hooks/useHomeData';
+import { ENV } from '../config/env';
 
 import { ListSkeleton } from '../components/ui/Skeletons';
 
@@ -19,7 +20,7 @@ export default function Certificates() {
   useEffect(() => {
     const fetchCertificates = async () => {
       try {
-        const res = await axios.get<Certificate[]>(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/certificates/`);
+        const res = await axios.get<Certificate[]>(`${ENV.API_URL}/api/v1/certificates/`);
         setCertificates(res.data);
       } catch (error) {
         console.error('Failed to fetch certificates', error);

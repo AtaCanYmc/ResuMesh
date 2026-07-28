@@ -1,7 +1,8 @@
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { ENV } from '../config/env';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = ENV.API_URL;
 
 export interface ContentConfig {
   hero: {
@@ -32,23 +33,23 @@ export interface ContentConfig {
   };
 }
 
+import contentData from '../config/content.json';
+
 export const useContentConfig = (lang: string = 'tr') => {
-  return useQuery<ContentConfig>({
-    queryKey: ['contentConfig', lang],
-    queryFn: async () => {
-      const response = await axios.get('/content.json');
-      const shortLang = lang.split('-')[0].toLowerCase();
-      const langData = response.data[shortLang] || response.data[lang] || response.data['en'];
-      return {
-        ...langData,
-        socials: response.data.socials || [],
-        footer: response.data.footer || {},
-        marquee: response.data.marquee || []
-      };
-    },
-    staleTime: Infinity,
-    placeholderData: keepPreviousData,
-  });
+  const shortLang = lang.split('-')[0].toLowerCase();
+  const langData = (contentData as any)[shortLang] || (contentData as any)[lang] || (contentData as any)['en'];
+  const data = {
+    ...langData,
+    socials: (contentData as any).socials || [],
+    footer: (contentData as any).footer || {},
+    marquee: (contentData as any).marquee || []
+  };
+
+  return {
+    data,
+    isLoading: false,
+    isSuccess: true,
+  };
 };
 
 export const useExperiences = () => {
@@ -107,6 +108,8 @@ export const useArticles = (limit?: number) => {
   });
 };
 
+import publicSettings from '../config/publicSettings.json';
+
 export interface AppSettings {
   show_projects: boolean;
   show_certificates: boolean;
@@ -115,12 +118,9 @@ export interface AppSettings {
 }
 
 export const useAppSettings = () => {
-  return useQuery<AppSettings>({
-    queryKey: ['appSettings'],
-    queryFn: async () => {
-      const response = await axios.get(`${API_URL}/api/v1/settings/`);
-      return response.data;
-    },
-    staleTime: 60000,
-  });
+  return {
+    data: publicSettings as AppSettings,
+    isLoading: false,
+    isSuccess: true,
+  };
 };

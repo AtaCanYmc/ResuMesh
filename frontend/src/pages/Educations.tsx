@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Loader2, GraduationCap } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useTranslation } from 'react-i18next';
+import { ENV } from '../config/env';
 
 import { TimelineSkeleton } from '../components/ui/Skeletons';
 
@@ -15,7 +16,7 @@ export default function Educations() {
   useEffect(() => {
     const fetchEducations = async () => {
       try {
-        const res = await axios.get<Education[]>(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/educations/`);
+        const res = await axios.get<Education[]>(`${ENV.API_URL}/api/v1/educations/`);
         setEducations(res.data);
       } catch (error) {
         console.error('Failed to fetch educations', error);

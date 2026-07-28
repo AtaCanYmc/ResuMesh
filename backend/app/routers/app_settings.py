@@ -7,6 +7,137 @@ from app.schemas.app_settings import AppSettingsResponse
 
 router = APIRouter(prefix="/settings", tags=["Settings"])
 
+DEFAULT_SOCIALS = [
+    {
+        "id": "github",
+        "platform": "github",
+        "url": "https://github.com/AtaCanYmc",
+        "label": "GitHub",
+    },
+    {
+        "id": "linkedin",
+        "platform": "linkedin",
+        "url": "https://www.linkedin.com/in/ata-can-yaymacı/",
+        "label": "LinkedIn",
+    },
+    {
+        "id": "devto",
+        "platform": "devto",
+        "url": "https://dev.to/atacanymc",
+        "label": "Dev.to",
+    },
+    {
+        "id": "medium",
+        "platform": "medium",
+        "url": "https://medium.com/@atacanymc",
+        "label": "Medium",
+    },
+]
+DEFAULT_FOOTER = {"email": "atacanymc@gmail.com"}
+DEFAULT_MARQUEE = [
+    "React.js",
+    "Vite.js",
+    "Java",
+    "SpringBoot",
+    "TypeScript",
+    "JavaScript",
+    "Tailwind CSS",
+    "Python",
+    "FastAPI",
+    "PostgreSQL",
+    "PL/SQL",
+    "C#",
+    ".NET",
+    "Supabase",
+    "Firebase",
+    "MongoDB",
+    "Docker",
+    "Node.js",
+    "Next.js",
+    "GraphQL",
+]
+DEFAULT_EN = {
+    "hero": {
+        "name": "Ata Can",
+        "fullName": "Ata Can Yaymacı",
+        "avatarSubtitle": "Crafting digital experiences",
+        "avatarImage": "/images/profile_pic.jpeg",
+        "title": "I bridge the gap between AI Workflows and Financial Technologies.",
+        "description": (
+            "With a Computer Engineering background from Dokuz Eylul University, "
+            "I specialize in scalable backend architectures and automation processes. "
+            "I transform complex data into meaningful insights "
+            "using modern web technologies."
+        ),
+        "resumeLink": "/resumes/resume.pdf",
+    },
+    "metrics": [
+        {
+            "id": 1,
+            "icon": "code",
+            "value": "25+",
+            "label": "Active Projects",
+            "color": "blue",
+        },
+        {
+            "id": 2,
+            "icon": "book",
+            "value": "40+",
+            "label": "Technical Articles",
+            "color": "indigo",
+        },
+        {
+            "id": 3,
+            "icon": "star",
+            "value": "4+",
+            "label": "Years Experience",
+            "color": "purple",
+        },
+    ],
+}
+DEFAULT_TR = {
+    "hero": {
+        "name": "Ata Can",
+        "fullName": "Ata Can Yaymacı",
+        "avatarSubtitle": "Dijital deneyimler tasarlıyorum",
+        "avatarImage": "/images/profile_pic.jpeg",
+        "title": (
+            "Yapay Zeka İş Akışları ve Finansal Teknolojiler "
+            "arasında köprü kuruyorum."
+        ),
+        "description": (
+            "Dokuz Eylül Üniversitesi Bilgisayar Mühendisliği geçmişimle, "
+            "ölçeklenebilir backend mimarileri ve otomasyon süreçleri "
+            "üzerine çalışıyorum. Modern web teknolojileriyle karmaşık verileri "
+            "anlamlı içgörülere dönüştürüyorum."
+        ),
+        "resumeLink": "/resumes/resume.pdf",
+    },
+    "metrics": [
+        {
+            "id": 1,
+            "icon": "code",
+            "value": "25+",
+            "label": "Aktif Proje",
+            "color": "blue",
+        },
+        {
+            "id": 2,
+            "icon": "book",
+            "value": "40+",
+            "label": "Teknik Makale",
+            "color": "indigo",
+        },
+        {
+            "id": 3,
+            "icon": "star",
+            "value": "4+",
+            "label": "Yıl Deneyim",
+            "color": "purple",
+        },
+    ],
+}
+
 
 @router.get("/", response_model=AppSettingsResponse)
 def get_settings(response: Response, db: Session = Depends(get_db)):
@@ -21,6 +152,11 @@ def get_settings(response: Response, db: Session = Depends(get_db)):
             show_certificates=True,
             show_videos=True,
             show_experiences=True,
+            socials=DEFAULT_SOCIALS,
+            footer=DEFAULT_FOOTER,
+            marquee=DEFAULT_MARQUEE,
+            en=DEFAULT_EN,
+            tr=DEFAULT_TR,
         )
         db.add(settings)
         db.commit()
