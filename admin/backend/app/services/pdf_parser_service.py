@@ -1,13 +1,11 @@
 import io
-from typing import List
+from typing import Any, List
 
 from pydantic import BaseModel, Field
 from pypdf import PdfReader
 
-from app.llm.base import LLMProvider
 from app.schemas.certificate import CertificateCreate
 from app.schemas.experience import ExperienceCreate
-from app.services.template_service import TemplateService
 
 
 # We guarantee that AI returns in this exact format (Structured Outputs)
@@ -48,16 +46,14 @@ class LinkedInPDFParser:
 
     @staticmethod
     async def parse_with_llm(
-        raw_text: str, llm_provider: LLMProvider
+        raw_text: str, llm_client: Any
     ) -> LinkedInProfileDataSchema:
         """Sends the extracted raw text to the project's LLM layer
         and parses it into the schema."""
+        from resumesh_llm import CVOptimizer
 
-        prompt = TemplateService.render_template(
-            "prompts/linkedin_pdf_parser.jinja2", raw_text=raw_text
-        )
-
-        response = await llm_provider.generate_structured_output(
-            prompt=prompt, response_model=LinkedInProfileDataSchema
+        optimizer = CVOptimizer(client=llm_client)
+        response = await optimizer.parse_linkedin_pdf_text(
+            raw_text=raw_text, response_model=LinkedInProfileDataSchema
         )
         return response

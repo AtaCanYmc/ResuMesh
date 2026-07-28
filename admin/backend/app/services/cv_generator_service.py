@@ -1,14 +1,14 @@
 import asyncio
 
+from resumesh_llm import LLMClient
+
 from app.db.repositories import (
     IArticleRepository,
     ICertificateRepository,
     IExperienceRepository,
     IProjectRepository,
 )
-from app.llm.base import LLMProvider
 from app.services.scraper_service import ScraperService
-from app.services.template_service import TemplateService
 
 
 class CVGeneratorService:
@@ -18,13 +18,13 @@ class CVGeneratorService:
         experience_repo: IExperienceRepository,
         article_repo: IArticleRepository,
         cert_repo: ICertificateRepository,
-        llm_provider: LLMProvider,
+        llm_client: LLMClient,
     ):
         self.project_repo = project_repo
         self.experience_repo = experience_repo
         self.article_repo = article_repo
         self.cert_repo = cert_repo
-        self.llm = llm_provider
+        self.llm = llm_client
 
     async def generate_tailored_cv(self, job_url: str, skills: list = None):
         # Fetch external scraping and internal database records concurrently
@@ -89,15 +89,13 @@ class CVGeneratorService:
 
         # 3. Call LLM for Structured Output
         from reactive_resume.models import ResumeImportData
+        from resumesh_llm import CVOptimizer
 
-        prompt = TemplateService.render_template(
-            "prompts/cv_generator.jinja2",
+        optimizer = CVOptimizer(client=self.llm)
+        tailored_cv_data = await optimizer.generate_tailored_cv(
             job_description=safe_job_description,
             user_context=safe_user_context,
-        )
-
-        tailored_cv_data = await self.llm.generate_structured_output(
-            prompt=prompt, response_model=ResumeImportData
+            response_model=ResumeImportData,
         )
 
         return tailored_cv_data

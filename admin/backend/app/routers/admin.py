@@ -31,7 +31,7 @@ from app.db.repositories import (
     ISkillRepository,
     ISystemLogRepository,
 )
-from app.llm.factory import get_llm_provider
+from app.llm.factory import get_llm_client
 from app.services.auth_service import get_current_admin
 from app.services.cv_generator_service import CVGeneratorService
 from app.services.ingestion_service import IngestionService
@@ -61,9 +61,9 @@ async def generate_cv(
     telemetry_ctx: dict = Depends(get_telemetry_data),
 ):
     try:
-        llm_provider = get_llm_provider()
+        llm_client = get_llm_client()
         cv_service = CVGeneratorService(
-            project_repo, experience_repo, article_repo, cert_repo, llm_provider
+            project_repo, experience_repo, article_repo, cert_repo, llm_client
         )
 
         skills = skill_repo.get_skills(limit=1000)
@@ -239,8 +239,8 @@ async def import_linkedin_pdf(
         pdf_bytes = await file.read()
         raw_text = LinkedInPDFParser.extract_raw_text(pdf_bytes)
 
-        llm_provider = get_llm_provider()
-        structured_data = await LinkedInPDFParser.parse_with_llm(raw_text, llm_provider)
+        llm_client = get_llm_client()
+        structured_data = await LinkedInPDFParser.parse_with_llm(raw_text, llm_client)
 
         # Save to database (Upsert / Create)
         experiences = getattr(structured_data, "experiences", []) or []
