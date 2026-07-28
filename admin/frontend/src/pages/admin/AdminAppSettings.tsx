@@ -1,52 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Eye, Globe, Share2, Check } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
+import { AppSettings, HeroContent, MetricItem, SectionVisibility } from "../../types";
+import { useEnv } from "../../hooks/env.ts";
 
-interface SocialLink {
-  id: string;
-  platform: string;
-  url: string;
-  label: string;
-}
-
-interface HeroConfig {
-  name: string;
-  fullName: string;
-  avatarSubtitle: string;
-  avatarImage: string;
-  title: string;
-  description: string;
-  resumeLink: string;
-}
-
-interface MetricItem {
-  id: number;
-  icon: string;
-  value: string;
-  label: string;
-  color: string;
-}
-
-interface LanguageContent {
-  hero: HeroConfig;
-  metrics: MetricItem[];
-}
-
-interface AppSettings {
-  show_projects: boolean;
-  show_certificates: boolean;
-  show_videos: boolean;
-  show_experiences: boolean;
-  socials: SocialLink[];
-  footer: { email: string };
-  marquee: string[];
-  en: LanguageContent;
-  tr: LanguageContent;
-}
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
 const ToggleSwitch = ({ label, description, isChecked, onChange }: { label: string; description: string; isChecked: boolean; onChange: () => void }) => (
   <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-800">
@@ -70,10 +32,16 @@ const ToggleSwitch = ({ label, description, isChecked, onChange }: { label: stri
   </div>
 );
 
+const inputCls = 'w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500';
+const labelCls = 'block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2';
+
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
 export default function AdminAppSettings() {
   const { token } = useAuth();
   const queryClient = useQueryClient();
-  const API_URL = import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001';
+  const { ADMIN_API_URL } = useEnv();
 
   const [activeTab, setActiveTab] = useState<'visibility' | 'socials' | 'content_en' | 'content_tr'>('visibility');
   const [formData, setFormData] = useState<AppSettings | null>(null);
@@ -81,7 +49,7 @@ export default function AdminAppSettings() {
   const { data: settings, isLoading } = useQuery<AppSettings>({
     queryKey: ['admin-app-settings'],
     queryFn: async () => {
-      const res = await axios.get(`${API_URL}/api/v1/settings/`, {
+      const res = await axios.get(`${ADMIN_API_URL}/api/v1/settings/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       return res.data;
@@ -96,7 +64,7 @@ export default function AdminAppSettings() {
 
   const updateMutation = useMutation({
     mutationFn: async (updatedData: AppSettings) => {
-      const res = await axios.patch(`${API_URL}/api/v1/settings/`, updatedData, {
+      const res = await axios.patch(`${ADMIN_API_URL}/api/v1/settings/`, updatedData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       return res.data;
@@ -123,48 +91,56 @@ export default function AdminAppSettings() {
     updateMutation.mutate(formData);
   };
 
-  const updateVisibility = (key: keyof AppSettings) => {
+  const updateVisibility = (key: keyof SectionVisibility) => {
     setFormData((prev) => {
       if (!prev) return null;
-      return { ...prev, [key]: !prev[key] };
+      return { ...prev, sections: { ...prev.sections, [key]: !prev.sections?.[key] } };
     });
   };
 
   const updateSocialUrl = (index: number, url: string) => {
     setFormData((prev) => {
       if (!prev) return null;
-      const newSocials = [...prev.socials];
-      newSocials[index].url = url;
+      const newSocials = [...(prev.socials ?? [])];
+      newSocials[index] = { ...newSocials[index], url };
       return { ...prev, socials: newSocials };
     });
   };
 
-  const handleHeroChange = (lang: 'en' | 'tr', field: keyof HeroConfig, value: string) => {
+  const handleHeroChange = (lang: 'en' | 'tr', field: keyof HeroContent, value: string) => {
     setFormData((prev) => {
       if (!prev) return null;
       const langContent = { ...prev[lang] };
-      langContent.hero = { ...langContent.hero, [field]: value };
+      langContent.hero = { ...langContent.hero, [field]: value } as HeroContent;
       return { ...prev, [lang]: langContent };
     });
   };
 
-  const handleMetricChange = (lang: 'en' | 'tr', index: number, field: keyof MetricItem, value: any) => {
+  const handleMetricChange = (lang: 'en' | 'tr', index: number, field: keyof MetricItem, value: string | number) => {
     setFormData((prev) => {
       if (!prev) return null;
       const langContent = { ...prev[lang] };
-      const newMetrics = [...langContent.metrics];
+      const newMetrics = [...(langContent.metrics ?? [])];
       newMetrics[index] = { ...newMetrics[index], [field]: value };
       langContent.metrics = newMetrics;
       return { ...prev, [lang]: langContent };
     });
   };
 
+  const tabCls = (tab: typeof activeTab) =>
+    `px-4 py-2 text-sm font-medium border-b-2 whitespace-nowrap transition-colors duration-200 cursor-pointer ${
+      activeTab === tab
+        ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+        : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'
+    }`;
+
+
   return (
     <div className="space-y-6 max-w-5xl">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <AdminPageHeader
           title="App Settings"
-          description="Configure your portfolio visibility, text configs, and social links."
+          description="Configure your portfolio visibility, text configs, social links, and AI provider."
         />
         <button
           onClick={handleSave}
@@ -178,53 +154,25 @@ export default function AdminAppSettings() {
 
       {/* Tabs */}
       <div className="flex border-b border-gray-200 dark:border-gray-800 overflow-x-auto gap-2 scrollbar-none">
-        <button
-          onClick={() => setActiveTab('visibility')}
-          className={`px-4 py-2 text-sm font-medium border-b-2 whitespace-nowrap transition-colors duration-200 cursor-pointer ${
-            activeTab === 'visibility'
-              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'
-          }`}
-        >
+        <button onClick={() => setActiveTab('visibility')} className={tabCls('visibility')}>
           <div className="flex items-center gap-2">
             <Eye size={16} />
-            <span>General & Visibility</span>
+            <span>General &amp; Visibility</span>
           </div>
         </button>
-        <button
-          onClick={() => setActiveTab('socials')}
-          className={`px-4 py-2 text-sm font-medium border-b-2 whitespace-nowrap transition-colors duration-200 cursor-pointer ${
-            activeTab === 'socials'
-              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'
-          }`}
-        >
+        <button onClick={() => setActiveTab('socials')} className={tabCls('socials')}>
           <div className="flex items-center gap-2">
             <Share2 size={16} />
             <span>Social Links</span>
           </div>
         </button>
-        <button
-          onClick={() => setActiveTab('content_en')}
-          className={`px-4 py-2 text-sm font-medium border-b-2 whitespace-nowrap transition-colors duration-200 cursor-pointer ${
-            activeTab === 'content_en'
-              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'
-          }`}
-        >
+        <button onClick={() => setActiveTab('content_en')} className={tabCls('content_en')}>
           <div className="flex items-center gap-2">
             <Globe size={16} />
             <span>English Content</span>
           </div>
         </button>
-        <button
-          onClick={() => setActiveTab('content_tr')}
-          className={`px-4 py-2 text-sm font-medium border-b-2 whitespace-nowrap transition-colors duration-200 cursor-pointer ${
-            activeTab === 'content_tr'
-              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'
-          }`}
-        >
+        <button onClick={() => setActiveTab('content_tr')} className={tabCls('content_tr')}>
           <div className="flex items-center gap-2">
             <Globe size={16} />
             <span>Turkish Content</span>
@@ -243,26 +191,26 @@ export default function AdminAppSettings() {
                 <ToggleSwitch
                   label="Projects Section"
                   description="Show or hide your projects page on the public site."
-                  isChecked={formData.show_projects}
-                  onChange={() => updateVisibility('show_projects')}
+                  isChecked={formData.sections?.projects ?? true}
+                  onChange={() => updateVisibility('projects')}
                 />
                 <ToggleSwitch
                   label="Certificates Section"
                   description="Show or hide your certificates page on the public site."
-                  isChecked={formData.show_certificates}
-                  onChange={() => updateVisibility('show_certificates')}
+                  isChecked={formData.sections?.certificates ?? true}
+                  onChange={() => updateVisibility('certificates')}
                 />
                 <ToggleSwitch
                   label="Videos Section"
                   description="Show or hide your videos page on the public site."
-                  isChecked={formData.show_videos}
-                  onChange={() => updateVisibility('show_videos')}
+                  isChecked={formData.sections?.videos ?? true}
+                  onChange={() => updateVisibility('videos')}
                 />
                 <ToggleSwitch
                   label="Experiences Section"
                   description="Show or hide your experiences page on the public site."
-                  isChecked={formData.show_experiences}
-                  onChange={() => updateVisibility('show_experiences')}
+                  isChecked={formData.sections?.experiences ?? true}
+                  onChange={() => updateVisibility('experiences')}
                 />
               </div>
             </div>
@@ -272,12 +220,12 @@ export default function AdminAppSettings() {
             <div>
               <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Global Footer</h3>
               <div className="max-w-xl">
-                <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Contact Email</label>
+                <label className={labelCls}>Contact Email</label>
                 <input
                   type="email"
                   value={formData.footer?.email || ''}
                   onChange={(e) => setFormData((prev) => prev ? { ...prev, footer: { email: e.target.value } } : null)}
-                  className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={inputCls}
                 />
               </div>
             </div>
@@ -287,7 +235,7 @@ export default function AdminAppSettings() {
             <div>
               <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Marquee Skills</h3>
               <div>
-                <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Skills List (comma separated)</label>
+                <label className={labelCls}>Skills List (comma separated)</label>
                 <textarea
                   value={formData.marquee?.join(', ') || ''}
                   onChange={(e) => setFormData((prev) => prev ? { ...prev, marquee: e.target.value.split(',').map((s) => s.trim()) } : null)}
@@ -327,70 +275,71 @@ export default function AdminAppSettings() {
         {(activeTab === 'content_en' || activeTab === 'content_tr') && (() => {
           const lang = activeTab === 'content_en' ? 'en' : 'tr';
           const content = formData[lang];
+          if (!content) return <p className="text-sm text-gray-500">No content available for {lang.toUpperCase()}.</p>;
           return (
             <div className="space-y-6">
               <div>
                 <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Hero Information ({lang.toUpperCase()})</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Display Name</label>
+                    <label className={labelCls}>Display Name</label>
                     <input
                       type="text"
                       value={content.hero.name}
                       onChange={(e) => handleHeroChange(lang, 'name', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={inputCls}
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Full Name</label>
+                    <label className={labelCls}>Full Name</label>
                     <input
                       type="text"
                       value={content.hero.fullName}
                       onChange={(e) => handleHeroChange(lang, 'fullName', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={inputCls}
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Avatar Subtitle</label>
+                    <label className={labelCls}>Avatar Subtitle</label>
                     <input
                       type="text"
                       value={content.hero.avatarSubtitle}
                       onChange={(e) => handleHeroChange(lang, 'avatarSubtitle', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={inputCls}
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Avatar Image Path</label>
+                    <label className={labelCls}>Avatar Image Path</label>
                     <input
                       type="text"
                       value={content.hero.avatarImage}
                       onChange={(e) => handleHeroChange(lang, 'avatarImage', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={inputCls}
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Resume Download Link</label>
+                    <label className={labelCls}>Resume Download Link</label>
                     <input
                       type="text"
                       value={content.hero.resumeLink}
                       onChange={(e) => handleHeroChange(lang, 'resumeLink', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={inputCls}
                     />
                   </div>
                 </div>
 
                 <div className="mt-4">
-                  <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Title / Catchphrase</label>
+                  <label className={labelCls}>Title / Catchphrase</label>
                   <input
                     type="text"
                     value={content.hero.title}
                     onChange={(e) => handleHeroChange(lang, 'title', e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className={inputCls}
                   />
                 </div>
 
                 <div className="mt-4">
-                  <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Description Biography</label>
+                  <label className={labelCls}>Description Biography</label>
                   <textarea
                     value={content.hero.description}
                     onChange={(e) => handleHeroChange(lang, 'description', e.target.value)}
@@ -435,6 +384,8 @@ export default function AdminAppSettings() {
             </div>
           );
         })()}
+
+        {/* Tab 5: AI / LLM Configuration - removed (llm_config no longer exists) */}
       </div>
     </div>
   );

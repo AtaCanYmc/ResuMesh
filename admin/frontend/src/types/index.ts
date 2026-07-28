@@ -130,3 +130,53 @@ export interface Video {
   thumbnail?: string;
   profile: string;
 }
+
+export interface SectionVisibility {
+  educations?: boolean;
+  articles?:boolean;
+  projects?: boolean;
+  certificates?: boolean;
+  videos?: boolean;
+  experiences?: boolean;
+  skills?: boolean;
+  posts?: boolean;
+}
+
+export interface SocialItem {
+  id: string;
+  platform: string;
+  url: string;
+  label: string;
+}
+
+export interface HeroContent {
+  name: string;
+  fullName: string;
+  avatarSubtitle: string;
+  avatarImage: string;
+  title: string;
+  description: string;
+  resumeLink: string;
+}
+
+export interface MetricItem {
+  id: number;
+  icon: string;
+  value: string;
+  label: string;
+  color: string;
+}
+
+export interface LanguageContent {
+  hero: HeroContent;
+  metrics: MetricItem[];
+}
+
+export interface AppSettings {
+  sections?: SectionVisibility;
+  socials?: SocialItem[];
+  footer?: { email: string };
+  marquee?: string[];
+  en?: LanguageContent;
+  tr?: LanguageContent;
+}

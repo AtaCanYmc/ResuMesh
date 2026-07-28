@@ -23,4 +23,4 @@ repos:
     hooks:
       - id: flake8
         # We ignore E203 for Black compatibility
-        args: ["--max-line-length=88", "--extend-ignore=E203"]
+        args: ["--max-line-length=120", "--extend-ignore=E203"]
