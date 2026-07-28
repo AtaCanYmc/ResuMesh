@@ -25,7 +25,6 @@ except ImportError:
     pass
 from app.routers import (
     articles,
-    career,
     certificates,
     cv,
     educations,
@@ -75,7 +74,6 @@ app.include_router(cv.router, prefix="/api/v1")
 app.include_router(packages.router, prefix="/api/v1")
 app.include_router(posts.router, prefix="/api/v1")
 app.include_router(videos.router, prefix="/api/v1")
-app.include_router(career.router, prefix="/api/v1")
 
 
 @app.get("/api/v1/")
