@@ -33,7 +33,5 @@ class AppSettingsResponse(AppSettingsBase):
     The frontend does not need to know about the underlying KV storage.
     """
 
-    id: int
-
     class Config:
         from_attributes = True
