@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 
 from app.config.database import get_db
@@ -9,7 +9,11 @@ router = APIRouter(prefix="/settings", tags=["Settings"])
 
 
 @router.get("/", response_model=AppSettingsResponse)
-def get_settings(db: Session = Depends(get_db)):
+def get_settings(response: Response, db: Session = Depends(get_db)):
+    # Cache settings at CDN level for 1 hour with 1 minute stale-while-revalidate window
+    response.headers["Cache-Control"] = (
+        "public, max-age=3600, stale-while-revalidate=60"
+    )
     settings = db.query(AppSettings).first()
     if not settings:
         settings = AppSettings(

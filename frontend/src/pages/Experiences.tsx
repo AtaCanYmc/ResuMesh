@@ -13,10 +13,6 @@ export default function Experiences() {
   const { data: settings } = useAppSettings();
   const { t } = useTranslation();
 
-  if (settings && settings.show_experiences === false) {
-    return <Navigate to="/" replace />;
-  }
-
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,6 +29,10 @@ export default function Experiences() {
     };
     fetchExperiences();
   }, []);
+
+  if (settings && settings.show_experiences === false) {
+    return <Navigate to="/" replace />;
+  }
 
   if (loading) {
     return <TimelineSkeleton />;

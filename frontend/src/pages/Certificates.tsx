@@ -13,10 +13,6 @@ export default function Certificates() {
   const { data: settings } = useAppSettings();
   const { t } = useTranslation();
 
-  if (settings && settings.show_certificates === false) {
-    return <Navigate to="/" replace />;
-  }
-
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,6 +29,10 @@ export default function Certificates() {
     };
     fetchCertificates();
   }, []);
+
+  if (settings && settings.show_certificates === false) {
+    return <Navigate to="/" replace />;
+  }
 
   if (loading) {
     return <ListSkeleton />;

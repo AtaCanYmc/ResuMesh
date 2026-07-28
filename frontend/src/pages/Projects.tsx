@@ -16,10 +16,6 @@ export default function Projects() {
   const { data: settings } = useAppSettings();
   const { t } = useTranslation();
 
-  if (settings && settings.show_projects === false) {
-    return <Navigate to="/" replace />;
-  }
-
   const [filter, setFilter] = useState('All');
   const [sortBy, setSortBy] = useState<'stars' | 'forks' | 'date_desc' | 'date_asc' | 'alphabetical'>('stars');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -32,6 +28,10 @@ export default function Projects() {
       return res.data;
     }
   });
+
+  if (settings && settings.show_projects === false) {
+    return <Navigate to="/" replace />;
+  }
 
   if (isError) {
     return (
