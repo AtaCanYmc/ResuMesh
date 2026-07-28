@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { Eye, Globe, Share2, Check } from 'lucide-react';
+import { Eye, Globe, Share2, Check, Bot, Eye as EyeIcon, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 
@@ -36,6 +36,16 @@ interface LanguageContent {
   metrics: MetricItem[];
 }
 
+interface LLMConfig {
+  llm_provider: string;
+  openai_api_key: string;
+  openai_model: string;
+  groq_api_key: string;
+  groq_model: string;
+  ollama_base_url: string;
+  ollama_model: string;
+}
+
 interface AppSettings {
   show_projects: boolean;
   show_certificates: boolean;
@@ -46,7 +56,10 @@ interface AppSettings {
   marquee: string[];
   en: LanguageContent;
   tr: LanguageContent;
+  llm_config: LLMConfig;
 }
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
 const ToggleSwitch = ({ label, description, isChecked, onChange }: { label: string; description: string; isChecked: boolean; onChange: () => void }) => (
   <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-800">
@@ -70,12 +83,44 @@ const ToggleSwitch = ({ label, description, isChecked, onChange }: { label: stri
   </div>
 );
 
+const inputCls = 'w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500';
+const labelCls = 'block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2';
+
+/** Password-style field with show/hide toggle */
+const SecretInput = ({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) => {
+  const [show, setShow] = useState(false);
+  const isMasked = value === '***';
+  return (
+    <div className="relative">
+      <input
+        type={show ? 'text' : 'password'}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder ?? 'Enter API key…'}
+        className={`${inputCls} pr-10`}
+      />
+      {!isMasked && (
+        <button
+          type="button"
+          onClick={() => setShow((s) => !s)}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          tabIndex={-1}
+        >
+          {show ? <EyeOff size={16} /> : <EyeIcon size={16} />}
+        </button>
+      )}
+    </div>
+  );
+};
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
 export default function AdminAppSettings() {
   const { token } = useAuth();
   const queryClient = useQueryClient();
   const API_URL = import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001';
 
-  const [activeTab, setActiveTab] = useState<'visibility' | 'socials' | 'content_en' | 'content_tr'>('visibility');
+  const [activeTab, setActiveTab] = useState<'visibility' | 'socials' | 'content_en' | 'content_tr' | 'ai'>('visibility');
   const [formData, setFormData] = useState<AppSettings | null>(null);
 
   const { data: settings, isLoading } = useQuery<AppSettings>({
@@ -96,7 +141,10 @@ export default function AdminAppSettings() {
 
   const updateMutation = useMutation({
     mutationFn: async (updatedData: AppSettings) => {
-      const res = await axios.patch(`${API_URL}/api/v1/settings/`, updatedData, {
+      // Flatten llm_config into the root payload for the backend PATCH
+      const { llm_config, ...rest } = updatedData;
+      const payload = { ...rest, ...llm_config };
+      const res = await axios.patch(`${API_URL}/api/v1/settings/`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       return res.data;
@@ -159,12 +207,28 @@ export default function AdminAppSettings() {
     });
   };
 
+  const updateLlm = (field: keyof LLMConfig, value: string) => {
+    setFormData((prev) => {
+      if (!prev) return null;
+      return { ...prev, llm_config: { ...prev.llm_config, [field]: value } };
+    });
+  };
+
+  const tabCls = (tab: typeof activeTab) =>
+    `px-4 py-2 text-sm font-medium border-b-2 whitespace-nowrap transition-colors duration-200 cursor-pointer ${
+      activeTab === tab
+        ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+        : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'
+    }`;
+
+  const provider = formData.llm_config?.llm_provider ?? 'mock';
+
   return (
     <div className="space-y-6 max-w-5xl">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <AdminPageHeader
           title="App Settings"
-          description="Configure your portfolio visibility, text configs, and social links."
+          description="Configure your portfolio visibility, text configs, social links, and AI provider."
         />
         <button
           onClick={handleSave}
@@ -178,56 +242,34 @@ export default function AdminAppSettings() {
 
       {/* Tabs */}
       <div className="flex border-b border-gray-200 dark:border-gray-800 overflow-x-auto gap-2 scrollbar-none">
-        <button
-          onClick={() => setActiveTab('visibility')}
-          className={`px-4 py-2 text-sm font-medium border-b-2 whitespace-nowrap transition-colors duration-200 cursor-pointer ${
-            activeTab === 'visibility'
-              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'
-          }`}
-        >
+        <button onClick={() => setActiveTab('visibility')} className={tabCls('visibility')}>
           <div className="flex items-center gap-2">
             <Eye size={16} />
-            <span>General & Visibility</span>
+            <span>General &amp; Visibility</span>
           </div>
         </button>
-        <button
-          onClick={() => setActiveTab('socials')}
-          className={`px-4 py-2 text-sm font-medium border-b-2 whitespace-nowrap transition-colors duration-200 cursor-pointer ${
-            activeTab === 'socials'
-              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'
-          }`}
-        >
+        <button onClick={() => setActiveTab('socials')} className={tabCls('socials')}>
           <div className="flex items-center gap-2">
             <Share2 size={16} />
             <span>Social Links</span>
           </div>
         </button>
-        <button
-          onClick={() => setActiveTab('content_en')}
-          className={`px-4 py-2 text-sm font-medium border-b-2 whitespace-nowrap transition-colors duration-200 cursor-pointer ${
-            activeTab === 'content_en'
-              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'
-          }`}
-        >
+        <button onClick={() => setActiveTab('content_en')} className={tabCls('content_en')}>
           <div className="flex items-center gap-2">
             <Globe size={16} />
             <span>English Content</span>
           </div>
         </button>
-        <button
-          onClick={() => setActiveTab('content_tr')}
-          className={`px-4 py-2 text-sm font-medium border-b-2 whitespace-nowrap transition-colors duration-200 cursor-pointer ${
-            activeTab === 'content_tr'
-              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'
-          }`}
-        >
+        <button onClick={() => setActiveTab('content_tr')} className={tabCls('content_tr')}>
           <div className="flex items-center gap-2">
             <Globe size={16} />
             <span>Turkish Content</span>
+          </div>
+        </button>
+        <button onClick={() => setActiveTab('ai')} className={tabCls('ai')}>
+          <div className="flex items-center gap-2">
+            <Bot size={16} />
+            <span>AI / LLM</span>
           </div>
         </button>
       </div>
@@ -272,12 +314,12 @@ export default function AdminAppSettings() {
             <div>
               <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Global Footer</h3>
               <div className="max-w-xl">
-                <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Contact Email</label>
+                <label className={labelCls}>Contact Email</label>
                 <input
                   type="email"
                   value={formData.footer?.email || ''}
                   onChange={(e) => setFormData((prev) => prev ? { ...prev, footer: { email: e.target.value } } : null)}
-                  className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={inputCls}
                 />
               </div>
             </div>
@@ -287,7 +329,7 @@ export default function AdminAppSettings() {
             <div>
               <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Marquee Skills</h3>
               <div>
-                <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Skills List (comma separated)</label>
+                <label className={labelCls}>Skills List (comma separated)</label>
                 <textarea
                   value={formData.marquee?.join(', ') || ''}
                   onChange={(e) => setFormData((prev) => prev ? { ...prev, marquee: e.target.value.split(',').map((s) => s.trim()) } : null)}
@@ -333,64 +375,64 @@ export default function AdminAppSettings() {
                 <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Hero Information ({lang.toUpperCase()})</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Display Name</label>
+                    <label className={labelCls}>Display Name</label>
                     <input
                       type="text"
                       value={content.hero.name}
                       onChange={(e) => handleHeroChange(lang, 'name', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={inputCls}
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Full Name</label>
+                    <label className={labelCls}>Full Name</label>
                     <input
                       type="text"
                       value={content.hero.fullName}
                       onChange={(e) => handleHeroChange(lang, 'fullName', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={inputCls}
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Avatar Subtitle</label>
+                    <label className={labelCls}>Avatar Subtitle</label>
                     <input
                       type="text"
                       value={content.hero.avatarSubtitle}
                       onChange={(e) => handleHeroChange(lang, 'avatarSubtitle', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={inputCls}
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Avatar Image Path</label>
+                    <label className={labelCls}>Avatar Image Path</label>
                     <input
                       type="text"
                       value={content.hero.avatarImage}
                       onChange={(e) => handleHeroChange(lang, 'avatarImage', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={inputCls}
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Resume Download Link</label>
+                    <label className={labelCls}>Resume Download Link</label>
                     <input
                       type="text"
                       value={content.hero.resumeLink}
                       onChange={(e) => handleHeroChange(lang, 'resumeLink', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={inputCls}
                     />
                   </div>
                 </div>
 
                 <div className="mt-4">
-                  <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Title / Catchphrase</label>
+                  <label className={labelCls}>Title / Catchphrase</label>
                   <input
                     type="text"
                     value={content.hero.title}
                     onChange={(e) => handleHeroChange(lang, 'title', e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className={inputCls}
                   />
                 </div>
 
                 <div className="mt-4">
-                  <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Description Biography</label>
+                  <label className={labelCls}>Description Biography</label>
                   <textarea
                     value={content.hero.description}
                     onChange={(e) => handleHeroChange(lang, 'description', e.target.value)}
@@ -435,6 +477,154 @@ export default function AdminAppSettings() {
             </div>
           );
         })()}
+
+        {/* Tab 5: AI / LLM Configuration */}
+        {activeTab === 'ai' && (
+          <div className="space-y-6">
+            {/* Provider Selector */}
+            <div>
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4">AI Provider</h3>
+              <div className="max-w-xs">
+                <label className={labelCls}>LLM Provider</label>
+                <select
+                  value={provider}
+                  onChange={(e) => updateLlm('llm_provider', e.target.value)}
+                  className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="mock">Mock (Testing)</option>
+                  <option value="openai">OpenAI</option>
+                  <option value="groq">Groq</option>
+                  <option value="ollama">Ollama (Self-hosted)</option>
+                </select>
+              </div>
+              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                {provider === 'mock' && 'Mock provider returns placeholder responses. No API key required.'}
+                {provider === 'openai' && 'Uses the OpenAI API (GPT models). Requires a valid API key.'}
+                {provider === 'groq' && 'Uses the Groq API (fast inference for open-source models). Requires a valid API key.'}
+                {provider === 'ollama' && 'Uses a locally running Ollama instance. No API key required.'}
+              </p>
+            </div>
+
+            <hr className="border-gray-200 dark:border-gray-800" />
+
+            {/* OpenAI Settings */}
+            {provider === 'openai' && (
+              <div>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 bg-green-500 rounded-full"></span>
+                  OpenAI Configuration
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+                  <div className="md:col-span-2">
+                    <label className={labelCls}>
+                      API Key
+                      {formData.llm_config?.openai_api_key === '***' && (
+                        <span className="ml-2 normal-case text-green-600 dark:text-green-400 font-normal">● Key is set</span>
+                      )}
+                    </label>
+                    <SecretInput
+                      value={formData.llm_config?.openai_api_key ?? ''}
+                      onChange={(v) => updateLlm('openai_api_key', v)}
+                      placeholder={formData.llm_config?.openai_api_key === '***' ? 'Leave blank to keep existing key' : 'sk-…'}
+                    />
+                    <p className="mt-1 text-xs text-gray-400">Leave blank to keep the existing stored key. Clear it to remove it.</p>
+                  </div>
+                  <div>
+                    <label className={labelCls}>Model</label>
+                    <input
+                      type="text"
+                      value={formData.llm_config?.openai_model ?? 'gpt-4o'}
+                      onChange={(e) => updateLlm('openai_model', e.target.value)}
+                      placeholder="gpt-4o"
+                      className={inputCls}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Groq Settings */}
+            {provider === 'groq' && (
+              <div>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 bg-orange-500 rounded-full"></span>
+                  Groq Configuration
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+                  <div className="md:col-span-2">
+                    <label className={labelCls}>
+                      API Key
+                      {formData.llm_config?.groq_api_key === '***' && (
+                        <span className="ml-2 normal-case text-green-600 dark:text-green-400 font-normal">● Key is set</span>
+                      )}
+                    </label>
+                    <SecretInput
+                      value={formData.llm_config?.groq_api_key ?? ''}
+                      onChange={(v) => updateLlm('groq_api_key', v)}
+                      placeholder={formData.llm_config?.groq_api_key === '***' ? 'Leave blank to keep existing key' : 'gsk_…'}
+                    />
+                    <p className="mt-1 text-xs text-gray-400">Leave blank to keep the existing stored key. Clear it to remove it.</p>
+                  </div>
+                  <div>
+                    <label className={labelCls}>Model</label>
+                    <input
+                      type="text"
+                      value={formData.llm_config?.groq_model ?? 'llama-3.3-70b-versatile'}
+                      onChange={(e) => updateLlm('groq_model', e.target.value)}
+                      placeholder="llama-3.3-70b-versatile"
+                      className={inputCls}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Ollama Settings */}
+            {provider === 'ollama' && (
+              <div>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 bg-purple-500 rounded-full"></span>
+                  Ollama Configuration
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+                  <div>
+                    <label className={labelCls}>Base URL</label>
+                    <input
+                      type="url"
+                      value={formData.llm_config?.ollama_base_url ?? 'http://localhost:11434'}
+                      onChange={(e) => updateLlm('ollama_base_url', e.target.value)}
+                      placeholder="http://localhost:11434"
+                      className={inputCls}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelCls}>Model</label>
+                    <input
+                      type="text"
+                      value={formData.llm_config?.ollama_model ?? 'llama3'}
+                      onChange={(e) => updateLlm('ollama_model', e.target.value)}
+                      placeholder="llama3"
+                      className={inputCls}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Mock notice */}
+            {provider === 'mock' && (
+              <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-xl">
+                <Bot size={20} className="text-blue-500 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-blue-800 dark:text-blue-300">Mock Mode Active</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
+                    The AI CV Builder and other LLM features will return placeholder data. Switch to OpenAI, Groq, or Ollama to enable real AI responses.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
