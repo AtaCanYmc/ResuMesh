@@ -13,6 +13,7 @@ from app.db.repositories import (
     IProjectRepository,
     ISearchRepository,
     ISkillRepository,
+    ISocialLinkRepository,
     ISystemLogRepository,
     IVideoRepository,
 )
@@ -92,3 +93,9 @@ def get_skill_repo(db: Session = Depends(get_db)) -> ISkillRepository:
     from app.db.providers.sqlalchemy import SQLAlchemySkillRepository
 
     return SQLAlchemySkillRepository(db)
+
+
+def get_social_link_repo(db: Session = Depends(get_db)) -> ISocialLinkRepository:
+    from app.db.providers.sqlalchemy import SQLAlchemySocialLinkRepository
+
+    return SQLAlchemySocialLinkRepository(db)
