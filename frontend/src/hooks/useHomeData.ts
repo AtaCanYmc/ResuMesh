@@ -1,43 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
+import {useQuery} from '@tanstack/react-query';
 import axios from 'axios';
-import { ENV } from '../config/env';
+import {ENV} from '../config/env';
 import contentData from '../config/content.json';
 import publicSettings from '../config/publicSettings.json';
+import {ContentConfig} from "../types";
 
 const API_URL = ENV.API_URL;
-
-export interface SocialLinkItem {
-  id: string;
-  platform: string;
-  url: string;
-  label: string;
-  icon?: string;
-  order_index?: number;
-  is_active?: boolean;
-}
-
-export interface ContentConfig {
-  hero: {
-    name: string;
-    title: string;
-    description: string;
-    resumeLink: string;
-  };
-  socials: SocialLinkItem[];
-  metrics: {
-    id: number;
-    icon: string;
-    value: string;
-    label: string;
-    color: string;
-  }[];
-  marquee: string[];
-  footer: {
-    email: string;
-    aboutTitle: string;
-    aboutText: string;
-  };
-}
 
 export const useAppSettings = () => {
   return {

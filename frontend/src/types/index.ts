@@ -14,7 +14,7 @@ export interface Article {
   id: string;
   title: string;
   url: string;
-  platform: 'MEDIUM' | 'DEV_TO';
+  platform: string;
   summary?: string;
   published_at?: string;
   reading_time_minutes?: number;
@@ -129,4 +129,41 @@ export interface Video {
   url: string;
   thumbnail?: string;
   profile: string;
+}
+
+export interface SocialLinkItem {
+  id: string;
+  platform: string;
+  url: string;
+  label: string;
+  icon?: string;
+  order_index?: number;
+  is_active?: boolean;
+}
+
+export interface HeroItem {
+    name: string;
+    title: string;
+    description: string;
+    resumeLink: string;
+}
+
+export interface MetricItem {
+    id: number;
+    icon: string;
+    value: string;
+    label: string;
+    color: string;
+}
+
+export interface ContentConfig {
+  hero: HeroItem;
+  socials: SocialLinkItem[];
+  metrics: MetricItem[];
+  marquee: string[];
+  footer: {
+    email: string;
+    aboutTitle: string;
+    aboutText: string;
+  };
 }
