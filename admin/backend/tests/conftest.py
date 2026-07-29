@@ -21,6 +21,8 @@ from app.db.dependencies import (
     get_post_repo,
     get_project_repo,
     get_search_repo,
+    get_section_repo,
+    get_social_link_repo,
     get_system_log_repo,
     get_video_repo,
 )
@@ -32,6 +34,8 @@ from app.db.repositories import (
     IPostRepository,
     IProjectRepository,
     ISearchRepository,
+    ISectionRepository,
+    ISocialLinkRepository,
     ISystemLogRepository,
     IVideoRepository,
 )
@@ -51,6 +55,12 @@ from app.schemas.package import PackageCreate, PackageResponse, PackageUpdate
 from app.schemas.post import PostCreate, PostResponse, PostUpdate
 from app.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
 from app.schemas.search import GlobalSearchResponse, SearchResultItem
+from app.schemas.section import SectionCreate, SectionResponse, SectionUpdate
+from app.schemas.social_link import (
+    SocialLinkCreate,
+    SocialLinkResponse,
+    SocialLinkUpdate,
+)
 from app.schemas.system_log import SystemLogCreate, SystemLogResponse
 from app.schemas.video import VideoCreate, VideoResponse, VideoUpdate
 
@@ -66,6 +76,8 @@ MOCK_DB_STATE = {
     "packages": [],
     "posts": [],
     "videos": [],
+    "social_links": [],
+    "sections": [],
 }
 
 
@@ -580,6 +592,108 @@ class MockVideoRepository(IVideoRepository):
         return False
 
 
+class MockSocialLinkRepository(ISocialLinkRepository):
+    def get_social_links(
+        self, skip: int = 0, limit: int = 100, active_only: bool = False
+    ) -> List[SocialLinkResponse]:
+        links = MOCK_DB_STATE["social_links"]
+        if active_only:
+            links = [l for l in links if l.is_active]
+        return links[skip : skip + limit]
+
+    def get_social_link_by_id(
+        self, social_link_id: str
+    ) -> Optional[SocialLinkResponse]:
+        for l in MOCK_DB_STATE["social_links"]:
+            if l.id == social_link_id:
+                return l
+        return None
+
+    def create_social_link(self, social_link: SocialLinkCreate) -> SocialLinkResponse:
+        data = social_link.model_dump()
+        if "id" not in data or not data["id"]:
+            data["id"] = str(uuid.uuid4())
+        data["created_at"] = datetime.now(timezone.utc)
+        data["updated_at"] = datetime.now(timezone.utc)
+        resp = SocialLinkResponse(**data)
+        MOCK_DB_STATE["social_links"].append(resp)
+        return resp
+
+    def update_social_link(
+        self, social_link_id: str, social_link: SocialLinkUpdate
+    ) -> Optional[SocialLinkResponse]:
+        for i, l in enumerate(MOCK_DB_STATE["social_links"]):
+            if l.id == social_link_id:
+                data = l.model_dump()
+                for k, v in social_link.model_dump(exclude_unset=True).items():
+                    data[k] = v
+                data["updated_at"] = datetime.now(timezone.utc)
+                resp = SocialLinkResponse(**data)
+                MOCK_DB_STATE["social_links"][i] = resp
+                return resp
+        return None
+
+    def delete_social_link(self, social_link_id: str) -> bool:
+        for i, l in enumerate(MOCK_DB_STATE["social_links"]):
+            if l.id == social_link_id:
+                MOCK_DB_STATE["social_links"].pop(i)
+                return True
+        return False
+
+
+class MockSectionRepository(ISectionRepository):
+    def get_sections(
+        self, skip: int = 0, limit: int = 100, active_only: bool = False
+    ) -> List[SectionResponse]:
+        sections = MOCK_DB_STATE["sections"]
+        if active_only:
+            sections = [s for s in sections if s.is_active]
+        return sections[skip : skip + limit]
+
+    def get_section_by_id(self, section_id: str) -> Optional[SectionResponse]:
+        for s in MOCK_DB_STATE["sections"]:
+            if s.id == section_id:
+                return s
+        return None
+
+    def get_section_by_key(self, key: str) -> Optional[SectionResponse]:
+        for s in MOCK_DB_STATE["sections"]:
+            if s.key == key:
+                return s
+        return None
+
+    def create_section(self, section: SectionCreate) -> SectionResponse:
+        data = section.model_dump()
+        if "id" not in data or not data["id"]:
+            data["id"] = str(uuid.uuid4())
+        data["created_at"] = datetime.now(timezone.utc)
+        data["updated_at"] = datetime.now(timezone.utc)
+        resp = SectionResponse(**data)
+        MOCK_DB_STATE["sections"].append(resp)
+        return resp
+
+    def update_section(
+        self, section_id: str, section: SectionUpdate
+    ) -> Optional[SectionResponse]:
+        for i, s in enumerate(MOCK_DB_STATE["sections"]):
+            if s.id == section_id or s.key == section_id:
+                data = s.model_dump()
+                for k, v in section.model_dump(exclude_unset=True).items():
+                    data[k] = v
+                data["updated_at"] = datetime.now(timezone.utc)
+                resp = SectionResponse(**data)
+                MOCK_DB_STATE["sections"][i] = resp
+                return resp
+        return None
+
+    def delete_section(self, section_id: str) -> bool:
+        for i, s in enumerate(MOCK_DB_STATE["sections"]):
+            if s.id == section_id or s.key == section_id:
+                MOCK_DB_STATE["sections"].pop(i)
+                return True
+        return False
+
+
 # --- WRAPPER FOR BACKWARD COMPATIBILITY IN TESTS ---
 class MockProviderWrapper:
     """Wrapper that combines the mocks for test backwards compatibility"""
@@ -594,6 +708,8 @@ class MockProviderWrapper:
         self.package_repo = MockPackageRepository()
         self.post_repo = MockPostRepository()
         self.video_repo = MockVideoRepository()
+        self.social_link_repo = MockSocialLinkRepository()
+        self.section_repo = MockSectionRepository()
 
     # Delegate methods to inner repos
     async def create_project(self, project):
@@ -660,6 +776,8 @@ def clean_mock_state():
     MOCK_DB_STATE["packages"].clear()
     MOCK_DB_STATE["posts"].clear()
     MOCK_DB_STATE["videos"].clear()
+    MOCK_DB_STATE["social_links"].clear()
+    MOCK_DB_STATE["sections"].clear()
 
 
 @pytest.fixture
@@ -687,6 +805,10 @@ async def client(mock_provider):
     app.dependency_overrides[get_package_repo] = lambda: mock_provider.package_repo
     app.dependency_overrides[get_post_repo] = lambda: mock_provider.post_repo
     app.dependency_overrides[get_video_repo] = lambda: mock_provider.video_repo
+    app.dependency_overrides[get_social_link_repo] = (
+        lambda: mock_provider.social_link_repo
+    )
+    app.dependency_overrides[get_section_repo] = lambda: mock_provider.section_repo
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:

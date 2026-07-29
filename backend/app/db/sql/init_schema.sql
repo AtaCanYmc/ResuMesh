@@ -91,7 +91,34 @@ CREATE TABLE IF NOT EXISTS generated_cvs (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 9. Performans İçin Temel İndekslerin Atılması (Faz 3 Arama Optimizasyonu)
+-- 9. SOCIAL_LINKS TABLOSU
+CREATE TABLE IF NOT EXISTS social_links (
+    id VARCHAR(36) PRIMARY KEY,
+    platform VARCHAR(50) NOT NULL,
+    label VARCHAR(100) NOT NULL,
+    url VARCHAR(512) NOT NULL,
+    icon VARCHAR(100),
+    order_index INT NOT NULL DEFAULT 0,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 10. SECTIONS TABLOSU
+CREATE TABLE IF NOT EXISTS sections (
+    id VARCHAR(36) PRIMARY KEY,
+    key VARCHAR(50) NOT NULL UNIQUE,
+    title VARCHAR(100) NOT NULL,
+    description TEXT,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    order_index INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 11. Performans İçin Temel İndekslerin Atılması (Faz 3 Arama Optimizasyonu)
 CREATE INDEX IF NOT EXISTS idx_projects_languages ON projects USING gin (languages);
 CREATE INDEX IF NOT EXISTS idx_projects_tags ON projects USING gin (tags);
 CREATE INDEX IF NOT EXISTS idx_system_logs_level ON system_logs (level);
+CREATE INDEX IF NOT EXISTS idx_social_links_platform ON social_links (platform);
+CREATE INDEX IF NOT EXISTS idx_sections_key ON sections (key);

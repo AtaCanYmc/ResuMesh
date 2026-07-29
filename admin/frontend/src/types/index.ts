@@ -147,6 +147,9 @@ export interface SocialItem {
   platform: string;
   url: string;
   label: string;
+  icon?: string;
+  order_index?: number;
+  is_active?: boolean;
 }
 
 export interface HeroContent {

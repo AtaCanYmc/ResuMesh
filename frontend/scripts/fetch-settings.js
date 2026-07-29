@@ -10,7 +10,7 @@ const CONTENT_PATH = path.resolve(__dirname, '../src/config/content.json');
 const API_URL = process.env.VITE_API_URL || 'http://localhost:8000';
 
 async function fetchSettings() {
-  console.log(`[ResuMesh Build] Fetching settings from ${API_URL}/api/v1/settings/ ...`);
+  console.log(`[ResuMesh Build] Syncing settings from ${API_URL}/api/v1/settings/ ...`);
   try {
     const response = await fetch(`${API_URL}/api/v1/settings/`);
     if (!response.ok) {
@@ -18,47 +18,55 @@ async function fetchSettings() {
     }
     const data = await response.json();
 
-    // 1. Save Visibility Settings
+    // 1. Save Visibility Settings & Sections Map
+    const sectionsMap =
+      typeof data.sections === 'object' && data.sections !== null
+        ? data.sections
+        : {};
     const settings = {
-      show_projects: data.show_projects !== false,
-      show_certificates: data.show_certificates !== false,
-      show_videos: data.show_videos !== false,
-      show_experiences: data.show_experiences !== false
+      show_projects: sectionsMap.projects !== false,
+      show_certificates: sectionsMap.certificates !== false,
+      show_videos: sectionsMap.videos !== false,
+      show_experiences: sectionsMap.experiences !== false,
+      show_educations: sectionsMap.educations !== false,
+      show_articles: sectionsMap.articles !== false,
+      show_skills: sectionsMap.skills !== false,
+      show_posts: sectionsMap.posts !== false,
+      sections: sectionsMap,
     };
     fs.writeFileSync(SETTINGS_PATH, JSON.stringify(settings, null, 2));
-    console.log('[ResuMesh Build] Successfully injected settings to publicSettings.json');
+    console.log(
+      '[ResuMesh Build] Successfully synced sections to publicSettings.json'
+    );
 
-    // 2. Save Content Settings
-    if (data.socials && data.footer && data.marquee && data.en && data.tr) {
+    // 2. Save Content & Social Links Settings
+    if (data.socials || data.footer || data.marquee || data.en || data.tr) {
+      let existingContent = {};
+      if (fs.existsSync(CONTENT_PATH)) {
+        try {
+          existingContent = JSON.parse(fs.readFileSync(CONTENT_PATH, 'utf8'));
+        } catch (e) {}
+      }
+
       const content = {
-        socials: data.socials,
-        footer: data.footer,
-        marquee: data.marquee,
-        en: data.en,
-        tr: data.tr
+        ...existingContent,
+        socials: data.socials || existingContent.socials || [],
+        sections: sectionsMap,
+        footer: data.footer || existingContent.footer || {},
+        marquee: data.marquee || existingContent.marquee || [],
+        en: data.en || existingContent.en || {},
+        tr: data.tr || existingContent.tr || {},
       };
       fs.writeFileSync(CONTENT_PATH, JSON.stringify(content, null, 2));
-      console.log('[ResuMesh Build] Successfully injected content config to content.json');
-    } else {
-      console.log('[ResuMesh Build] Content data was missing or incomplete in database, keeping existing content.json');
+      console.log(
+        '[ResuMesh Build] Successfully synced social_links & content to content.json'
+      );
     }
   } catch (error) {
-    console.warn('[ResuMesh Build] Warning: Failed to fetch settings/content from API, using defaults.', error.message);
-
-    // Ensure both files exist
-    if (!fs.existsSync(SETTINGS_PATH)) {
-      const defaultSettings = {
-        show_projects: true,
-        show_certificates: true,
-        show_videos: true,
-        show_experiences: true
-      };
-      fs.writeFileSync(SETTINGS_PATH, JSON.stringify(defaultSettings, null, 2));
-    }
-
-    if (!fs.existsSync(CONTENT_PATH)) {
-      console.warn('[ResuMesh Build] Warning: content.json is missing, please ensure frontend/src/config/content.json is present.');
-    }
+    console.warn(
+      '[ResuMesh Build] Warning: Failed to fetch settings from API during build, keeping existing static JSON configs.',
+      error.message
+    );
   }
 }
 

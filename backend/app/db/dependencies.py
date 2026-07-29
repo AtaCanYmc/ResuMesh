@@ -12,6 +12,7 @@ from app.db.repositories import (
     IPostRepository,
     IProjectRepository,
     ISearchRepository,
+    ISectionRepository,
     ISkillRepository,
     ISocialLinkRepository,
     ISystemLogRepository,
@@ -99,3 +100,9 @@ def get_social_link_repo(db: Session = Depends(get_db)) -> ISocialLinkRepository
     from app.db.providers.sqlalchemy import SQLAlchemySocialLinkRepository
 
     return SQLAlchemySocialLinkRepository(db)
+
+
+def get_section_repo(db: Session = Depends(get_db)) -> ISectionRepository:
+    from app.db.providers.sqlalchemy import SQLAlchemySectionRepository
+
+    return SQLAlchemySectionRepository(db)
