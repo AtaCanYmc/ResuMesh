@@ -1,6 +1,6 @@
-"""settings_store.py — Read-only helper for the key-value app_settings table.
+"""settings_store.py — Read-only helper for app_settings, sections, and social_links tables.
 
-The public backend only reads settings; writes happen via the admin backend.
+The public backend reads settings, sections, and socials from database tables.
 """
 
 from typing import Any, Dict
@@ -8,6 +8,8 @@ from typing import Any, Dict
 from sqlalchemy.orm import Session
 
 from app.models.app_settings import AppSetting
+from app.models.section import Section
+from app.models.social_link import SocialLink
 
 DEFAULT_SECTIONS: Dict[str, bool] = {
     "educations": True,
@@ -172,4 +174,27 @@ def get_setting(db: Session, key: str, default: Any = None) -> Any:
 def get_all_settings(db: Session) -> Dict[str, Any]:
     rows = db.query(AppSetting).all()
     stored = {row.key: row.value for row in rows}
-    return {**DEFAULTS, **stored}
+    result = {**DEFAULTS, **stored}
+
+    # Fetch sections from sections table
+    db_sections = db.query(Section).order_by(Section.order_index.asc()).all()
+    if db_sections:
+        result["sections"] = {s.key: s.is_active for s in db_sections}
+
+    # Fetch socials from social_links table
+    db_socials = db.query(SocialLink).order_by(SocialLink.order_index.asc()).all()
+    if db_socials:
+        result["socials"] = [
+            {
+                "id": s.id,
+                "platform": s.platform,
+                "label": s.label,
+                "url": s.url,
+                "icon": s.icon,
+                "order_index": s.order_index,
+                "is_active": s.is_active,
+            }
+            for s in db_socials
+        ]
+
+    return result
