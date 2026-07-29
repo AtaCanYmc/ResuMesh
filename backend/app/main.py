@@ -33,6 +33,7 @@ from app.routers import (
     posts,
     projects,
     search,
+    sections,
     seo,
     skills,
     social_links,
@@ -77,6 +78,7 @@ app.include_router(packages.router, prefix="/api/v1")
 app.include_router(posts.router, prefix="/api/v1")
 app.include_router(videos.router, prefix="/api/v1")
 app.include_router(social_links.router, prefix="/api/v1")
+app.include_router(sections.router, prefix="/api/v1")
 app.include_router(settings_router, prefix="/api/v1")
 
 
