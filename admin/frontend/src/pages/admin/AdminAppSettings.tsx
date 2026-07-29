@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {useEffect, useState} from 'react';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import axios from 'axios';
-import { toast } from 'react-hot-toast';
-import { Eye, Globe, Share2, Check } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import {toast} from 'react-hot-toast';
+import {Check, Eye, Globe, Share2} from 'lucide-react';
+import {useAuth} from '../../context/AuthContext';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
-import { AppSettings, HeroContent, MetricItem, SectionVisibility } from "../../types";
-import { useEnv } from "../../hooks/env.ts";
+import {AppSettings, HeroContent, MetricItem, SectionVisibility} from "../../types";
+import {useEnv} from "../../hooks/env.ts";
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -189,6 +189,18 @@ export default function AdminAppSettings() {
               <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Module Visibility</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <ToggleSwitch
+                  label="Educations Section"
+                  description="Show or hide your educations page on the public site."
+                  isChecked={formData.sections?.educations ?? true}
+                  onChange={() => updateVisibility('educations')}
+                />
+                <ToggleSwitch
+                  label="Experiences Section"
+                  description="Show or hide your experiences page on the public site."
+                  isChecked={formData.sections?.experiences ?? true}
+                  onChange={() => updateVisibility('experiences')}
+                />
+                <ToggleSwitch
                   label="Projects Section"
                   description="Show or hide your projects page on the public site."
                   isChecked={formData.sections?.projects ?? true}
@@ -201,16 +213,28 @@ export default function AdminAppSettings() {
                   onChange={() => updateVisibility('certificates')}
                 />
                 <ToggleSwitch
+                  label="Articles Section"
+                  description="Show or hide your articles page on the public site."
+                  isChecked={formData.sections?.articles ?? true}
+                  onChange={() => updateVisibility('articles')}
+                />
+                <ToggleSwitch
                   label="Videos Section"
                   description="Show or hide your videos page on the public site."
                   isChecked={formData.sections?.videos ?? true}
                   onChange={() => updateVisibility('videos')}
                 />
                 <ToggleSwitch
-                  label="Experiences Section"
-                  description="Show or hide your experiences page on the public site."
-                  isChecked={formData.sections?.experiences ?? true}
-                  onChange={() => updateVisibility('experiences')}
+                  label="Skills Section"
+                  description="Show or hide your skills page on the public site."
+                  isChecked={formData.sections?.skills ?? true}
+                  onChange={() => updateVisibility('skills')}
+                />
+                <ToggleSwitch
+                  label="Posts Section"
+                  description="Show or hide your posts page on the public site."
+                  isChecked={formData.sections?.posts ?? true}
+                  onChange={() => updateVisibility('posts')}
                 />
               </div>
             </div>
