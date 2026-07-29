@@ -39,47 +39,47 @@ export interface ContentConfig {
   };
 }
 
-export const useSocialLinks = () => {
-  return useQuery<SocialLinkItem[]>({
-    queryKey: ['social-links'],
+export const useAppSettings = () => {
+  return useQuery({
+    queryKey: ['app-settings'],
     queryFn: async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/v1/social-links/`, {
-          params: { active_only: true },
-        });
-        if (Array.isArray(response.data) && response.data.length > 0) {
-          return response.data;
-        }
+        const response = await axios.get(`${API_URL}/api/v1/settings/`);
+        return response.data;
       } catch (err) {
-        console.warn('Failed to fetch social links from API, using default content', err);
+        console.warn('Failed to fetch app settings, using local fallback', err);
+        return publicSettings;
       }
-      return (contentData as any).socials || [];
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 10,
   });
 };
 
 export const useContentConfig = (lang: string = 'tr') => {
-  const { data: dynamicSocials, isLoading: isSocialsLoading } = useSocialLinks();
+  const { data: apiSettings, isLoading: isSettingsLoading } = useAppSettings();
   const shortLang = lang.split('-')[0].toLowerCase();
   const langData =
     (contentData as any)[shortLang] ||
     (contentData as any)[lang] ||
     (contentData as any)['en'];
 
+  const socials =
+    apiSettings?.socials &&
+    Array.isArray(apiSettings.socials) &&
+    apiSettings.socials.length > 0
+      ? apiSettings.socials
+      : (contentData as any).socials || [];
+
   const data: ContentConfig = {
     ...langData,
-    socials:
-      dynamicSocials && dynamicSocials.length > 0
-        ? dynamicSocials
-        : (contentData as any).socials || [],
-    footer: (contentData as any).footer || {},
-    marquee: (contentData as any).marquee || [],
+    socials,
+    footer: apiSettings?.footer || (contentData as any).footer || {},
+    marquee: apiSettings?.marquee || (contentData as any).marquee || [],
   };
 
   return {
     data,
-    isLoading: isSocialsLoading,
+    isLoading: isSettingsLoading,
     isSuccess: true,
   };
 };
@@ -138,19 +138,4 @@ export const useArticles = (limit?: number) => {
       return limit ? data.slice(0, limit) : data;
     },
   });
-};
-
-export interface AppSettings {
-  show_projects: boolean;
-  show_certificates: boolean;
-  show_videos: boolean;
-  show_experiences: boolean;
-}
-
-export const useAppSettings = () => {
-  return {
-    data: publicSettings as AppSettings,
-    isLoading: false,
-    isSuccess: true,
-  };
 };

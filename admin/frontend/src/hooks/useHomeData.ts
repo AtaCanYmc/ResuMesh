@@ -36,31 +36,27 @@ export interface ContentConfig {
   };
 }
 
-export const useSocialLinks = () => {
-  return useQuery<SocialLinkItem[]>({
-    queryKey: ['social-links'],
+export const useAppSettings = () => {
+  return useQuery({
+    queryKey: ['app-settings'],
     queryFn: async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/v1/social-links/`, {
-          params: { active_only: true },
-        });
-        if (Array.isArray(response.data) && response.data.length > 0) {
-          return response.data;
-        }
+        const response = await axios.get(`${API_URL}/api/v1/settings/`);
+        return response.data;
       } catch (err) {
-        console.warn('Failed to fetch social links from API', err);
+        console.warn('Failed to fetch settings from API', err);
+        return null;
       }
-      return [];
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 10,
   });
 };
 
 export const useContentConfig = (lang: string = 'tr') => {
-  const { data: dynamicSocials } = useSocialLinks();
+  const { data: apiSettings } = useAppSettings();
 
   return useQuery<ContentConfig>({
-    queryKey: ['contentConfig', lang, dynamicSocials],
+    queryKey: ['contentConfig', lang, apiSettings],
     queryFn: async () => {
       const response = await axios.get('/content.json');
       const shortLang = lang.split('-')[0].toLowerCase();
@@ -68,14 +64,18 @@ export const useContentConfig = (lang: string = 'tr') => {
         response.data[shortLang] || response.data[lang] || response.data['en'];
       const defaultSocials = response.data.socials || [];
 
+      const socials =
+        apiSettings?.socials &&
+        Array.isArray(apiSettings.socials) &&
+        apiSettings.socials.length > 0
+          ? apiSettings.socials
+          : defaultSocials;
+
       return {
         ...langData,
-        socials:
-          dynamicSocials && dynamicSocials.length > 0
-            ? dynamicSocials
-            : defaultSocials,
-        footer: response.data.footer || {},
-        marquee: response.data.marquee || [],
+        socials,
+        footer: apiSettings?.footer || response.data.footer || {},
+        marquee: apiSettings?.marquee || response.data.marquee || [],
       };
     },
     staleTime: Infinity,
