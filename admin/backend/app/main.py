@@ -38,6 +38,7 @@ from app.routers import (
     search,
     seo,
     skills,
+    social_links,
     videos,
 )
 from app.routers.app_settings import router as settings_router
@@ -81,6 +82,7 @@ app.include_router(rxresume.router, prefix="/api/v1")
 app.include_router(packages.router, prefix="/api/v1")
 app.include_router(posts.router, prefix="/api/v1")
 app.include_router(videos.router, prefix="/api/v1")
+app.include_router(social_links.router, prefix="/api/v1")
 app.include_router(settings_router, prefix="/api/v1")
 
 

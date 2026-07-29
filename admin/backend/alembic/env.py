@@ -32,6 +32,7 @@ from app.models.package import Package  # noqa: E402, F401
 from app.models.post import Post  # noqa: E402, F401
 from app.models.project import Project  # noqa: E402, F401
 from app.models.skill import Skill  # noqa: E402, F401
+from app.models.social_link import SocialLink  # noqa: E402, F401
 from app.models.system_log import SystemLog  # noqa: E402, F401
 from app.models.video import Video  # noqa: E402, F401
 

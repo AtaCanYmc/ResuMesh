@@ -7,5 +7,6 @@ from app.db.repositories.post import IPostRepository  # noqa: F401
 from app.db.repositories.project import IProjectRepository  # noqa: F401
 from app.db.repositories.search import ISearchRepository  # noqa: F401
 from app.db.repositories.skill import ISkillRepository  # noqa: F401
+from app.db.repositories.social_link import ISocialLinkRepository  # noqa: F401
 from app.db.repositories.system_log import ISystemLogRepository  # noqa: F401
 from app.db.repositories.video import IVideoRepository  # noqa: F401
