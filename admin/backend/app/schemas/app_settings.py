@@ -1,10 +1,9 @@
-from typing import Any, Dict, List, Optional
-
 from pydantic import BaseModel
+from typing import Any, Dict, List, Optional, Union
 
 
 class AppSettingsBase(BaseModel):
-    sections: Optional[List[Dict[str, Any]]] = None
+    sections: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None
     socials: Optional[List[Dict[str, Any]]] = None
     footer: Optional[Dict[str, Any]] = None
     marquee: Optional[List[str]] = None
@@ -19,7 +18,7 @@ class AppSettingsCreate(AppSettingsBase):
 class AppSettingsUpdate(BaseModel):
     """All fields optional — send only what you want to change."""
 
-    sections: Optional[List[Dict[str, Any]]] = None
+    sections: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None
     socials: Optional[List[Dict[str, Any]]] = None
     footer: Optional[Dict[str, Any]] = None
     marquee: Optional[List[str]] = None
