@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class AppSettingsBase(BaseModel):
@@ -33,5 +33,4 @@ class AppSettingsResponse(AppSettingsBase):
     The frontend does not need to know about the underlying KV storage.
     """
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
