@@ -3,6 +3,16 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
+export interface SocialLinkItem {
+  id: string;
+  platform: string;
+  url: string;
+  label: string;
+  icon?: string;
+  order_index?: number;
+  is_active?: boolean;
+}
+
 export interface ContentConfig {
   hero: {
     name: string;
@@ -10,13 +20,7 @@ export interface ContentConfig {
     description: string;
     resumeLink: string;
   };
-  socials: {
-    id: string;
-    platform: string;
-    url: string;
-    label: string;
-    icon?: string;
-  }[];
+  socials: SocialLinkItem[];
   metrics: {
     id: number;
     icon: string;
@@ -32,18 +36,46 @@ export interface ContentConfig {
   };
 }
 
+export const useSocialLinks = () => {
+  return useQuery<SocialLinkItem[]>({
+    queryKey: ['social-links'],
+    queryFn: async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/v1/social-links/`, {
+          params: { active_only: true },
+        });
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          return response.data;
+        }
+      } catch (err) {
+        console.warn('Failed to fetch social links from API', err);
+      }
+      return [];
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
 export const useContentConfig = (lang: string = 'tr') => {
+  const { data: dynamicSocials } = useSocialLinks();
+
   return useQuery<ContentConfig>({
-    queryKey: ['contentConfig', lang],
+    queryKey: ['contentConfig', lang, dynamicSocials],
     queryFn: async () => {
       const response = await axios.get('/content.json');
       const shortLang = lang.split('-')[0].toLowerCase();
-      const langData = response.data[shortLang] || response.data[lang] || response.data['en'];
+      const langData =
+        response.data[shortLang] || response.data[lang] || response.data['en'];
+      const defaultSocials = response.data.socials || [];
+
       return {
         ...langData,
-        socials: response.data.socials || [],
+        socials:
+          dynamicSocials && dynamicSocials.length > 0
+            ? dynamicSocials
+            : defaultSocials,
         footer: response.data.footer || {},
-        marquee: response.data.marquee || []
+        marquee: response.data.marquee || [],
       };
     },
     staleTime: Infinity,
@@ -57,52 +89,6 @@ export const useExperiences = () => {
     queryFn: async () => {
       const response = await axios.get(`${API_URL}/api/v1/experiences/`);
       return response.data;
-    },
-  });
-};
-
-export const useEducations = () => {
-  return useQuery({
-    queryKey: ['educations'],
-    queryFn: async () => {
-      const response = await axios.get(`${API_URL}/api/v1/educations/`);
-      return response.data;
-    },
-  });
-};
-
-export const useSkills = () => {
-  return useQuery({
-    queryKey: ['skills'],
-    queryFn: async () => {
-      const response = await axios.get(`${API_URL}/api/v1/skills/`);
-      return Array.isArray(response.data) ? response.data : [];
-    },
-  });
-};
-
-export const useProjects = (limit?: number) => {
-  return useQuery({
-    queryKey: ['projects', limit],
-    queryFn: async () => {
-      const response = await axios.get(`${API_URL}/api/v1/projects/`, {
-        params: limit ? { limit } : undefined
-      });
-      const data = Array.isArray(response.data) ? response.data : [];
-      return limit ? data.slice(0, limit) : data;
-    },
-  });
-};
-
-export const useArticles = (limit?: number) => {
-  return useQuery({
-    queryKey: ['articles', limit],
-    queryFn: async () => {
-      const response = await axios.get(`${API_URL}/api/v1/articles/`, {
-        params: limit ? { limit } : undefined
-      });
-      const data = Array.isArray(response.data) ? response.data : [];
-      return limit ? data.slice(0, limit) : data;
     },
   });
 };
