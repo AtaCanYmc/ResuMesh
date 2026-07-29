@@ -126,6 +126,27 @@ export default function AdminAppSettings() {
     });
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const uploadFormData = new FormData();
+    uploadFormData.append('file', file);
+    try {
+      const res = await axios.post(`${ADMIN_API_URL}/api/v1/avatar/upload`, uploadFormData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      const newAvatarUrl = res.data.url;
+      handleHeroChange('en', 'avatarImage', newAvatarUrl);
+      handleHeroChange('tr', 'avatarImage', newAvatarUrl);
+      toast.success('Profile picture uploaded to Supabase Storage!');
+    } catch (err: any) {
+      toast.error(err.response?.data?.detail || 'Failed to upload profile picture');
+    }
+  };
+
   const handleMetricChange = (lang: 'en' | 'tr', index: number, field: keyof MetricItem, value: string | number) => {
     setFormData((prev) => {
       if (!prev) return null;
@@ -364,13 +385,19 @@ export default function AdminAppSettings() {
                     />
                   </div>
                   <div>
-                    <label className={labelCls}>Avatar Image Path</label>
-                    <input
-                      type="text"
-                      value={content.hero.avatarImage}
-                      onChange={(e) => handleHeroChange(lang, 'avatarImage', e.target.value)}
-                      className={inputCls}
-                    />
+                    <label className={labelCls}>Avatar Image Path / Supabase Upload</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={content.hero.avatarImage}
+                        onChange={(e) => handleHeroChange(lang, 'avatarImage', e.target.value)}
+                        className={inputCls}
+                      />
+                      <label className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl cursor-pointer transition-colors shrink-0 flex items-center gap-1.5 shadow-sm">
+                        <span>Upload</span>
+                        <input type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+                      </label>
+                    </div>
                   </div>
                   <div>
                     <label className={labelCls}>Resume Download Link</label>

@@ -3,19 +3,20 @@ import axios from 'axios';
 import { Loader2, Server } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { ENV } from '../config/env';
+import { useEnv } from '../hooks/useEnv';
 
 interface ServerWakeupGateProps {
   children: React.ReactNode;
 }
 
 const ServerWakeupGate: React.FC<ServerWakeupGateProps> = ({ children }) => {
+  const env = useEnv();
   const [isAwake, setIsAwake] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [dots, setDots] = useState<string>('');
   const { t } = useTranslation();
 
-  const apiUrl = ENV.API_URL;
+  const apiUrl = env.API_URL;
 
   useEffect(() => {
     let intervalId: any;

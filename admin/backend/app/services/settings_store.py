@@ -83,7 +83,7 @@ DEFAULT_EN: Dict[str, Any] = {
         "name": "Ata Can",
         "fullName": "Ata Can Yaymacı",
         "avatarSubtitle": "Crafting digital experiences",
-        "avatarImage": "/images/profile_pic.jpeg",
+        "avatarImage": "/api/v1/avatar/profile_pic.jpeg",
         "title": "I bridge the gap between AI Workflows and Financial Technologies.",
         "description": (
             "With a Computer Engineering background from Dokuz Eylul University, "
@@ -123,7 +123,7 @@ DEFAULT_TR: Dict[str, Any] = {
         "name": "Ata Can",
         "fullName": "Ata Can Yaymacı",
         "avatarSubtitle": "Dijital deneyimler tasarlıyorum",
-        "avatarImage": "/images/profile_pic.jpeg",
+        "avatarImage": "/api/v1/avatar/profile_pic.jpeg",
         "title": "Yapay Zeka İş Akışları ve Finansal Teknolojiler arasında köprü kuruyorum.",
         "description": (
             "Dokuz Eylül Üniversitesi Bilgisayar Mühendisliği geçmişimle, "

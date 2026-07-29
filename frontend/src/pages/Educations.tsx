@@ -4,11 +4,12 @@ import axios from 'axios';
 import { Loader2, GraduationCap } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useTranslation } from 'react-i18next';
-import { ENV } from '../config/env';
+import { useEnv } from '../hooks/useEnv';
 
 import { TimelineSkeleton } from '../components/ui/Skeletons';
 
 export default function Educations() {
+  const { API_URL } = useEnv();
   const { t } = useTranslation();
   const [educations, setEducations] = useState<Education[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,7 +17,7 @@ export default function Educations() {
   useEffect(() => {
     const fetchEducations = async () => {
       try {
-        const res = await axios.get<Education[]>(`${ENV.API_URL}/api/v1/educations/`);
+        const res = await axios.get<Education[]>(`${API_URL}/api/v1/educations/`);
         setEducations(res.data);
       } catch (error) {
         console.error('Failed to fetch educations', error);

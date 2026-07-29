@@ -28,6 +28,7 @@ const AdminReactiveResume = React.lazy(() => import('./pages/admin/AdminReactive
 const AdminPackages = React.lazy(() => import('./pages/admin/AdminPackages'));
 const AdminPosts = React.lazy(() => import('./pages/admin/AdminPosts'));
 const AdminVideos = React.lazy(() => import('./pages/admin/AdminVideos'));
+const AdminStorage = React.lazy(() => import('./pages/admin/AdminStorage'));
 const AdminAppSettings = React.lazy(() => import('./pages/admin/AdminAppSettings'));
 
 
@@ -76,6 +77,7 @@ const router = createBrowserRouter([
       { path: 'packages', element: <AdminPackages /> },
       { path: 'posts', element: <AdminPosts /> },
       { path: 'videos', element: <AdminVideos /> },
+      { path: 'storage', element: <AdminStorage /> },
       { path: 'settings', element: <AdminAppSettings /> },
     ],
   },

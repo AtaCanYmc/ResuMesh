@@ -27,6 +27,7 @@ from app.routers import (
     admin,
     articles,
     auth,
+    avatar,
     certificates,
     cv,
     educations,
@@ -40,6 +41,7 @@ from app.routers import (
     seo,
     skills,
     social_links,
+    storage,
     videos,
 )
 from app.routers.app_settings import router as settings_router
@@ -79,12 +81,14 @@ app.include_router(skills.router, prefix="/api/v1")
 app.include_router(certificates.router, prefix="/api/v1")
 app.include_router(seo.router, prefix="/api/v1/seo")
 app.include_router(cv.router, prefix="/api/v1")
+app.include_router(avatar.router, prefix="/api/v1")
 app.include_router(rxresume.router, prefix="/api/v1")
 app.include_router(packages.router, prefix="/api/v1")
 app.include_router(posts.router, prefix="/api/v1")
 app.include_router(videos.router, prefix="/api/v1")
 app.include_router(social_links.router, prefix="/api/v1")
 app.include_router(sections.router, prefix="/api/v1")
+app.include_router(storage.router, prefix="/api/v1")
 app.include_router(settings_router, prefix="/api/v1")
 
 

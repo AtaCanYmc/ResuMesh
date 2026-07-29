@@ -8,7 +8,7 @@ import { useContentConfig } from '../../hooks/useHomeData';
 import { HeroSkeleton } from '../ui/Skeletons';
 import { getIcon } from '../../utils/iconResolver';
 import { useDownloadResume } from '../../hooks/useDownloadResume';
-import { ENV } from '../../config/env';
+import { useEnv } from '../../hooks/useEnv';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -27,6 +27,7 @@ const textVariants = {
 };
 
 const HeroSection: React.FC = () => {
+  const env = useEnv();
   const { t, i18n } = useTranslation();
   const { data: config, isLoading } = useContentConfig(i18n.language);
   const { isDownloading, handleDownload } = useDownloadResume(config?.hero?.resumeLink);
@@ -150,10 +151,15 @@ const HeroSection: React.FC = () => {
               style={{ transform: "translateZ(50px)" }}
               className="text-center p-8 bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-2xl border border-white/20 dark:border-white/10"
             >
-              {config.hero.avatarImage || ENV.GITHUB_USERNAME ? (
+              {config.hero.avatarImage || env.GITHUB_USERNAME ? (
                 <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-white/20 shadow-lg">
                   <img
-                    src={config.hero.avatarImage || `https://github.com/${ENV.GITHUB_USERNAME}.png`}
+                    src={
+                      config.hero.avatarImage?.startsWith('/')
+                        ? `${env.API_URL}${config.hero.avatarImage}`
+                        : config.hero.avatarImage ||
+                          `https://github.com/${env.GITHUB_USERNAME}.png`
+                    }
                     alt={config.hero.fullName}
                     className="w-full h-full object-cover"
                   />

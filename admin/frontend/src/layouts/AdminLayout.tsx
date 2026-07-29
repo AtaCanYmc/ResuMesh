@@ -18,6 +18,7 @@ import {
   Box,
   Share2,
   Video,
+  HardDrive,
   Settings
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -49,6 +50,7 @@ export default function AdminLayout() {
     { path: '/admin/import-linkedin', label: 'Import LinkedIn', icon: <Upload size={20} />, end: false },
     { path: '/admin/ai-cv', label: 'AI CV Builder', icon: <Wand2 size={20} />, end: false },
     { path: '/admin/reactive-resume', label: 'Reactive Resume', icon: <Cloud size={20} />, end: false },
+    { path: '/admin/storage', label: 'Supabase Storage', icon: <HardDrive size={20} />, end: false },
     { path: '/admin/settings', label: 'Settings', icon: <Settings size={20} />, end: false },
   ];
 

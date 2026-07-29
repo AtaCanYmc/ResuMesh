@@ -6,11 +6,12 @@ import Modal from '../components/Modal';
 import SEO from '../components/SEO';
 import EmptyState from '../components/ui/EmptyState';
 import { useTranslation } from 'react-i18next';
-import { ENV } from '../config/env';
+import { useEnv } from '../hooks/useEnv';
 
 import { ArticlesSkeleton } from '../components/ui/Skeletons';
 
 export default function Articles() {
+  const { API_URL } = useEnv();
   const { t } = useTranslation();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +21,7 @@ export default function Articles() {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const res = await axios.get<Article[]>(`${ENV.API_URL}/api/v1/articles/`);
+        const res = await axios.get<Article[]>(`${API_URL}/api/v1/articles/`);
         setArticles(res.data);
       } catch (error) {
         console.error('Failed to fetch articles', error);
