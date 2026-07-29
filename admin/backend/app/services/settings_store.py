@@ -1,8 +1,8 @@
-"""settings_store.py — Helper layer for app_settings, sections, and social_links tables.
+"""settings_store.py — Storage layer for settings, sections, and social_links tables.
 
-All access to application settings goes through this module. Reads and writes
-for 'sections' and 'socials' automatically sync with their dedicated database
-tables ('sections' and 'social_links').
+Key-value configurations (footer, marquee, en, tr) are stored in 'app_settings'.
+Section visibilities are stored exclusively in 'sections' table.
+Social links are stored exclusively in 'social_links' table.
 """
 
 import uuid
@@ -15,8 +15,7 @@ from app.models.section import Section
 from app.models.social_link import SocialLink
 
 # ---------------------------------------------------------------------------
-# Default values for every known setting key.
-# Used when a row does not yet exist in the DB.
+# Default values
 # ---------------------------------------------------------------------------
 DEFAULT_SECTIONS: Dict[str, bool] = {
     "educations": True,
@@ -161,13 +160,17 @@ DEFAULT_TR: Dict[str, Any] = {
 
 DEFAULT_FOOTER: Dict[str, Any] = {"email": "atacanymc@gmail.com"}
 
-DEFAULTS: Dict[str, Any] = {
-    "sections": DEFAULT_SECTIONS,
-    "socials": DEFAULT_SOCIALS,
+KV_DEFAULTS: Dict[str, Any] = {
     "footer": DEFAULT_FOOTER,
     "marquee": DEFAULT_MARQUEE,
     "en": DEFAULT_EN,
     "tr": DEFAULT_TR,
+}
+
+DEFAULTS: Dict[str, Any] = {
+    "sections": DEFAULT_SECTIONS,
+    "socials": DEFAULT_SOCIALS,
+    **KV_DEFAULTS,
 }
 
 
@@ -178,19 +181,40 @@ DEFAULTS: Dict[str, Any] = {
 
 def get_setting(db: Session, key: str, default: Any = None) -> Any:
     """Return the value for *key*, or *default* if the row doesn't exist."""
+    if key == "sections":
+        db_sections = db.query(Section).order_by(Section.order_index.asc()).all()
+        if db_sections:
+            return {s.key: s.is_active for s in db_sections}
+        return DEFAULT_SECTIONS
+
+    if key == "socials":
+        db_socials = db.query(SocialLink).order_by(SocialLink.order_index.asc()).all()
+        if db_socials:
+            return [
+                {
+                    "id": s.id,
+                    "platform": s.platform,
+                    "label": s.label,
+                    "url": s.url,
+                    "icon": s.icon,
+                    "order_index": s.order_index,
+                    "is_active": s.is_active,
+                }
+                for s in db_socials
+            ]
+        return DEFAULT_SOCIALS
+
     row = db.query(AppSetting).filter(AppSetting.key == key).first()
     if row is None:
-        return DEFAULTS.get(key, default)
+        return KV_DEFAULTS.get(key, default)
     return row.value
 
 
-def set_setting(
-    db: Session, key: str, value: Any, *, commit: bool = True
-) -> AppSetting:
-    """Upsert a single key-value pair.
+def set_setting(db: Session, key: str, value: Any, *, commit: bool = True) -> Any:
+    """Upsert setting.
 
-    Special keys 'sections' and 'socials' persist directly to their dedicated
-    database tables ('sections' and 'social_links').
+    'sections' and 'socials' persist exclusively to their dedicated database tables
+    ('sections' and 'social_links'). Other keys update 'app_settings'.
     """
     if key == "sections" and isinstance(value, dict):
         for s_key, is_act in value.items():
@@ -208,7 +232,11 @@ def set_setting(
                     is_active=bool(is_act),
                 )
                 db.add(sec)
-    elif key == "socials" and isinstance(value, list):
+        if commit:
+            db.commit()
+        return value
+
+    if key == "socials" and isinstance(value, list):
         for item in value:
             s_id = item.get("id")
             platform = item.get("platform") or "custom"
@@ -237,6 +265,9 @@ def set_setting(
                     is_active=item.get("is_active", True),
                 )
                 db.add(social)
+        if commit:
+            db.commit()
+        return value
 
     row = db.query(AppSetting).filter(AppSetting.key == key).first()
     if row is None:
@@ -247,21 +278,25 @@ def set_setting(
     if commit:
         db.commit()
         db.refresh(row)
-    return row
+    return row.value
 
 
 def get_all_settings(db: Session) -> Dict[str, Any]:
-    """Return all settings as a flat {key: value} dict, sourcing sections
-    and socials directly from dedicated database tables.
+    """Return all settings as a flat {key: value} dict.
+
+    Sources sections and socials exclusively from 'sections' and 'social_links'
+    database tables, reducing app_settings storage footprint.
     """
     rows = db.query(AppSetting).all()
     stored = {row.key: row.value for row in rows}
-    result = {**DEFAULTS, **stored}
+    result = {**KV_DEFAULTS, **stored}
 
     # Fetch sections from sections table
     db_sections = db.query(Section).order_by(Section.order_index.asc()).all()
     if db_sections:
         result["sections"] = {s.key: s.is_active for s in db_sections}
+    else:
+        result["sections"] = DEFAULT_SECTIONS
 
     # Fetch socials from social_links table
     db_socials = db.query(SocialLink).order_by(SocialLink.order_index.asc()).all()
@@ -278,16 +313,18 @@ def get_all_settings(db: Session) -> Dict[str, Any]:
             }
             for s in db_socials
         ]
+    else:
+        result["socials"] = DEFAULT_SOCIALS
 
     return result
 
 
 def ensure_defaults(db: Session) -> None:
-    """Insert any missing default settings into database tables."""
+    """Insert missing default settings into database tables."""
     existing_keys = {row.key for row in db.query(AppSetting.key).all()}
     new_rows = [
         AppSetting(key=key, value=value)
-        for key, value in DEFAULTS.items()
+        for key, value in KV_DEFAULTS.items()
         if key not in existing_keys
     ]
     if new_rows:

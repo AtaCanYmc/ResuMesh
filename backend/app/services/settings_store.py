@@ -1,6 +1,6 @@
-"""settings_store.py — Read-only helper for app_settings, sections, and social_links tables.
+"""settings_store.py — Read-only storage helper for settings, sections, and social_links tables.
 
-The public backend reads settings, sections, and socials from database tables.
+Sections and socials are read exclusively from dedicated database tables.
 """
 
 from typing import Any, Dict
@@ -154,32 +154,61 @@ DEFAULT_TR: Dict[str, Any] = {
 
 DEFAULT_FOOTER: Dict[str, Any] = {"email": "atacanymc@gmail.com"}
 
-DEFAULTS: Dict[str, Any] = {
-    "sections": DEFAULT_SECTIONS,
-    "socials": DEFAULT_SOCIALS,
+KV_DEFAULTS: Dict[str, Any] = {
     "footer": DEFAULT_FOOTER,
     "marquee": DEFAULT_MARQUEE,
     "en": DEFAULT_EN,
     "tr": DEFAULT_TR,
 }
 
+DEFAULTS: Dict[str, Any] = {
+    "sections": DEFAULT_SECTIONS,
+    "socials": DEFAULT_SOCIALS,
+    **KV_DEFAULTS,
+}
+
 
 def get_setting(db: Session, key: str, default: Any = None) -> Any:
+    if key == "sections":
+        db_sections = db.query(Section).order_by(Section.order_index.asc()).all()
+        if db_sections:
+            return {s.key: s.is_active for s in db_sections}
+        return DEFAULT_SECTIONS
+
+    if key == "socials":
+        db_socials = db.query(SocialLink).order_by(SocialLink.order_index.asc()).all()
+        if db_socials:
+            return [
+                {
+                    "id": s.id,
+                    "platform": s.platform,
+                    "label": s.label,
+                    "url": s.url,
+                    "icon": s.icon,
+                    "order_index": s.order_index,
+                    "is_active": s.is_active,
+                }
+                for s in db_socials
+            ]
+        return DEFAULT_SOCIALS
+
     row = db.query(AppSetting).filter(AppSetting.key == key).first()
     if row is None:
-        return DEFAULTS.get(key, default)
+        return KV_DEFAULTS.get(key, default)
     return row.value
 
 
 def get_all_settings(db: Session) -> Dict[str, Any]:
     rows = db.query(AppSetting).all()
     stored = {row.key: row.value for row in rows}
-    result = {**DEFAULTS, **stored}
+    result = {**KV_DEFAULTS, **stored}
 
     # Fetch sections from sections table
     db_sections = db.query(Section).order_by(Section.order_index.asc()).all()
     if db_sections:
         result["sections"] = {s.key: s.is_active for s in db_sections}
+    else:
+        result["sections"] = DEFAULT_SECTIONS
 
     # Fetch socials from social_links table
     db_socials = db.query(SocialLink).order_by(SocialLink.order_index.asc()).all()
@@ -196,5 +225,7 @@ def get_all_settings(db: Session) -> Dict[str, Any]:
             }
             for s in db_socials
         ]
+    else:
+        result["socials"] = DEFAULT_SOCIALS
 
     return result
