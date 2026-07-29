@@ -27,6 +27,7 @@ from app.routers import (
     admin,
     articles,
     auth,
+    avatar,
     certificates,
     cv,
     educations,
@@ -79,6 +80,7 @@ app.include_router(skills.router, prefix="/api/v1")
 app.include_router(certificates.router, prefix="/api/v1")
 app.include_router(seo.router, prefix="/api/v1/seo")
 app.include_router(cv.router, prefix="/api/v1")
+app.include_router(avatar.router, prefix="/api/v1")
 app.include_router(rxresume.router, prefix="/api/v1")
 app.include_router(packages.router, prefix="/api/v1")
 app.include_router(posts.router, prefix="/api/v1")
