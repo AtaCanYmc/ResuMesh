@@ -1,4 +1,4 @@
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -36,51 +36,36 @@ export interface ContentConfig {
   };
 }
 
+import contentData from '../config/content.json';
+import publicSettings from '../config/publicSettings.json';
+
 export const useAppSettings = () => {
-  return useQuery({
-    queryKey: ['app-settings'],
-    queryFn: async () => {
-      try {
-        const response = await axios.get(`${API_URL}/api/v1/settings/`);
-        return response.data;
-      } catch (err) {
-        console.warn('Failed to fetch settings from API', err);
-        return null;
-      }
-    },
-    staleTime: 1000 * 60 * 10,
-  });
+  return {
+    data: publicSettings as Record<string, any>,
+    isLoading: false,
+    isSuccess: true,
+  };
 };
 
 export const useContentConfig = (lang: string = 'tr') => {
-  const { data: apiSettings } = useAppSettings();
+  const shortLang = lang.split('-')[0].toLowerCase();
+  const langData =
+    (contentData as any)[shortLang] ||
+    (contentData as any)[lang] ||
+    (contentData as any)['en'];
 
-  return useQuery<ContentConfig>({
-    queryKey: ['contentConfig', lang, apiSettings],
-    queryFn: async () => {
-      const response = await axios.get('/content.json');
-      const shortLang = lang.split('-')[0].toLowerCase();
-      const langData =
-        response.data[shortLang] || response.data[lang] || response.data['en'];
-      const defaultSocials = response.data.socials || [];
+  const data: ContentConfig = {
+    ...langData,
+    socials: (contentData as any).socials || [],
+    footer: (contentData as any).footer || {},
+    marquee: (contentData as any).marquee || [],
+  };
 
-      const socials =
-        apiSettings?.socials &&
-        Array.isArray(apiSettings.socials) &&
-        apiSettings.socials.length > 0
-          ? apiSettings.socials
-          : defaultSocials;
-
-      return {
-        ...langData,
-        socials,
-        footer: apiSettings?.footer || response.data.footer || {},
-        marquee: apiSettings?.marquee || response.data.marquee || [],
-      };
-    },
-    staleTime: Infinity,
-    placeholderData: keepPreviousData,
-  });
+  return {
+    data,
+    isLoading: false,
+    isSuccess: true,
+  };
 };
 
 export const useExperiences = () => {

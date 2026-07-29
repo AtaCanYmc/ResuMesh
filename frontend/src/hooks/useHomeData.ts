@@ -40,46 +40,30 @@ export interface ContentConfig {
 }
 
 export const useAppSettings = () => {
-  return useQuery({
-    queryKey: ['app-settings'],
-    queryFn: async () => {
-      try {
-        const response = await axios.get(`${API_URL}/api/v1/settings/`);
-        return response.data;
-      } catch (err) {
-        console.warn('Failed to fetch app settings, using local fallback', err);
-        return publicSettings;
-      }
-    },
-    staleTime: 1000 * 60 * 10,
-  });
+  return {
+    data: publicSettings as Record<string, any>,
+    isLoading: false,
+    isSuccess: true,
+  };
 };
 
 export const useContentConfig = (lang: string = 'tr') => {
-  const { data: apiSettings, isLoading: isSettingsLoading } = useAppSettings();
   const shortLang = lang.split('-')[0].toLowerCase();
   const langData =
     (contentData as any)[shortLang] ||
     (contentData as any)[lang] ||
     (contentData as any)['en'];
 
-  const socials =
-    apiSettings?.socials &&
-    Array.isArray(apiSettings.socials) &&
-    apiSettings.socials.length > 0
-      ? apiSettings.socials
-      : (contentData as any).socials || [];
-
   const data: ContentConfig = {
     ...langData,
-    socials,
-    footer: apiSettings?.footer || (contentData as any).footer || {},
-    marquee: apiSettings?.marquee || (contentData as any).marquee || [],
+    socials: (contentData as any).socials || [],
+    footer: (contentData as any).footer || {},
+    marquee: (contentData as any).marquee || [],
   };
 
   return {
     data,
-    isLoading: isSettingsLoading,
+    isLoading: false,
     isSuccess: true,
   };
 };
