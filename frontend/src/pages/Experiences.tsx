@@ -6,11 +6,12 @@ import SEO from '../components/SEO';
 import { useTranslation } from 'react-i18next';
 import { Navigate } from 'react-router-dom';
 import { useAppSettings } from '../hooks/useHomeData';
-import { ENV } from '../config/env';
+import { useEnv } from '../hooks/useEnv';
 
 import { TimelineSkeleton } from '../components/ui/Skeletons';
 
 export default function Experiences() {
+  const { API_URL } = useEnv();
   const { data: settings } = useAppSettings();
   const { t } = useTranslation();
 
@@ -20,7 +21,7 @@ export default function Experiences() {
   useEffect(() => {
     const fetchExperiences = async () => {
       try {
-        const res = await axios.get<Experience[]>(`${ENV.API_URL}/api/v1/experiences/`);
+        const res = await axios.get<Experience[]>(`${API_URL}/api/v1/experiences/`);
         setExperiences(res.data);
       } catch (error) {
         console.error('Failed to fetch experiences', error);

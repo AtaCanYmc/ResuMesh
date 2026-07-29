@@ -7,9 +7,10 @@ import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
-import { ENV } from '../config/env';
+import { useEnv } from '../hooks/useEnv';
 
 export default function SearchBar() {
+  const { API_URL } = useEnv();
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 300);
@@ -31,7 +32,7 @@ export default function SearchBar() {
       setLoading(true);
       try {
         const response = await axios.get<GlobalSearchResponse>(
-          `${ENV.API_URL}/api/v1/search/`,
+          `${API_URL}/api/v1/search/`,
           { params: { q: debouncedQuery } }
         );
         setResults(response.data);

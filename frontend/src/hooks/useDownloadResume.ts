@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import posthog from 'posthog-js';
-import { ENV } from '../config/env';
+import { useEnv } from './useEnv';
 
 export const useDownloadResume = (fallbackLink?: string) => {
+  const env = useEnv();
   const [isDownloading, setIsDownloading] = useState(false);
 
   const handleDownload = async (e: React.MouseEvent) => {
@@ -10,10 +11,10 @@ export const useDownloadResume = (fallbackLink?: string) => {
     if (isDownloading) return;
     setIsDownloading(true);
 
-    const filename = ENV.CV_FILENAME;
+    const filename = env.CV_FILENAME;
 
     try {
-      const apiUrl = ENV.API_URL;
+      const apiUrl = env.API_URL;
       const downloadUrl = `${apiUrl}/api/v1/cv/${filename}`;
 
       const response = await fetch(downloadUrl);
@@ -29,7 +30,7 @@ export const useDownloadResume = (fallbackLink?: string) => {
       a.remove();
       window.URL.revokeObjectURL(url);
 
-      if (ENV.POSTHOG_API_KEY && ENV.MODE !== 'development') {
+      if (env.POSTHOG_API_KEY && env.MODE !== 'development') {
         posthog.capture('cv_download_clicked', {
           filename,
           fallback_used: false,
@@ -45,7 +46,7 @@ export const useDownloadResume = (fallbackLink?: string) => {
       a.click();
       a.remove();
 
-      if (ENV.POSTHOG_API_KEY && ENV.MODE !== 'development') {
+      if (env.POSTHOG_API_KEY && env.MODE !== 'development') {
         posthog.capture('cv_download_clicked', {
           filename,
           fallback_used: true,

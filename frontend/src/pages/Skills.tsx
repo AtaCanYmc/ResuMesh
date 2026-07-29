@@ -4,11 +4,12 @@ import axios from 'axios';
 import { Loader2, Wand2 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useTranslation } from 'react-i18next';
-import { ENV } from '../config/env';
+import { useEnv } from '../hooks/useEnv';
 
 import { ListSkeleton } from '../components/ui/Skeletons';
 
 export default function Skills() {
+  const { API_URL } = useEnv();
   const { t } = useTranslation();
   const [skills, setSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,7 +17,7 @@ export default function Skills() {
   useEffect(() => {
     const fetchSkills = async () => {
       try {
-        const res = await axios.get<Skill[]>(`${ENV.API_URL}/api/v1/skills/`);
+        const res = await axios.get<Skill[]>(`${API_URL}/api/v1/skills/`);
         setSkills(res.data);
       } catch (error) {
         console.error('Failed to fetch skills', error);

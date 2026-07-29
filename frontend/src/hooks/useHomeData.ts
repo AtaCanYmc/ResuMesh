@@ -1,11 +1,9 @@
-import {useQuery} from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import {ENV} from '../config/env';
+import { useEnv } from './useEnv';
 import contentData from '../config/content.json';
 import publicSettings from '../config/publicSettings.json';
-import {ContentConfig} from "../types";
-
-const API_URL = ENV.API_URL;
+import { ContentConfig } from '../types';
 
 export const useAppSettings = () => {
   return {
@@ -37,6 +35,7 @@ export const useContentConfig = (lang: string = 'tr') => {
 };
 
 export const useExperiences = () => {
+  const { API_URL } = useEnv();
   return useQuery({
     queryKey: ['experiences'],
     queryFn: async () => {
@@ -47,6 +46,7 @@ export const useExperiences = () => {
 };
 
 export const useEducations = () => {
+  const { API_URL } = useEnv();
   return useQuery({
     queryKey: ['educations'],
     queryFn: async () => {
@@ -57,6 +57,7 @@ export const useEducations = () => {
 };
 
 export const useSkills = () => {
+  const { API_URL } = useEnv();
   return useQuery({
     queryKey: ['skills'],
     queryFn: async () => {
@@ -67,6 +68,7 @@ export const useSkills = () => {
 };
 
 export const useProjects = (limit?: number) => {
+  const { API_URL } = useEnv();
   return useQuery({
     queryKey: ['projects', limit],
     queryFn: async () => {
@@ -80,6 +82,7 @@ export const useProjects = (limit?: number) => {
 };
 
 export const useArticles = (limit?: number) => {
+  const { API_URL } = useEnv();
   return useQuery({
     queryKey: ['articles', limit],
     queryFn: async () => {

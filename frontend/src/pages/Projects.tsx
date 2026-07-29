@@ -11,9 +11,10 @@ import EmptyState from '../components/ui/EmptyState';
 import { useTranslation } from 'react-i18next';
 import { Navigate } from 'react-router-dom';
 import { useAppSettings } from '../hooks/useHomeData';
-import { ENV } from '../config/env';
+import { useEnv } from '../hooks/useEnv';
 
 export default function Projects() {
+  const { API_URL } = useEnv();
   const { data: settings } = useAppSettings();
   const { t } = useTranslation();
 
@@ -25,7 +26,7 @@ export default function Projects() {
   const { data: projects = [], isLoading, isError, error } = useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
-      const res = await axios.get<Project[]>(`${ENV.API_URL}/api/v1/projects/`);
+      const res = await axios.get<Project[]>(`${API_URL}/api/v1/projects/`);
       return res.data;
     }
   });
