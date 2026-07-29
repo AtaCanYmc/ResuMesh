@@ -1,3 +1,4 @@
+import uuid
 from typing import List, Optional
 
 from sqlalchemy.orm import Session
@@ -34,7 +35,10 @@ class SQLAlchemySocialLinkRepository(ISocialLinkRepository):
         return self.db.query(SocialLink).filter(SocialLink.id == social_link_id).first()
 
     def create_social_link(self, social_link: SocialLinkCreate) -> SocialLinkResponse:
-        db_social_link = SocialLink(**social_link.model_dump())
+        data = social_link.model_dump(exclude_none=True)
+        if "id" not in data or not data["id"]:
+            data["id"] = str(uuid.uuid4())
+        db_social_link = SocialLink(**data)
         self.db.add(db_social_link)
         self.db.commit()
         self.db.refresh(db_social_link)

@@ -1,10 +1,11 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class SocialLinkBase(BaseModel):
+    id: Optional[str] = None
     platform: str = Field(
         ..., description="Platform name e.g. github, linkedin, devto, medium"
     )
@@ -33,5 +34,4 @@ class SocialLinkResponse(SocialLinkBase):
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
