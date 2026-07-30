@@ -5,9 +5,8 @@ from pydantic import BaseModel
 from resumesh_scrapers import NpmScraperService, PyPIScraperService
 from sqlalchemy.orm import Session
 
-from app.config.database import get_db
 from app.config.settings import settings
-from app.db.dependencies import get_package_repo
+from app.db.dependencies import get_db, get_package_repo
 from app.db.repositories import IPackageRepository
 from app.schemas.package import PackageCreate, PackageResponse, PackageUpdate
 from app.services.auth_service import get_current_admin
