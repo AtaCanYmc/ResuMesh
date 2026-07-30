@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Optional
+
 from pydantic import ConfigDict
 from resumesh_scrapers.models import GitHubRepositoryModel
 
