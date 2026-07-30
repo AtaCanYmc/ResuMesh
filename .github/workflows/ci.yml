@@ -147,7 +147,11 @@ jobs:
 
     - name: Install dependencies
       working-directory: ./frontend
-      run: npm ci
+      run: |
+        npm config set fetch-retries 5
+        npm config set fetch-retry-mintimeout 20000
+        npm config set fetch-retry-maxtimeout 120000
+        npm ci
 
     - name: Lint
       working-directory: ./frontend
@@ -177,7 +181,11 @@ jobs:
 
     - name: Install dependencies
       working-directory: ./admin/frontend
-      run: npm ci
+      run: |
+        npm config set fetch-retries 5
+        npm config set fetch-retry-mintimeout 20000
+        npm config set fetch-retry-maxtimeout 120000
+        npm ci
 
     - name: Lint
       working-directory: ./admin/frontend
