@@ -1,6 +1,7 @@
 export interface Project {
   id: string;
-  title: string;
+  name: string;
+  title?: string;
   description?: string;
   url?: string;
   languages: string[];

@@ -66,11 +66,11 @@ const FeaturedProjects: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex flex-col h-full p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shadow-sm hover:shadow-md"
-                  aria-label={`${project.title} projesine git`}
+                  aria-label={`${project.name || project.title} projesine git`}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="font-bold text-lg text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                      {project.title}
+                      {project.name || project.title}
                     </div>
                     <ExternalLink size={18} className="text-gray-400 group-hover:text-blue-500 transition-colors" aria-hidden="true" />
                   </div>
