@@ -154,6 +154,4 @@ export default function AdminLogin() {
       </div>
     </div>
   );
-};
-
-export default AdminLogin;
+}
