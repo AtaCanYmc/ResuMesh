@@ -21,6 +21,11 @@ class SupabaseProjectRepository(IProjectRepository):
             project_data["watchers"] = getattr(project, "watchers_count", 0)
         if "forks" not in project_data or not project_data["forks"]:
             project_data["forks"] = getattr(project, "forks_count", 0)
+        if (
+            "github_url" not in project_data or not project_data["github_url"]
+        ) and getattr(project, "url", None):
+            project_data["github_url"] = str(getattr(project, "url"))
+
         if "github_url" in project_data and project_data["github_url"]:
             project_data["github_url"] = str(project_data["github_url"])
 
@@ -75,6 +80,11 @@ class SupabaseProjectRepository(IProjectRepository):
             project_data["watchers"] = getattr(project, "watchers_count", 0)
         if "forks" not in project_data or not project_data["forks"]:
             project_data["forks"] = getattr(project, "forks_count", 0)
+        if (
+            "github_url" not in project_data or not project_data["github_url"]
+        ) and getattr(project, "url", None):
+            project_data["github_url"] = str(getattr(project, "url"))
+
         if "github_url" in project_data and project_data["github_url"]:
             project_data["github_url"] = str(project_data["github_url"])
 
@@ -91,12 +101,19 @@ class SupabaseProjectRepository(IProjectRepository):
         }
         project_data = {k: v for k, v in project_data.items() if k in valid_keys}
 
-        existing = (
-            await self.client.table("projects")
-            .select("*")
-            .eq("github_url", project_data["github_url"])
-            .execute()
-        )
+        github_url = project_data.get("github_url")
+        if github_url:
+            query = (
+                self.client.table("projects").select("*").eq("github_url", github_url)
+            )
+        else:
+            query = (
+                self.client.table("projects")
+                .select("*")
+                .eq("title", project_data.get("title", ""))
+            )
+
+        existing = await query.execute()
         if existing.data:
             proj_id = existing.data[0]["id"]
             response = (
