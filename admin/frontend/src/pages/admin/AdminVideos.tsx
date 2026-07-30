@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Video as VideoIcon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useEnv } from '../../hooks/useEnv';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
@@ -14,6 +15,7 @@ import { Video } from '../../types';
 
 export default function AdminVideos() {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
   const [videoToDelete, setVideoToDelete] = useState<Video | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -23,7 +25,7 @@ export default function AdminVideos() {
     queryKey: ['admin-videos'],
     queryFn: async () => {
       const res = await axios.get(
-        `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/videos/`
+        `${ADMIN_API_URL}/api/v1/videos/`
       );
       return res.data;
     }
@@ -32,7 +34,7 @@ export default function AdminVideos() {
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       await axios.delete(
-        `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/videos/${id}`,
+        `${ADMIN_API_URL}/api/v1/videos/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }

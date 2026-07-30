@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../../context/AuthContext';
+import { useEnv } from '../../../hooks/useEnv';
 import Modal from '../../Modal';
 import { Package } from '../../../types';
 
@@ -13,11 +14,11 @@ const packageSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
   platform: z.string().min(1, 'Platform is required'),
-  url: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-  docs_url: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  url: z.union([z.literal(''), z.string().url('Invalid URL')]).optional(),
+  docs_url: z.union([z.literal(''), z.string().url('Invalid URL')]).optional(),
   tags: z.string().optional(),
   version: z.string().optional(),
-  last_month_downloads: z.number().min(0),
+  last_month_downloads: z.coerce.number().min(0).default(0),
 });
 
 type PackageFormData = z.infer<typeof packageSchema>;
@@ -30,14 +31,11 @@ interface PackageFormModalProps {
 
 export default function PackageFormModal({ isOpen, onClose, pkg }: PackageFormModalProps) {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<PackageFormData>({
     resolver: zodResolver(packageSchema),
-    defaultValues: {
-      platform: 'npm',
-      last_month_downloads: 0
-    }
   });
 
   useEffect(() => {
@@ -45,7 +43,7 @@ export default function PackageFormModal({ isOpen, onClose, pkg }: PackageFormMo
       reset({
         title: pkg.title,
         description: pkg.description || '',
-        platform: pkg.platform,
+        platform: pkg.platform || 'npm',
         url: pkg.url || '',
         docs_url: pkg.docs_url || '',
         tags: pkg.tags || '',
@@ -68,7 +66,7 @@ export default function PackageFormModal({ isOpen, onClose, pkg }: PackageFormMo
 
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
-      const apiUrl = `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/packages/`;
+      const apiUrl = `${ADMIN_API_URL}/api/v1/packages/`;
       const url = pkg ? `${apiUrl}${pkg.id}` : apiUrl;
       const method = pkg ? 'put' : 'post';
       await axios({

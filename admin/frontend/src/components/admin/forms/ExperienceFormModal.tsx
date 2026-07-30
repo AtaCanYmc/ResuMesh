@@ -6,20 +6,21 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../../context/AuthContext';
+import { useEnv } from '../../../hooks/useEnv';
 import Modal from '../../Modal';
 import { Experience } from '../../../types';
 
-const experienceSchema = z.object({
+const schema = z.object({
   title: z.string().min(1, 'Title is required'),
-  company_name: z.string().min(1, 'Company name is required'),
+  company_name: z.string().min(1, 'Company is required'),
   location: z.string().optional(),
   start_date: z.string().min(1, 'Start date is required'),
   end_date: z.string().optional(),
-  is_current: z.boolean().default(false),
   description: z.string().optional(),
+  skills: z.string().optional(),
 });
 
-type ExperienceFormData = z.infer<typeof experienceSchema>;
+type ExperienceFormData = z.infer<typeof schema>;
 
 interface ExperienceFormModalProps {
   isOpen: boolean;
@@ -29,28 +30,23 @@ interface ExperienceFormModalProps {
 
 export default function ExperienceFormModal({ isOpen, onClose, experience }: ExperienceFormModalProps) {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
 
-  const { register, handleSubmit, watch, reset, formState: { errors } } = useForm<ExperienceFormData>({
-    resolver: zodResolver(experienceSchema),
-    defaultValues: {
-      is_current: false
-    }
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<ExperienceFormData>({
+    resolver: zodResolver(schema),
   });
 
-  const isCurrent = watch('is_current');
-
   useEffect(() => {
-    if (experience && isOpen) {
-      const formatDate = (dateString?: string) => dateString ? dateString.split('T')[0] : '';
+    if (experience) {
       reset({
         title: experience.title,
         company_name: experience.company_name,
         location: experience.location || '',
-        start_date: formatDate(experience.start_date),
-        end_date: formatDate(experience.end_date) || '',
-        is_current: experience.is_current || false,
+        start_date: experience.start_date ? experience.start_date.slice(0, 10) : '',
+        end_date: experience.end_date ? experience.end_date.slice(0, 10) : '',
         description: experience.description || '',
+        skills: Array.isArray(experience.skills) ? experience.skills.join(', ') : '',
       });
     } else if (isOpen) {
       reset({
@@ -59,8 +55,8 @@ export default function ExperienceFormModal({ isOpen, onClose, experience }: Exp
         location: '',
         start_date: '',
         end_date: '',
-        is_current: false,
         description: '',
+        skills: '',
       });
     }
   }, [experience, isOpen, reset]);
@@ -68,8 +64,8 @@ export default function ExperienceFormModal({ isOpen, onClose, experience }: Exp
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
       const url = experience
-        ? `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/experiences/${experience.id}`
-        : `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/experiences/`;
+        ? `${ADMIN_API_URL}/api/v1/experiences/${experience.id}`
+        : `${ADMIN_API_URL}/api/v1/experiences/`;
       const method = experience ? 'put' : 'post';
       await axios({
         method,

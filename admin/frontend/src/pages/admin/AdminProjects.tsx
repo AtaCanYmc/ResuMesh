@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { FolderGit, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useEnv } from '../../hooks/useEnv';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
@@ -14,45 +15,46 @@ import { Project } from '../../types';
 
 export default function AdminProjects() {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
-  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+  const [projToDelete, setProjToDelete] = useState<Project | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
+  const [projToEdit, setProjToEdit] = useState<Project | null>(null);
 
   // Read
   const { data: projects = [], isLoading } = useQuery<Project[]>({
     queryKey: ['admin-projects'],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/projects/`);
+      const res = await axios.get(`${ADMIN_API_URL}/api/v1/projects/`);
       return res.data;
     }
   });
 
   // Delete Mutation
   const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
-      await axios.delete(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/projects/${id}`, {
+    mutationFn: async (id: string) => {
+      await axios.delete(`${ADMIN_API_URL}/api/v1/projects/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
     },
     onSuccess: () => {
       toast.success('Project deleted successfully.');
       queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
-      setProjectToDelete(null);
+      setProjToDelete(null);
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.detail || 'Failed to delete project.');
-      setProjectToDelete(null);
+      setProjToDelete(null);
     }
   });
 
   // Refresh Mutation
   const refreshMutation = useMutation({
     mutationFn: async () => {
-      const username = import.meta.env.VITE_GITHUB_USERNAME || 'AtaCanYmc';
+      const githubUser = import.meta.env.VITE_GITHUB_USERNAME || 'AtaCanYmc';
       await axios.post(
-        `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/projects/refresh`,
-        { username, include_forks: false },
+        `${ADMIN_API_URL}/api/v1/projects/refresh`,
+        { username: githubUser, platform: 'github' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
     },

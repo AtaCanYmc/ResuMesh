@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Upload, ShieldAlert, Loader2, FileText } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
+import { useEnv } from '../../hooks/useEnv';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 
 export default function AdminLinkedInImport() {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
@@ -19,7 +21,7 @@ export default function AdminLinkedInImport() {
     formData.append('file', selectedFile);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/admin/import/linkedin-pdf`, formData, {
+      const response = await axios.post(`${ADMIN_API_URL}/api/v1/admin/import/linkedin-pdf`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`

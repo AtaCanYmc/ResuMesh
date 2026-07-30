@@ -6,18 +6,19 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../../context/AuthContext';
+import { useEnv } from '../../../hooks/useEnv';
 import Modal from '../../Modal';
 import { Project } from '../../../types';
 
-const projectSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
+const schema = z.object({
+  title: z.string().min(1, 'Project title is required'),
   description: z.string().optional(),
-  github_url: z.union([z.literal(''), z.string().url('Invalid URL')]).optional(),
-  languages: z.string().optional(), // We'll handle comma separated
+  github_url: z.string().url('Must be a valid URL').or(z.literal('')).optional(),
+  languages: z.string().optional(),
   tags: z.string().optional(),
 });
 
-type ProjectFormData = z.infer<typeof projectSchema>;
+type ProjectFormData = z.infer<typeof schema>;
 
 interface ProjectFormModalProps {
   isOpen: boolean;
@@ -27,22 +28,23 @@ interface ProjectFormModalProps {
 
 export default function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalProps) {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ProjectFormData>({
-    resolver: zodResolver(projectSchema),
+    resolver: zodResolver(schema),
   });
 
   useEffect(() => {
-    if (project && isOpen) {
+    if (project) {
       reset({
         title: project.title,
         description: project.description || '',
         github_url: project.github_url || '',
-        languages: project.languages?.join(', ') || '',
-        tags: project.tags?.join(', ') || '',
+        languages: Array.isArray(project.languages) ? project.languages.join(', ') : '',
+        tags: Array.isArray(project.tags) ? project.tags.join(', ') : '',
       });
-    } else if (isOpen) {
+    } else {
       reset({
         title: '',
         description: '',
@@ -56,8 +58,8 @@ export default function ProjectFormModal({ isOpen, onClose, project }: ProjectFo
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
       const url = project
-        ? `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/projects/${project.id}`
-        : `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/projects/`;
+        ? `${ADMIN_API_URL}/api/v1/projects/${project.id}`
+        : `${ADMIN_API_URL}/api/v1/projects/`;
       const method = project ? 'put' : 'post';
       await axios({
         method,

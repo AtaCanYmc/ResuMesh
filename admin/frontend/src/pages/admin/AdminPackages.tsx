@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Box, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useEnv } from '../../hooks/useEnv';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
@@ -14,6 +15,7 @@ import { Package } from '../../types';
 
 export default function AdminPackages() {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
   const [packageToDelete, setPackageToDelete] = useState<Package | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -23,7 +25,7 @@ export default function AdminPackages() {
     queryKey: ['admin-packages'],
     queryFn: async () => {
       const res = await axios.get(
-        `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/packages/`
+        `${ADMIN_API_URL}/api/v1/packages/`
       );
       return res.data;
     }
@@ -32,7 +34,7 @@ export default function AdminPackages() {
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       await axios.delete(
-        `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/packages/${id}`,
+        `${ADMIN_API_URL}/api/v1/packages/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -55,25 +57,18 @@ export default function AdminPackages() {
       const pypiUser = import.meta.env.VITE_PYPI_USERNAME || 'atacanymc';
       const pypiPackages = (import.meta.env.VITE_PYPI_PACKAGES || '').split(',').filter(Boolean);
 
-      const promises = [
+      await Promise.all([
         axios.post(
-          `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/packages/refresh`,
-          { username: npmUser, platform: 'npm' },
+          `${ADMIN_API_URL}/api/v1/packages/refresh`,
+          { platform: 'npm' },
+          { headers: { Authorization: `Bearer ${token}` } }
+        ),
+        axios.post(
+          `${ADMIN_API_URL}/api/v1/packages/refresh`,
+          { platform: 'pypi' },
           { headers: { Authorization: `Bearer ${token}` } }
         )
-      ];
-
-      if (pypiPackages.length > 0) {
-        promises.push(
-          axios.post(
-            `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/packages/refresh`,
-            { username: pypiUser, platform: 'pypi', package_names: pypiPackages },
-            { headers: { Authorization: `Bearer ${token}` } }
-          )
-        );
-      }
-
-      await Promise.all(promises);
+      ]);
     },
     onSuccess: () => {
       toast.success('Packages ingestion started in background.');

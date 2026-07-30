@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { BookOpen, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useEnv } from '../../hooks/useEnv';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
@@ -14,6 +15,7 @@ import { Article } from '../../types';
 
 export default function AdminArticles() {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
   const [articleToDelete, setArticleToDelete] = useState<Article | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -22,14 +24,14 @@ export default function AdminArticles() {
   const { data: articles = [], isLoading } = useQuery<Article[]>({
     queryKey: ['admin-articles'],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/articles/`);
+      const res = await axios.get(`${ADMIN_API_URL}/api/v1/articles/`);
       return res.data;
     }
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      await axios.delete(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/articles/${id}`, {
+      await axios.delete(`${ADMIN_API_URL}/api/v1/articles/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
     },
@@ -52,12 +54,12 @@ export default function AdminArticles() {
 
       await Promise.all([
         axios.post(
-          `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/articles/refresh`,
+          `${ADMIN_API_URL}/api/v1/articles/refresh`,
           { username: devtoUser, platform: 'devto' },
           { headers: { Authorization: `Bearer ${token}` } }
         ),
         axios.post(
-          `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/articles/refresh`,
+          `${ADMIN_API_URL}/api/v1/articles/refresh`,
           { username: mediumUser, platform: 'medium' },
           { headers: { Authorization: `Bearer ${token}` } }
         )

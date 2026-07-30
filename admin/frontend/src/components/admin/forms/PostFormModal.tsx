@@ -6,19 +6,20 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../../context/AuthContext';
+import { useEnv } from '../../../hooks/useEnv';
 import Modal from '../../Modal';
 import { Post } from '../../../types';
 
-const postSchema = z.object({
+const schema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
-  platform: z.string().optional(),
-  url: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-  thumbnail: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  platform: z.string().min(1, 'Platform is required'),
+  url: z.string().url('Must be a valid URL').or(z.literal('')).optional(),
+  thumbnail: z.string().url('Must be a valid URL').or(z.literal('')).optional(),
   profile: z.string().optional(),
 });
 
-type PostFormData = z.infer<typeof postSchema>;
+type PostFormData = z.infer<typeof schema>;
 
 interface PostFormModalProps {
   isOpen: boolean;
@@ -28,14 +29,15 @@ interface PostFormModalProps {
 
 export default function PostFormModal({ isOpen, onClose, post }: PostFormModalProps) {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<PostFormData>({
-    resolver: zodResolver(postSchema),
+    resolver: zodResolver(schema),
   });
 
   useEffect(() => {
-    if (post && isOpen) {
+    if (post) {
       reset({
         title: post.title,
         description: post.description || '',
@@ -44,7 +46,7 @@ export default function PostFormModal({ isOpen, onClose, post }: PostFormModalPr
         thumbnail: post.thumbnail || '',
         profile: post.profile || '',
       });
-    } else if (isOpen) {
+    } else {
       reset({
         title: '',
         description: '',
@@ -58,7 +60,7 @@ export default function PostFormModal({ isOpen, onClose, post }: PostFormModalPr
 
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
-      const apiUrl = `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/posts/`;
+      const apiUrl = `${ADMIN_API_URL}/api/v1/posts/`;
       const url = post ? `${apiUrl}${post.id}` : apiUrl;
       const method = post ? 'put' : 'post';
       await axios({

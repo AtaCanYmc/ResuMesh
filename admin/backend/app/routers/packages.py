@@ -3,12 +3,16 @@ from typing import List
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel
 from resumesh_scrapers import NpmScraperService, PyPIScraperService
+from sqlalchemy.orm import Session
 
+from app.config.database import get_db
+from app.config.settings import settings
 from app.db.dependencies import get_package_repo
 from app.db.repositories import IPackageRepository
 from app.schemas.package import PackageCreate, PackageResponse, PackageUpdate
 from app.services.auth_service import get_current_admin
 from app.services.ingestion_service import IngestionService
+from app.services.settings_store import get_setting
 from app.services.telemetry_service import get_telemetry_data, telemetry
 
 router = APIRouter(prefix="/packages", tags=["packages"])
@@ -16,7 +20,7 @@ router = APIRouter(prefix="/packages", tags=["packages"])
 
 class PackageRefreshRequest(BaseModel):
     platform: str
-    username: str
+    username: str = ""
     package_names: List[str] = []
 
 
@@ -25,17 +29,25 @@ async def refresh_packages(
     request: PackageRefreshRequest,
     background_tasks: BackgroundTasks,
     provider: IPackageRepository = Depends(get_package_repo),
+    db: Session = Depends(get_db),
     admin: dict = Depends(get_current_admin),
     telemetry_ctx: dict = Depends(get_telemetry_data),
 ):
     try:
         ingestion = IngestionService()
+        integrations = get_setting(db, "integrations", {}) or {}
+        username = (
+            request.username
+            or integrations.get("github_username")
+            or settings.GITHUB_USERNAME
+        )
+
         if request.platform.lower() == "npm":
             scraper = NpmScraperService()
             background_tasks.add_task(
                 ingestion.fetch_npm_packages,
                 scraper=scraper,
-                username=request.username,
+                username=username,
                 provider=provider,
             )
         elif request.platform.lower() == "pypi":
@@ -43,7 +55,7 @@ async def refresh_packages(
             background_tasks.add_task(
                 ingestion.fetch_pypi_packages,
                 scraper=scraper,
-                username=request.username,
+                username=username,
                 provider=provider,
                 package_names=request.package_names,
             )
