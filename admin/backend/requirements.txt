@@ -20,6 +20,7 @@ resumesh-scrapers==0.6.0
 resumesh-llm==0.6.0
 
 # PDF Parsing
+pypdf==6.13.3
 python-multipart==0.0.31
 
 # Reactive Resume
