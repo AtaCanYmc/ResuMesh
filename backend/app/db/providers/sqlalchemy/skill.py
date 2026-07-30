@@ -1,9 +1,10 @@
 from typing import List, Optional
 
+from sqlalchemy.orm import Session
+
 from app.db.repositories import ISkillRepository
 from app.models.skill import Skill
 from app.schemas.skill import SkillCreate, SkillResponse, SkillUpdate
-from sqlalchemy.orm import Session
 
 
 class SQLAlchemySkillRepository(ISkillRepository):

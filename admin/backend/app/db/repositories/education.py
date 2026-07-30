@@ -13,7 +13,7 @@ class IEducationRepository(ABC):
 
     @abstractmethod
     async def get_education_by_id(
-            self, education_id: str
+        self, education_id: str
     ) -> Optional[EducationResponse]:
         pass
 

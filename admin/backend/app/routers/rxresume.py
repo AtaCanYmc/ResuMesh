@@ -1,3 +1,6 @@
+from fastapi import APIRouter, Depends, HTTPException
+from reactive_resume.models import Basics
+
 from app.db.dependencies import (
     get_article_repo,
     get_certificate_repo,
@@ -19,8 +22,6 @@ from app.db.repositories import (
 from app.services.auth_service import get_current_admin
 from app.services.mappers.reactive_resume_mapper import ReactiveResumeMapper
 from app.services.reactive_resume_service import ReactiveResumeService
-from fastapi import APIRouter, Depends, HTTPException
-from reactive_resume.models import Basics
 
 router = APIRouter(prefix="/admin/rxresume", tags=["Admin Reactive Resume Management"])
 

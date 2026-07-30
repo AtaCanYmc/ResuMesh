@@ -1,11 +1,12 @@
 from typing import List
 
+from fastapi import APIRouter, Depends, HTTPException
+
 from app.db.dependencies import get_skill_repo
 from app.db.repositories import ISkillRepository
 from app.schemas.skill import SkillCreate, SkillResponse, SkillUpdate
 from app.services.auth_service import get_current_admin
 from app.services.telemetry_service import get_telemetry_data, telemetry
-from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter(prefix="/skills", tags=["Skills"])
 

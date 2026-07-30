@@ -1,9 +1,10 @@
 from typing import List, Optional
 
+from sqlalchemy.orm import Session
+
 from app.db.repositories import IEducationRepository
 from app.models.education import Education
 from app.schemas.education import EducationCreate, EducationResponse, EducationUpdate
-from sqlalchemy.orm import Session
 
 
 class SQLAlchemyEducationRepository(IEducationRepository):
@@ -22,7 +23,7 @@ class SQLAlchemyEducationRepository(IEducationRepository):
         )
 
     async def get_education_by_id(
-            self, education_id: str
+        self, education_id: str
     ) -> Optional[EducationResponse]:
         return self.db.query(Education).filter(Education.id == education_id).first()
 

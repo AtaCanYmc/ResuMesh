@@ -1,5 +1,19 @@
 from typing import Optional
 
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    File,
+    HTTPException,
+    Query,
+    Request,
+    UploadFile,
+)
+from pydantic import BaseModel, HttpUrl
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
 from app.config.settings import settings
 from app.db.dependencies import (
     get_article_repo,
@@ -23,19 +37,6 @@ from app.services.cv_generator_service import CVGeneratorService
 from app.services.ingestion_service import IngestionService
 from app.services.pdf_parser_service import LinkedInPDFParser
 from app.services.telemetry_service import get_telemetry_data, telemetry
-from fastapi import (
-    APIRouter,
-    BackgroundTasks,
-    Depends,
-    File,
-    HTTPException,
-    Query,
-    Request,
-    UploadFile,
-)
-from pydantic import BaseModel, HttpUrl
-from slowapi import Limiter
-from slowapi.util import get_remote_address
 
 limiter = Limiter(key_func=get_remote_address)
 

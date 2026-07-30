@@ -7,6 +7,9 @@ to the database via the repository layer.
 
 from typing import Any, Dict, List
 
+from resumesh_scrapers import IScraperService
+from resumesh_scrapers.exceptions import ScraperError
+
 from app.db.repositories import (
     IArticleRepository,
     ICertificateRepository,
@@ -20,8 +23,6 @@ from app.schemas.package import PackageCreate
 from app.schemas.project import ProjectCreate
 from app.services.log_service import LogService
 from app.services.mappers.linkedin_mapper import LinkedInDataMapper
-from resumesh_scrapers import IScraperService
-from resumesh_scrapers.exceptions import ScraperError
 
 
 class IngestionService:
@@ -31,7 +32,7 @@ class IngestionService:
     async def _execute_scraper(
         self,
         scraper: IScraperService,
-            upsert_func,
+        upsert_func,
         platform_name: str,
         username: str,
         **kwargs,
