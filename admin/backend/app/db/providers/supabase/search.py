@@ -15,7 +15,7 @@ class SupabaseSearchRepository(ISearchRepository):
         tasks = [
             self.client.table("projects")
             .select("*")
-            .or_(f"title.{search_term},description.{search_term}")
+            .or_(f"name.{search_term},description.{search_term}")
             .execute(),
             self.client.table("articles")
             .select("*")
@@ -38,7 +38,7 @@ class SupabaseSearchRepository(ISearchRepository):
         projects = [
             SearchResultItem(
                 id=str(p["id"]),
-                title=p["title"],
+                title=p.get("name") or p.get("title", ""),
                 subtitle=p.get("description")[:100] if p.get("description") else None,
                 url=p.get("url"),
                 tags=p.get("languages", []) + p.get("tags", []),

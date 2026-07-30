@@ -65,6 +65,7 @@ class IngestionService:
             )
             for item in items:
                 proj = ProjectCreate(
+                    name=getattr(item, "name", None) or getattr(item, "title", ""),
                     title=getattr(item, "name", None) or getattr(item, "title", ""),
                     description=getattr(item, "description", None),
                     url=getattr(item, "html_url", None) or getattr(item, "url", None),
@@ -232,6 +233,7 @@ class IngestionService:
             items = await scraper.fetch_data(username, api_key=api_key)
             for item in items:
                 proj = ProjectCreate(
+                    name=item.name,
                     title=item.name,
                     description=(
                         f"Behance Project. Views: {item.stats_views}, "

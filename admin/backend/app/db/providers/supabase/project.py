@@ -11,8 +11,12 @@ class SupabaseProjectRepository(IProjectRepository):
 
     async def create_project(self, project: ProjectCreate) -> ProjectResponse:
         project_data = project.model_dump(mode="json")
+        if "name" not in project_data or not project_data["name"]:
+            project_data["name"] = getattr(project, "title", None) or getattr(
+                project, "name", ""
+            )
         valid_keys = {
-            "title",
+            "name",
             "description",
             "url",
             "stars",
@@ -27,7 +31,10 @@ class SupabaseProjectRepository(IProjectRepository):
         response = await self.client.table("projects").insert(project_data).execute()
         if not response.data:
             raise Exception("Failed to create project in Supabase.")
-        return ProjectResponse(**response.data[0])
+        item = response.data[0]
+        if "name" not in item or not item["name"]:
+            item["name"] = item.get("title", "")
+        return ProjectResponse(**item)
 
     async def get_projects(
         self, skip: int = 0, limit: int = 100
@@ -60,9 +67,9 @@ class SupabaseProjectRepository(IProjectRepository):
 
     async def upsert_project(self, project: ProjectCreate) -> ProjectResponse:
         project_data = project.model_dump(mode="json")
-        if "title" not in project_data or not project_data["title"]:
-            project_data["title"] = getattr(project, "name", None) or getattr(
-                project, "title", ""
+        if "name" not in project_data or not project_data["name"]:
+            project_data["name"] = getattr(project, "title", None) or getattr(
+                project, "name", ""
             )
         if "stars" not in project_data or not project_data["stars"]:
             project_data["stars"] = getattr(project, "stargazers_count", 0)
@@ -79,7 +86,7 @@ class SupabaseProjectRepository(IProjectRepository):
             project_data["url"] = str(project_data["url"])
 
         valid_keys = {
-            "title",
+            "name",
             "description",
             "url",
             "stars",
@@ -98,7 +105,7 @@ class SupabaseProjectRepository(IProjectRepository):
             query = (
                 self.client.table("projects")
                 .select("*")
-                .eq("title", project_data.get("title", ""))
+                .eq("name", project_data.get("name", ""))
             )
 
         existing = await query.execute()

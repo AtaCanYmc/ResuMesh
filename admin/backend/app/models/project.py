@@ -12,7 +12,7 @@ class Project(Base):
     id = Column(
         String(36), primary_key=True, index=True, default=lambda: str(uuid.uuid4())
     )
-    title = Column(String(255), nullable=False, index=True)
+    name = Column(String(255), nullable=False, index=True)
     description = Column(Text, nullable=True)
     url = Column(String(512), nullable=True)
     stars = Column(Integer, default=0)

@@ -60,7 +60,7 @@ class ReactiveResumeMapper:
         return ProjectItem(
             id=project.id,
             visible=True,
-            name=project.title,
+            name=getattr(project, "name", None) or getattr(project, "title", ""),
             description=project.description or "",
             date=project.created_at.strftime("%Y-%m") if project.created_at else "",
             summary=summary,

@@ -25,7 +25,7 @@ def test_mapper_format_date_range():
 def test_mapper_project_mapping():
     proj = Project(
         id="proj-123",
-        title="My Awesome Project",
+        name="My Awesome Project",
         description="A great test project",
         url="https://github.com/user/project",
         languages=["Python", "HTML"],

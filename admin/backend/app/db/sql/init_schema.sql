@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- 3. PROJECTS TABLOSU (GitHub Verileri)
 CREATE TABLE IF NOT EXISTS projects (
     id BIGSERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
     description TEXT,
     url VARCHAR(512) NOT NULL UNIQUE,
     stars INT DEFAULT 0,
