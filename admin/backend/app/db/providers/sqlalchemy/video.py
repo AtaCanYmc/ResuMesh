@@ -20,7 +20,7 @@ class SQLAlchemyVideoRepository(IVideoRepository):
         return self.db.query(Video).filter(Video.id == video_id).first()
 
     async def create_video(self, video: VideoCreate) -> VideoResponse:
-        db_video = Video(**video.model_dump())
+        db_video = Video(**video.model_dump(mode="json"))
         self.db.add(db_video)
         self.db.commit()
         self.db.refresh(db_video)
@@ -33,7 +33,7 @@ class SQLAlchemyVideoRepository(IVideoRepository):
             .first()
         )
         if db_video:
-            update_data = video.model_dump(exclude_unset=True)
+            update_data = video.model_dump(mode="json", exclude_unset=True)
             for key, value in update_data.items():
                 setattr(db_video, key, value)
             self.db.commit()
@@ -47,7 +47,7 @@ class SQLAlchemyVideoRepository(IVideoRepository):
         db_video = await self.get_video_by_id(video_id)
         if not db_video:
             return None
-        update_data = video.model_dump(exclude_unset=True)
+        update_data = video.model_dump(mode="json", exclude_unset=True)
         for key, value in update_data.items():
             setattr(db_video, key, value)
         self.db.commit()

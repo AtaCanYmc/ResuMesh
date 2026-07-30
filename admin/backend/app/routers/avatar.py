@@ -40,6 +40,10 @@ async def get_avatar(filename: str, telemetry_ctx: dict = Depends(get_telemetry_
             headers={"Cache-Control": "public, max-age=86400"},
         )
     except Exception as e:
+        if filename in ["profile_pic.jpeg", "profile_pic.jpg", "profile_pic.png"]:
+            from fastapi.responses import RedirectResponse
+
+            return RedirectResponse(url="/images/profile_pic.jpeg", status_code=307)
         raise HTTPException(
             status_code=404, detail=f"Profile picture not found: {str(e)}"
         )
