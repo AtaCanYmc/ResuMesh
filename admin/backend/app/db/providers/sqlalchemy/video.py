@@ -11,22 +11,22 @@ class SQLAlchemyVideoRepository(IVideoRepository):
     def __init__(self, db: Session):
         self.db = db
 
-    def get_videos(self, skip: int = 0, limit: int = 100) -> List[VideoResponse]:
+    async def get_videos(self, skip: int = 0, limit: int = 100) -> List[VideoResponse]:
         return (
             self.db.query(Video).order_by(Video.title).offset(skip).limit(limit).all()
         )
 
-    def get_video_by_id(self, video_id: str) -> Optional[VideoResponse]:
+    async def get_video_by_id(self, video_id: str) -> Optional[VideoResponse]:
         return self.db.query(Video).filter(Video.id == video_id).first()
 
-    def create_video(self, video: VideoCreate) -> VideoResponse:
+    async def create_video(self, video: VideoCreate) -> VideoResponse:
         db_video = Video(**video.model_dump())
         self.db.add(db_video)
         self.db.commit()
         self.db.refresh(db_video)
         return db_video
 
-    def upsert_video(self, video: VideoCreate) -> VideoResponse:
+    async def upsert_video(self, video: VideoCreate) -> VideoResponse:
         db_video = (
             self.db.query(Video)
             .filter(Video.url == str(video.url) if video.url else False)
@@ -39,12 +39,12 @@ class SQLAlchemyVideoRepository(IVideoRepository):
             self.db.commit()
             self.db.refresh(db_video)
             return db_video
-        return self.create_video(video)
+        return await self.create_video(video)
 
-    def update_video(
+    async def update_video(
         self, video_id: str, video: VideoUpdate
     ) -> Optional[VideoResponse]:
-        db_video = self.get_video_by_id(video_id)
+        db_video = await self.get_video_by_id(video_id)
         if not db_video:
             return None
         update_data = video.model_dump(exclude_unset=True)
@@ -54,8 +54,8 @@ class SQLAlchemyVideoRepository(IVideoRepository):
         self.db.refresh(db_video)
         return db_video
 
-    def delete_video(self, video_id: str) -> bool:
-        db_video = self.get_video_by_id(video_id)
+    async def delete_video(self, video_id: str) -> bool:
+        db_video = await self.get_video_by_id(video_id)
         if not db_video:
             return False
         self.db.delete(db_video)

@@ -11,7 +11,9 @@ class SQLAlchemyPackageRepository(IPackageRepository):
     def __init__(self, db: Session):
         self.db = db
 
-    def get_packages(self, skip: int = 0, limit: int = 100) -> List[PackageResponse]:
+    async def get_packages(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[PackageResponse]:
         return (
             self.db.query(Package)
             .order_by(Package.title)
@@ -20,17 +22,17 @@ class SQLAlchemyPackageRepository(IPackageRepository):
             .all()
         )
 
-    def get_package_by_id(self, package_id: str) -> Optional[PackageResponse]:
+    async def get_package_by_id(self, package_id: str) -> Optional[PackageResponse]:
         return self.db.query(Package).filter(Package.id == package_id).first()
 
-    def create_package(self, package: PackageCreate) -> PackageResponse:
+    async def create_package(self, package: PackageCreate) -> PackageResponse:
         db_package = Package(**package.model_dump())
         self.db.add(db_package)
         self.db.commit()
         self.db.refresh(db_package)
         return db_package
 
-    def upsert_package(self, package: PackageCreate) -> PackageResponse:
+    async def upsert_package(self, package: PackageCreate) -> PackageResponse:
         db_package = (
             self.db.query(Package)
             .filter(
@@ -45,12 +47,12 @@ class SQLAlchemyPackageRepository(IPackageRepository):
             self.db.commit()
             self.db.refresh(db_package)
             return db_package
-        return self.create_package(package)
+        return await self.create_package(package)
 
-    def update_package(
+    async def update_package(
         self, package_id: str, package: PackageUpdate
     ) -> Optional[PackageResponse]:
-        db_package = self.get_package_by_id(package_id)
+        db_package = await self.get_package_by_id(package_id)
         if not db_package:
             return None
         update_data = package.model_dump(exclude_unset=True)
@@ -60,8 +62,8 @@ class SQLAlchemyPackageRepository(IPackageRepository):
         self.db.refresh(db_package)
         return db_package
 
-    def delete_package(self, package_id: str) -> bool:
-        db_package = self.get_package_by_id(package_id)
+    async def delete_package(self, package_id: str) -> bool:
+        db_package = await self.get_package_by_id(package_id)
         if not db_package:
             return False
         self.db.delete(db_package)
