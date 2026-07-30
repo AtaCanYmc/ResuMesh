@@ -1,10 +1,9 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import ConfigDict
 from resumesh_scrapers.models import GitHubRepositoryModel
 
-
-from typing import Optional
 
 class ProjectBase(GitHubRepositoryModel):
     name: Optional[str] = None
