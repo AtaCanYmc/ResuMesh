@@ -38,3 +38,17 @@ async def get_avatar(filename: str, telemetry_ctx: dict = Depends(get_telemetry_
         raise HTTPException(
             status_code=404, detail=f"Profile picture not found: {str(e)}"
         )
+
+
+@router.get("/{filename}/url")
+async def get_avatar_url(
+    filename: str, telemetry_ctx: dict = Depends(get_telemetry_data)
+):
+    try:
+        storage = SupabaseStorageService()
+        public_url = storage.get_avatar_public_url(filename)
+        return {"filename": filename, "url": public_url}
+    except Exception as e:
+        raise HTTPException(
+            status_code=404, detail=f"Failed to get avatar URL: {str(e)}"
+        )
