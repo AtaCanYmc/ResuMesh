@@ -1,17 +1,16 @@
 from typing import List, Optional
 
-from sqlalchemy.orm import Session
-
 from app.db.repositories import ISkillRepository
 from app.models.skill import Skill
 from app.schemas.skill import SkillCreate, SkillResponse, SkillUpdate
+from sqlalchemy.orm import Session
 
 
 class SQLAlchemySkillRepository(ISkillRepository):
     def __init__(self, db: Session):
         self.db = db
 
-    def get_skills(self, skip: int = 0, limit: int = 100) -> List[SkillResponse]:
+    async def get_skills(self, skip: int = 0, limit: int = 100) -> List[SkillResponse]:
         return (
             self.db.query(Skill)
             .order_by(Skill.category, Skill.name)
@@ -20,20 +19,20 @@ class SQLAlchemySkillRepository(ISkillRepository):
             .all()
         )
 
-    def get_skill_by_id(self, skill_id: str) -> Optional[SkillResponse]:
+    async def get_skill_by_id(self, skill_id: str) -> Optional[SkillResponse]:
         return self.db.query(Skill).filter(Skill.id == skill_id).first()
 
-    def create_skill(self, skill: SkillCreate) -> SkillResponse:
+    async def create_skill(self, skill: SkillCreate) -> SkillResponse:
         db_skill = Skill(**skill.model_dump())
         self.db.add(db_skill)
         self.db.commit()
         self.db.refresh(db_skill)
         return db_skill
 
-    def update_skill(
+    async def update_skill(
         self, skill_id: str, skill: SkillUpdate
     ) -> Optional[SkillResponse]:
-        db_skill = self.get_skill_by_id(skill_id)
+        db_skill = await self.get_skill_by_id(skill_id)
         if not db_skill:
             return None
         update_data = skill.model_dump(exclude_unset=True)
@@ -43,8 +42,8 @@ class SQLAlchemySkillRepository(ISkillRepository):
         self.db.refresh(db_skill)
         return db_skill
 
-    def delete_skill(self, skill_id: str) -> bool:
-        db_skill = self.get_skill_by_id(skill_id)
+    async def delete_skill(self, skill_id: str) -> bool:
+        db_skill = await self.get_skill_by_id(skill_id)
         if not db_skill:
             return False
         self.db.delete(db_skill)
