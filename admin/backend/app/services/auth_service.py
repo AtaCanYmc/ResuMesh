@@ -29,15 +29,6 @@ async def get_current_admin(
 
     Extracts user info directly from the JWT payload — no local database lookup.
     """
-    if not settings.ENABLE_ADMIN_WORKSPACE:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=(
-                "Admin panel operations are disabled "
-                "on this environment/instance to save resources."
-            ),
-        )
-
     token = request.cookies.get("access_token") or token_from_header
     if not token:
         logger.warning(

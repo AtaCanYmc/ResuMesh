@@ -40,6 +40,8 @@ def _build_response(raw: dict) -> dict:
         "marquee": raw.get("marquee"),
         "en": raw.get("en"),
         "tr": raw.get("tr"),
+        "integrations": raw.get("integrations"),
+        "llm": raw.get("llm"),
     }
 
 
@@ -86,6 +88,10 @@ def update_settings(
         set_setting(db, key, value, commit=False)
 
     db.commit()
+
+    from app.llm.factory import reset_llm_client
+
+    reset_llm_client()
 
     if app_settings.DEPLOY_WEBHOOK_URL:
         background_tasks.add_task(trigger_redeploy_webhook)

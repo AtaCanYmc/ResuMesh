@@ -46,7 +46,7 @@ class LinkedInPDFParser:
 
     @staticmethod
     async def parse_with_llm(
-            raw_text: str, llm_client: Any
+        raw_text: str, llm_client: Any
     ) -> LinkedInProfileDataSchema:
         """Sends the extracted raw text to the project's LLM layer
         and parses it into the schema."""

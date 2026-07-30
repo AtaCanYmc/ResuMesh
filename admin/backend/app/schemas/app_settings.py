@@ -10,6 +10,8 @@ class AppSettingsBase(BaseModel):
     marquee: Optional[List[str]] = None
     en: Optional[Dict[str, Any]] = None
     tr: Optional[Dict[str, Any]] = None
+    integrations: Optional[Dict[str, Any]] = None
+    llm: Optional[Dict[str, Any]] = None
 
 
 class AppSettingsCreate(AppSettingsBase):
@@ -25,6 +27,8 @@ class AppSettingsUpdate(BaseModel):
     marquee: Optional[List[str]] = None
     en: Optional[Dict[str, Any]] = None
     tr: Optional[Dict[str, Any]] = None
+    integrations: Optional[Dict[str, Any]] = None
+    llm: Optional[Dict[str, Any]] = None
 
 
 class AppSettingsResponse(AppSettingsBase):

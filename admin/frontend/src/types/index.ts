@@ -175,6 +175,20 @@ export interface LanguageContent {
   metrics: MetricItem[];
 }
 
+export interface IntegrationsConfig {
+  github_username?: string;
+  medium_username?: string;
+  devto_username?: string;
+}
+
+export interface LlmConfig {
+  provider?: string;
+  openai_model?: string;
+  groq_model?: string;
+  ollama_base_url?: string;
+  ollama_model?: string;
+}
+
 export interface AppSettings {
   sections?: SectionVisibility;
   socials?: SocialItem[];
@@ -182,4 +196,6 @@ export interface AppSettings {
   marquee?: string[];
   en?: LanguageContent;
   tr?: LanguageContent;
+  integrations?: IntegrationsConfig;
+  llm?: LlmConfig;
 }

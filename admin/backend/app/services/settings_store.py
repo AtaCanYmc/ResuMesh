@@ -160,11 +160,27 @@ DEFAULT_TR: Dict[str, Any] = {
 
 DEFAULT_FOOTER: Dict[str, Any] = {"email": "atacanymc@gmail.com"}
 
+DEFAULT_INTEGRATIONS: Dict[str, Any] = {
+    "github_username": "AtaCanYmc",
+    "medium_username": "atacanymc",
+    "devto_username": "atacanymc",
+}
+
+DEFAULT_LLM: Dict[str, Any] = {
+    "provider": "mock",
+    "openai_model": "gpt-4o",
+    "groq_model": "llama-3.3-70b-versatile",
+    "ollama_base_url": "http://localhost:11434",
+    "ollama_model": "llama3",
+}
+
 KV_DEFAULTS: Dict[str, Any] = {
     "footer": DEFAULT_FOOTER,
     "marquee": DEFAULT_MARQUEE,
     "en": DEFAULT_EN,
     "tr": DEFAULT_TR,
+    "integrations": DEFAULT_INTEGRATIONS,
+    "llm": DEFAULT_LLM,
 }
 
 DEFAULTS: Dict[str, Any] = {
