@@ -222,7 +222,7 @@ class IngestionService:
                     watchers=item.stats_views,
                     forks=0,
                     languages=[],
-                    tags=item.tags or []
+                    tags=item.tags or [],
                 )
                 await provider.upsert_project(proj)
         except ScraperError as exc:

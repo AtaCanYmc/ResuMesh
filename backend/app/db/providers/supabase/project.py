@@ -21,9 +21,9 @@ class SupabaseProjectRepository(IProjectRepository):
             project_data["watchers"] = getattr(project, "watchers_count", 0)
         if "forks" not in project_data or not project_data["forks"]:
             project_data["forks"] = getattr(project, "forks_count", 0)
-        if (
-            "url" not in project_data or not project_data["url"]
-        ) and getattr(project, "url", None):
+        if ("url" not in project_data or not project_data["url"]) and getattr(
+            project, "url", None
+        ):
             project_data["url"] = str(getattr(project, "url"))
 
         if "url" in project_data and project_data["url"]:
@@ -37,7 +37,7 @@ class SupabaseProjectRepository(IProjectRepository):
             "watchers",
             "forks",
             "languages",
-            "tags"
+            "tags",
         }
         project_data = {k: v for k, v in project_data.items() if k in valid_keys}
 
@@ -79,9 +79,9 @@ class SupabaseProjectRepository(IProjectRepository):
             project_data["watchers"] = getattr(project, "watchers_count", 0)
         if "forks" not in project_data or not project_data["forks"]:
             project_data["forks"] = getattr(project, "forks_count", 0)
-        if (
-            "url" not in project_data or not project_data["url"]
-        ) and getattr(project, "url", None):
+        if ("url" not in project_data or not project_data["url"]) and getattr(
+            project, "url", None
+        ):
             project_data["url"] = str(getattr(project, "url"))
 
         if "url" in project_data and project_data["url"]:
@@ -95,15 +95,13 @@ class SupabaseProjectRepository(IProjectRepository):
             "watchers",
             "forks",
             "languages",
-            "tags"
+            "tags",
         }
         project_data = {k: v for k, v in project_data.items() if k in valid_keys}
 
         url = project_data.get("url")
         if url:
-            query = (
-                self.client.table("projects").select("*").eq("url", url)
-            )
+            query = self.client.table("projects").select("*").eq("url", url)
         else:
             query = (
                 self.client.table("projects")
