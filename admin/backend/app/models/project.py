@@ -1,7 +1,7 @@
 import uuid
 
 from sqlalchemy import Column, DateTime, Index, Integer, String, Text, func
-from sqlalchemy.dialects.postgresql import ARRAY, JSONB
+from sqlalchemy.dialects.postgresql import ARRAY
 
 from app.config.database import Base
 
@@ -14,7 +14,7 @@ class Project(Base):
     )
     title = Column(String(255), nullable=False, index=True)
     description = Column(Text, nullable=True)
-    github_url = Column(String(512), nullable=True)
+    url = Column(String(512), nullable=True)
     stars = Column(Integer, default=0)
     watchers = Column(Integer, default=0)
     forks = Column(Integer, default=0)
@@ -22,7 +22,6 @@ class Project(Base):
     # Python mapping for PostgreSQL ARRAY and JSONB types
     languages = Column(ARRAY(String), default=[])
     tags = Column(ARRAY(String), default=[])
-    raw_github_data = Column(JSONB, nullable=True)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(

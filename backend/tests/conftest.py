@@ -320,7 +320,7 @@ class MockSearchRepository(ISearchRepository):
                 or (q in p_langs)
                 or (q in p_tags)
             ):
-                url_val = str(p.github_url) if p.github_url else None
+                url_val = str(p.url) if p.url else None
                 projects.append(
                     SearchResultItem(
                         id=p.id,

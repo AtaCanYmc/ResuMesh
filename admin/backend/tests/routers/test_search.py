@@ -10,7 +10,7 @@ async def test_global_search(client, mock_provider):
         ProjectCreate(
             title="React Portfolio",
             description="A cool portfolio built with React",
-            github_url="http://test.com",
+            url="http://test.com",
             languages=["React"],
         )
     )

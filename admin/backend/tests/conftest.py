@@ -106,8 +106,8 @@ class MockProjectRepository(IProjectRepository):
             data["watchers"] = getattr(project, "watchers_count", 0)
         if "forks" not in data or not data["forks"]:
             data["forks"] = getattr(project, "forks_count", 0)
-        if "github_url" in data and data["github_url"]:
-            data["github_url"] = str(data["github_url"])
+        if "url" in data and data["url"]:
+            data["url"] = str(data["url"])
         data["id"] = str(uuid.uuid4())
         data["created_at"] = datetime.now(timezone.utc)
         data["updated_at"] = datetime.now(timezone.utc)
@@ -128,8 +128,8 @@ class MockProjectRepository(IProjectRepository):
                     data["watchers"] = getattr(project, "watchers_count", 0)
                 if "forks" not in data or not data["forks"]:
                     data["forks"] = getattr(project, "forks_count", 0)
-                if "github_url" in data and data["github_url"]:
-                    data["github_url"] = str(data["github_url"])
+                if "url" in data and data["url"]:
+                    data["url"] = str(data["url"])
                 data["id"] = p.id
                 data["created_at"] = p.created_at
                 data["updated_at"] = datetime.now(timezone.utc)
@@ -145,7 +145,7 @@ class MockProjectRepository(IProjectRepository):
             if p.id == project_id:
                 data = p.model_dump()
                 for k, v in project_update.model_dump(exclude_unset=True).items():
-                    if k == "github_url" and v:
+                    if k == "url" and v:
                         v = str(v)
                     data[k] = v
                 data["updated_at"] = datetime.now(timezone.utc)
@@ -366,7 +366,7 @@ class MockSearchRepository(ISearchRepository):
                         id=p.id,
                         title=p.title,
                         subtitle=(p.description[:100] if p.description else None),
-                        url=(str(p.github_url) if p.github_url else None),
+                        url=(str(p.url) if p.url else None),
                         tags=p.languages + p.tags,
                     )
                 )

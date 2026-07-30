@@ -2,7 +2,7 @@ export interface Project {
   id: string;
   title: string;
   description?: string;
-  github_url?: string;
+  url?: string;
   languages: string[];
   tags: string[];
   stars: number;

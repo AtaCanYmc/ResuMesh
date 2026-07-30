@@ -62,19 +62,25 @@ const FeaturedProjects: React.FC = () => {
             <motion.div variants={itemVariants} key={project.id} className="h-full">
               <SpotlightCard spotlightColor={getSpotlightColor(project.color)} className="h-full">
                 <a
-                  href={project.url || project.github_url || '#'}
+                  href={project.url || project.url || '#'}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex flex-col h-full p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shadow-sm hover:shadow-md"
+                  className="group flex h-full flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-colors hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-gray-800 dark:bg-gray-900"
                   aria-label={`${project.title} projesine git`}
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="font-bold text-lg text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <div className="mb-4 flex items-start justify-between">
+                    <div className="text-lg font-bold text-gray-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
                       {project.title}
                     </div>
-                    <ExternalLink size={18} className="text-gray-400 group-hover:text-blue-500 transition-colors" aria-hidden="true" />
+                    <ExternalLink
+                      size={18}
+                      className="text-gray-400 transition-colors group-hover:text-blue-500"
+                      aria-hidden="true"
+                    />
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{project.description}</p>
+                  <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+                    {project.description}
+                  </p>
                 </a>
               </SpotlightCard>
             </motion.div>

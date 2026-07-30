@@ -21,24 +21,23 @@ class SupabaseProjectRepository(IProjectRepository):
             project_data["watchers"] = getattr(project, "watchers_count", 0)
         if "forks" not in project_data or not project_data["forks"]:
             project_data["forks"] = getattr(project, "forks_count", 0)
-        if (
-            "github_url" not in project_data or not project_data["github_url"]
-        ) and getattr(project, "url", None):
-            project_data["github_url"] = str(getattr(project, "url"))
+        if ("url" not in project_data or not project_data["url"]) and getattr(
+            project, "url", None
+        ):
+            project_data["url"] = str(getattr(project, "url"))
 
-        if "github_url" in project_data and project_data["github_url"]:
-            project_data["github_url"] = str(project_data["github_url"])
+        if "url" in project_data and project_data["url"]:
+            project_data["url"] = str(project_data["url"])
 
         valid_keys = {
             "title",
             "description",
-            "github_url",
+            "url",
             "stars",
             "watchers",
             "forks",
             "languages",
             "tags",
-            "raw_github_data",
         }
         project_data = {k: v for k, v in project_data.items() if k in valid_keys}
 
@@ -80,32 +79,29 @@ class SupabaseProjectRepository(IProjectRepository):
             project_data["watchers"] = getattr(project, "watchers_count", 0)
         if "forks" not in project_data or not project_data["forks"]:
             project_data["forks"] = getattr(project, "forks_count", 0)
-        if (
-            "github_url" not in project_data or not project_data["github_url"]
-        ) and getattr(project, "url", None):
-            project_data["github_url"] = str(getattr(project, "url"))
+        if ("url" not in project_data or not project_data["url"]) and getattr(
+            project, "url", None
+        ):
+            project_data["url"] = str(getattr(project, "url"))
 
-        if "github_url" in project_data and project_data["github_url"]:
-            project_data["github_url"] = str(project_data["github_url"])
+        if "url" in project_data and project_data["url"]:
+            project_data["url"] = str(project_data["url"])
 
         valid_keys = {
             "title",
             "description",
-            "github_url",
+            "url",
             "stars",
             "watchers",
             "forks",
             "languages",
             "tags",
-            "raw_github_data",
         }
         project_data = {k: v for k, v in project_data.items() if k in valid_keys}
 
-        github_url = project_data.get("github_url")
-        if github_url:
-            query = (
-                self.client.table("projects").select("*").eq("github_url", github_url)
-            )
+        url = project_data.get("url")
+        if url:
+            query = self.client.table("projects").select("*").eq("url", url)
         else:
             query = (
                 self.client.table("projects")
@@ -134,8 +130,8 @@ class SupabaseProjectRepository(IProjectRepository):
         self, project_id: str, project: ProjectUpdate
     ) -> Optional[ProjectResponse]:
         update_data = project.model_dump(mode="json", exclude_unset=True)
-        if "github_url" in update_data and update_data["github_url"] is not None:
-            update_data["github_url"] = str(update_data["github_url"])
+        if "url" in update_data and update_data["url"] is not None:
+            update_data["url"] = str(update_data["url"])
         response = (
             await self.client.table("projects")
             .update(update_data)

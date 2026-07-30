@@ -53,7 +53,7 @@ def seed_mock_data():
                 proj = Project(
                     title=fake.catch_phrase(),
                     description=fake.text(max_nb_chars=300),
-                    github_url=fake.url(),
+                    url=fake.url(),
                     stars=random.randint(0, 1500),
                     watchers=random.randint(0, 200),
                     forks=random.randint(0, 500),

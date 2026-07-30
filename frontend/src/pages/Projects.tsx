@@ -166,7 +166,7 @@ export default function Projects() {
               tags={project.languages || []}
               description={project.description || t('common.noDescription')}
               icon={<Code size={20} />}
-              externalLink={project.github_url || undefined}
+              externalLink={project.url || undefined}
               onClick={() => setSelectedProject(project)}
               footerContent={
                 <>
@@ -224,9 +224,9 @@ export default function Projects() {
                 <GitFork size={18} aria-hidden="true" />
                 <span>{selectedProject.forks || 0} Forks</span>
               </div>
-              {selectedProject.github_url && (
+              {selectedProject.url && (
                 <a
-                  href={selectedProject.github_url}
+                  href={selectedProject.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
