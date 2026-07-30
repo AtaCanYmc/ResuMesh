@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Briefcase } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useEnv } from '../../hooks/useEnv';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
@@ -14,6 +15,7 @@ import { Experience } from '../../types';
 
 export default function AdminExperiences() {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
   const [experienceToDelete, setExperienceToDelete] = useState<Experience | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -22,14 +24,14 @@ export default function AdminExperiences() {
   const { data: experiences = [], isLoading } = useQuery<Experience[]>({
     queryKey: ['admin-experiences'],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/experiences/`);
+      const res = await axios.get(`${ADMIN_API_URL}/api/v1/experiences/`);
       return res.data;
     }
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
-      await axios.delete(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/experiences/${id}`, {
+    mutationFn: async (id: string) => {
+      await axios.delete(`${ADMIN_API_URL}/api/v1/experiences/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
     },

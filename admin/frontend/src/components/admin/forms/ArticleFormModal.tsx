@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../../context/AuthContext';
+import { useEnv } from '../../../hooks/useEnv';
 import Modal from '../../Modal';
 import { Article } from '../../../types';
 
@@ -28,6 +29,7 @@ interface ArticleFormModalProps {
 
 export default function ArticleFormModal({ isOpen, onClose, article }: ArticleFormModalProps) {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ArticleFormData>({
@@ -64,8 +66,8 @@ export default function ArticleFormModal({ isOpen, onClose, article }: ArticleFo
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
       const url = article
-        ? `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/articles/${article.id}`
-        : `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/articles/`;
+        ? `${ADMIN_API_URL}/api/v1/articles/${article.id}`
+        : `${ADMIN_API_URL}/api/v1/articles/`;
       const method = article ? 'put' : 'post';
       await axios({
         method,

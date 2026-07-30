@@ -5,14 +5,16 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import { useAuth } from '../../context/AuthContext';
+import { useEnv } from '../../hooks/useEnv';
 
 export default function AdminOverview() {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
 
   const refreshMutation = useMutation({
     mutationFn: async () => {
-      await axios.post(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/admin/refresh-data`, {}, {
+      await axios.post(`${ADMIN_API_URL}/api/v1/admin/refresh-data`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
     },

@@ -6,26 +6,19 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../../context/AuthContext';
+import { useEnv } from '../../../hooks/useEnv';
 import Modal from '../../Modal';
 import { Education } from '../../../types';
 
 const educationSchema = z.object({
   school: z.string().min(1, 'School is required'),
   degree: z.string().min(1, 'Degree is required'),
-  field_of_study: z.string().min(1, 'Field of study is required'),
+  field_of_study: z.string().optional(),
   start_date: z.string().min(1, 'Start date is required'),
   end_date: z.string().optional(),
   is_current: z.boolean().default(false),
   grade: z.string().optional(),
   description: z.string().optional(),
-}).refine((data) => {
-  if (!data.is_current && data.end_date) {
-    return new Date(data.end_date) >= new Date(data.start_date);
-  }
-  return true;
-}, {
-  message: "End date cannot be before start date",
-  path: ["end_date"],
 });
 
 type EducationFormData = z.infer<typeof educationSchema>;
@@ -38,13 +31,11 @@ interface EducationFormModalProps {
 
 export default function EducationFormModal({ isOpen, onClose, education }: EducationFormModalProps) {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
 
-  const { register, handleSubmit, watch, reset, formState: { errors } } = useForm<EducationFormData>({
+  const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<EducationFormData>({
     resolver: zodResolver(educationSchema),
-    defaultValues: {
-      is_current: false
-    }
   });
 
   const isCurrent = watch('is_current');
@@ -55,9 +46,9 @@ export default function EducationFormModal({ isOpen, onClose, education }: Educa
       reset({
         school: education.school,
         degree: education.degree,
-        field_of_study: education.field_of_study,
+        field_of_study: education.field_of_study || '',
         start_date: formatDate(education.start_date),
-        end_date: formatDate(education.end_date) || '',
+        end_date: formatDate(education.end_date),
         is_current: education.is_current || false,
         grade: education.grade || '',
         description: education.description || '',
@@ -79,8 +70,8 @@ export default function EducationFormModal({ isOpen, onClose, education }: Educa
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
       const url = education
-        ? `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/educations/${education.id}`
-        : `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/educations/`;
+        ? `${ADMIN_API_URL}/api/v1/educations/${education.id}`
+        : `${ADMIN_API_URL}/api/v1/educations/`;
       const method = education ? 'put' : 'post';
       await axios({
         method,

@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Award } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useEnv } from '../../hooks/useEnv';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
@@ -14,22 +15,23 @@ import { Certificate } from '../../types';
 
 export default function AdminCertificates() {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
-  const [certificateToDelete, setCertificateToDelete] = useState<Certificate | null>(null);
+  const [certToDelete, setCertToDelete] = useState<Certificate | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [certificateToEdit, setCertificateToEdit] = useState<Certificate | null>(null);
+  const [certToEdit, setCertToEdit] = useState<Certificate | null>(null);
 
   const { data: certificates = [], isLoading } = useQuery<Certificate[]>({
     queryKey: ['admin-certificates'],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/certificates/`);
+      const res = await axios.get(`${ADMIN_API_URL}/api/v1/certificates/`);
       return res.data;
     }
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
-      await axios.delete(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/certificates/${id}`, {
+    mutationFn: async (id: string) => {
+      await axios.delete(`${ADMIN_API_URL}/api/v1/certificates/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
     },

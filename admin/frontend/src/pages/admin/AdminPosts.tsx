@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Share2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useEnv } from '../../hooks/useEnv';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
@@ -14,6 +15,7 @@ import { Post } from '../../types';
 
 export default function AdminPosts() {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
   const [postToDelete, setPostToDelete] = useState<Post | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -23,7 +25,7 @@ export default function AdminPosts() {
     queryKey: ['admin-posts'],
     queryFn: async () => {
       const res = await axios.get(
-        `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/posts/`
+        `${ADMIN_API_URL}/api/v1/posts/`
       );
       return res.data;
     }
@@ -32,7 +34,7 @@ export default function AdminPosts() {
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       await axios.delete(
-        `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/posts/${id}`,
+        `${ADMIN_API_URL}/api/v1/posts/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }

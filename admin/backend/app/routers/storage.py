@@ -44,7 +44,7 @@ async def list_storage_files(
 
     try:
         storage = SupabaseStorageService()
-        files = await storage.client.storage.from_(bucket).list()
+        files = await storage.client.storage.from_(bucket).list("")
 
         result = []
         for f in files:

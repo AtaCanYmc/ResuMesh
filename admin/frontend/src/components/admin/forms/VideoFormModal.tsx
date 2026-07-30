@@ -6,19 +6,20 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../../context/AuthContext';
+import { useEnv } from '../../../hooks/useEnv';
 import Modal from '../../Modal';
 import { Video } from '../../../types';
 
-const videoSchema = z.object({
+const schema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
   platform: z.string().min(1, 'Platform is required'),
   url: z.string().url('Must be a valid URL'),
-  thumbnail: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-  profile: z.string().min(1, 'Profile is required'),
+  thumbnail: z.string().url('Must be a valid URL').or(z.literal('')).optional(),
+  profile: z.string().optional(),
 });
 
-type VideoFormData = z.infer<typeof videoSchema>;
+type VideoFormData = z.infer<typeof schema>;
 
 interface VideoFormModalProps {
   isOpen: boolean;
@@ -28,23 +29,24 @@ interface VideoFormModalProps {
 
 export default function VideoFormModal({ isOpen, onClose, video }: VideoFormModalProps) {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<VideoFormData>({
-    resolver: zodResolver(videoSchema),
+    resolver: zodResolver(schema),
   });
 
   useEffect(() => {
-    if (video && isOpen) {
+    if (video) {
       reset({
         title: video.title,
         description: video.description || '',
-        platform: video.platform,
-        url: video.url,
+        platform: video.platform || 'youtube',
+        url: video.url || '',
         thumbnail: video.thumbnail || '',
-        profile: video.profile,
+        profile: video.profile || '',
       });
-    } else if (isOpen) {
+    } else {
       reset({
         title: '',
         description: '',
@@ -58,7 +60,7 @@ export default function VideoFormModal({ isOpen, onClose, video }: VideoFormModa
 
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
-      const apiUrl = `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/videos/`;
+      const apiUrl = `${ADMIN_API_URL}/api/v1/videos/`;
       const url = video ? `${apiUrl}${video.id}` : apiUrl;
       const method = video ? 'put' : 'post';
       await axios({

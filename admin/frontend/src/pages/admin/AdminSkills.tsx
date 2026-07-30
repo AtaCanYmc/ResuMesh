@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Wand2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useEnv } from '../../hooks/useEnv';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import DataTable from '../../components/admin/DataTable';
 import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal';
@@ -14,6 +15,7 @@ import { Skill } from '../../types';
 
 export default function AdminSkills() {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
   const [skillToDelete, setSkillToDelete] = useState<Skill | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -22,14 +24,14 @@ export default function AdminSkills() {
   const { data: skills = [], isLoading } = useQuery<Skill[]>({
     queryKey: ['admin-skills'],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/skills/`);
+      const res = await axios.get(`${ADMIN_API_URL}/api/v1/skills/`);
       return res.data;
     }
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
-      await axios.delete(`${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/skills/${id}`, {
+    mutationFn: async (id: string) => {
+      await axios.delete(`${ADMIN_API_URL}/api/v1/skills/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
     },

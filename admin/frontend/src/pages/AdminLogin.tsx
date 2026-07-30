@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ShieldAlert, Loader2, KeyRound } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useEnv } from '../hooks/useEnv';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -17,10 +18,11 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-const AdminLogin: React.FC = () => {
-  const [error, setError] = useState<string | null>(null);
+export default function AdminLogin() {
   const { login } = useAuth();
+  const { SUPABASE_URL, ADMIN_API_URL } = useEnv();
   const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
 
   const {
     register,
@@ -34,10 +36,10 @@ const AdminLogin: React.FC = () => {
     setError(null);
 
     // Fallback: if Supabase config is missing, fall back to backend login (useful for tests)
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+    const supabaseUrl = SUPABASE_URL || '';
     if (!supabaseUrl) {
       try {
-        const apiUrl = import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001';
+        const apiUrl = ADMIN_API_URL || 'http://localhost:8001';
         const formData = new URLSearchParams();
         formData.append('username', data.username);
         formData.append('password', data.password);
@@ -152,6 +154,4 @@ const AdminLogin: React.FC = () => {
       </div>
     </div>
   );
-};
-
-export default AdminLogin;
+}

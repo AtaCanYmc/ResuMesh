@@ -6,18 +6,19 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../../context/AuthContext';
+import { useEnv } from '../../../hooks/useEnv';
 import Modal from '../../Modal';
 import { Certificate } from '../../../types';
 
-const certificateSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  issuing_organization: z.string().optional(),
+const schema = z.object({
+  name: z.string().min(1, 'Certificate name is required'),
+  issuing_organization: z.string().min(1, 'Issuing organization is required'),
   issue_date: z.string().optional(),
   credential_id: z.string().optional(),
-  credential_url: z.union([z.literal(''), z.string().url('Invalid URL')]).optional(),
+  credential_url: z.string().url('Must be a valid URL').or(z.literal('')).optional(),
 });
 
-type CertificateFormData = z.infer<typeof certificateSchema>;
+type CertificateFormData = z.infer<typeof schema>;
 
 interface CertificateFormModalProps {
   isOpen: boolean;
@@ -27,23 +28,23 @@ interface CertificateFormModalProps {
 
 export default function CertificateFormModal({ isOpen, onClose, certificate }: CertificateFormModalProps) {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<CertificateFormData>({
-    resolver: zodResolver(certificateSchema),
+    resolver: zodResolver(schema),
   });
 
   useEffect(() => {
-    if (certificate && isOpen) {
-      const formatDate = (dateString?: string) => dateString ? dateString.split('T')[0] : '';
+    if (certificate) {
       reset({
         name: certificate.name,
-        issuing_organization: certificate.issuing_organization || '',
-        issue_date: formatDate(certificate.issue_date),
+        issuing_organization: certificate.issuing_organization,
+        issue_date: certificate.issue_date ? certificate.issue_date.slice(0, 10) : '',
         credential_id: certificate.credential_id || '',
         credential_url: certificate.credential_url || '',
       });
-    } else if (isOpen) {
+    } else {
       reset({
         name: '',
         issuing_organization: '',
@@ -57,8 +58,8 @@ export default function CertificateFormModal({ isOpen, onClose, certificate }: C
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
       const url = certificate
-        ? `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/certificates/${certificate.id}`
-        : `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/certificates/`;
+        ? `${ADMIN_API_URL}/api/v1/certificates/${certificate.id}`
+        : `${ADMIN_API_URL}/api/v1/certificates/`;
       const method = certificate ? 'put' : 'post';
       await axios({
         method,

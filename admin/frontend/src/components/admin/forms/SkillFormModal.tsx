@@ -6,16 +6,17 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../../context/AuthContext';
+import { useEnv } from '../../../hooks/useEnv';
 import Modal from '../../Modal';
 import { Skill } from '../../../types';
 
-const skillSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
+const schema = z.object({
+  name: z.string().min(1, 'Skill name is required'),
   category: z.string().min(1, 'Category is required'),
   icon_name: z.string().optional(),
 });
 
-type SkillFormData = z.infer<typeof skillSchema>;
+type SkillFormData = z.infer<typeof schema>;
 
 interface SkillFormModalProps {
   isOpen: boolean;
@@ -25,23 +26,24 @@ interface SkillFormModalProps {
 
 export default function SkillFormModal({ isOpen, onClose, skill }: SkillFormModalProps) {
   const { token } = useAuth();
+  const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<SkillFormData>({
-    resolver: zodResolver(skillSchema),
+    resolver: zodResolver(schema),
   });
 
   useEffect(() => {
-    if (skill && isOpen) {
+    if (skill) {
       reset({
         name: skill.name,
         category: skill.category,
         icon_name: skill.icon_name || '',
       });
-    } else if (isOpen) {
+    } else {
       reset({
         name: '',
-        category: '',
+        category: 'Backend',
         icon_name: '',
       });
     }
@@ -50,8 +52,8 @@ export default function SkillFormModal({ isOpen, onClose, skill }: SkillFormModa
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
       const url = skill
-        ? `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/skills/${skill.id}`
-        : `${import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001'}/api/v1/skills/`;
+        ? `${ADMIN_API_URL}/api/v1/skills/${skill.id}`
+        : `${ADMIN_API_URL}/api/v1/skills/`;
       const method = skill ? 'put' : 'post';
       await axios({
         method,

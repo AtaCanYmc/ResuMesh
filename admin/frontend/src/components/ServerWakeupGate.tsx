@@ -2,18 +2,20 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Loader2, Server } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useEnv } from '../hooks/useEnv';
 
 interface ServerWakeupGateProps {
   children: React.ReactNode;
 }
 
 const ServerWakeupGate: React.FC<ServerWakeupGateProps> = ({ children }) => {
+  const { ADMIN_API_URL } = useEnv();
   const [isAwake, setIsAwake] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [dots, setDots] = useState<string>('');
   const { t } = useTranslation();
 
-  const apiUrl = import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8001';
+  const apiUrl = ADMIN_API_URL;
 
   useEffect(() => {
     let intervalId: any;
