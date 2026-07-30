@@ -37,7 +37,12 @@ class SupabaseProjectRepository(IProjectRepository):
         response = (
             await self.client.table("projects").select("*").range(start, end).execute()
         )
-        return [ProjectResponse(**item) for item in response.data]
+        results = []
+        for item in response.data:
+            if "name" not in item or not item["name"]:
+                item["name"] = item.get("title", "")
+            results.append(ProjectResponse(**item))
+        return results
 
     async def get_project_by_id(self, project_id: str) -> Optional[ProjectResponse]:
         response = (
@@ -48,7 +53,10 @@ class SupabaseProjectRepository(IProjectRepository):
         )
         if not response.data:
             return None
-        return ProjectResponse(**response.data[0])
+        item = response.data[0]
+        if "name" not in item or not item["name"]:
+            item["name"] = item.get("title", "")
+        return ProjectResponse(**item)
 
     async def upsert_project(self, project: ProjectCreate) -> ProjectResponse:
         project_data = project.model_dump(mode="json")
