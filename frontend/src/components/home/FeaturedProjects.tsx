@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Star, GitFork } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import SpotlightCard from '../ui/SpotlightCard';
@@ -58,23 +58,39 @@ const FeaturedProjects: React.FC = () => {
             }
           };
 
+          const stars = project.stars ?? project.stargazers_count ?? 0;
+          const forks = project.forks ?? project.forks_count ?? 0;
+
           return (
             <motion.div variants={itemVariants} key={project.id} className="h-full">
               <SpotlightCard spotlightColor={getSpotlightColor(project.color)} className="h-full">
                 <a
-                  href={project.url || '#'}
+                  href={project.url || project.html_url || '#'}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex flex-col h-full p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shadow-sm hover:shadow-md"
+                  className="group flex flex-col justify-between h-full p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shadow-sm hover:shadow-md"
                   aria-label={`${project.name || project.title} projesine git`}
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="font-bold text-lg text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                      {project.name || project.title}
+                  <div>
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="font-bold text-lg text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {project.name || project.title}
+                      </div>
+                      <ExternalLink size={18} className="text-gray-400 group-hover:text-blue-500 transition-colors" aria-hidden="true" />
                     </div>
-                    <ExternalLink size={18} className="text-gray-400 group-hover:text-blue-500 transition-colors" aria-hidden="true" />
+                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{project.description}</p>
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{project.description}</p>
+
+                  <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800/60 flex items-center gap-4 text-xs font-medium text-gray-500 dark:text-gray-400">
+                    <span className="flex items-center gap-1">
+                      <Star size={14} className="text-amber-500 fill-amber-500/20" aria-hidden="true" />
+                      {stars}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <GitFork size={14} className="text-blue-500" aria-hidden="true" />
+                      {forks}
+                    </span>
+                  </div>
                 </a>
               </SpotlightCard>
             </motion.div>
