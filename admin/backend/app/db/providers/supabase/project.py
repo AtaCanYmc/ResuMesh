@@ -11,24 +11,6 @@ class SupabaseProjectRepository(IProjectRepository):
 
     async def create_project(self, project: ProjectCreate) -> ProjectResponse:
         project_data = project.model_dump(mode="json")
-        if "title" not in project_data or not project_data["title"]:
-            project_data["title"] = getattr(project, "name", None) or getattr(
-                project, "title", ""
-            )
-        if "stars" not in project_data or not project_data["stars"]:
-            project_data["stars"] = getattr(project, "stargazers_count", 0)
-        if "watchers" not in project_data or not project_data["watchers"]:
-            project_data["watchers"] = getattr(project, "watchers_count", 0)
-        if "forks" not in project_data or not project_data["forks"]:
-            project_data["forks"] = getattr(project, "forks_count", 0)
-        if ("url" not in project_data or not project_data["url"]) and getattr(
-            project, "url", None
-        ):
-            project_data["url"] = str(getattr(project, "url"))
-
-        if "url" in project_data and project_data["url"]:
-            project_data["url"] = str(project_data["url"])
-
         valid_keys = {
             "title",
             "description",
