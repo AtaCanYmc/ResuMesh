@@ -17,9 +17,9 @@ export default function AdminCertificates() {
   const { token } = useAuth();
   const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
-  const [certToDelete, setCertToDelete] = useState<Certificate | null>(null);
+  const [certificateToDelete, setCertificateToDelete] = useState<Certificate | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [certToEdit, setCertToEdit] = useState<Certificate | null>(null);
+  const [certificateToEdit, setCertificateToEdit] = useState<Certificate | null>(null);
 
   const { data: certificates = [], isLoading } = useQuery<Certificate[]>({
     queryKey: ['admin-certificates'],

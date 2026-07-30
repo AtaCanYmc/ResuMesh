@@ -17,9 +17,9 @@ export default function AdminProjects() {
   const { token } = useAuth();
   const { ADMIN_API_URL } = useEnv();
   const queryClient = useQueryClient();
-  const [projToDelete, setProjToDelete] = useState<Project | null>(null);
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [projToEdit, setProjToEdit] = useState<Project | null>(null);
+  const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
 
   // Read
   const { data: projects = [], isLoading } = useQuery<Project[]>({
@@ -40,11 +40,11 @@ export default function AdminProjects() {
     onSuccess: () => {
       toast.success('Project deleted successfully.');
       queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
-      setProjToDelete(null);
+      setProjectToDelete(null);
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.detail || 'Failed to delete project.');
-      setProjToDelete(null);
+      setProjectToDelete(null);
     }
   });
 

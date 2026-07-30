@@ -30,7 +30,7 @@ export default function AdminEducations() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
+    mutationFn: async (id: string) => {
       await axios.delete(`${ADMIN_API_URL}/api/v1/educations/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
