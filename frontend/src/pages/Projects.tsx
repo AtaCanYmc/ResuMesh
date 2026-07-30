@@ -77,7 +77,7 @@ export default function Projects() {
       case 'date_asc':
         return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
       case 'alphabetical':
-        return a.title.localeCompare(b.title);
+        return (a.name || a.title || '').localeCompare(b.name || b.title || '');
       default:
         return 0;
     }
@@ -162,7 +162,7 @@ export default function Projects() {
           sortedProjects.map((project) => (
             <ContentCard
               key={project.id}
-              title={project.title}
+              title={project.name || project.title || ''}
               tags={project.languages || []}
               description={project.description || t('common.noDescription')}
               icon={<Code size={20} />}
@@ -199,7 +199,7 @@ export default function Projects() {
       <Modal
         isOpen={!!selectedProject}
         onClose={() => setSelectedProject(null)}
-        title={selectedProject?.title}
+        title={selectedProject?.name || selectedProject?.title}
       >
         {selectedProject && (
           <div className="space-y-6">
