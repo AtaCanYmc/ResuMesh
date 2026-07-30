@@ -1,19 +1,35 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl
+from pydantic import ConfigDict
+from resumesh_scrapers.models import GitHubRepositoryModel
 
 
-class ProjectBase(BaseModel):
-    title: str
-    description: Optional[str] = None
-    url: Optional[HttpUrl] = None
-    stars: int = 0
-    watchers: int = 0
-    forks: int = 0
-    languages: List[str] = Field(default_factory=list)
-    tags: List[str] = Field(default_factory=list)
-    created_at: Optional[datetime] = None
+class ProjectBase(GitHubRepositoryModel):
+    name: Optional[str] = None
+    title: Optional[str] = None
+
+    def model_post_init(self, __context):
+        if not self.name and self.title:
+            self.name = self.title
+        elif not self.title and self.name:
+            self.title = self.name
+
+    @property
+    def stars(self) -> int:
+        return self.stargazers_count
+
+    @property
+    def watchers(self) -> int:
+        return self.watchers_count
+
+    @property
+    def forks(self) -> int:
+        return self.forks_count
+
+    @property
+    def url(self) -> Optional[str]:
+        return self.html_url
 
 
 class ProjectCreate(ProjectBase):

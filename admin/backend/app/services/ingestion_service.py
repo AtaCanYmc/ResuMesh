@@ -5,7 +5,7 @@ Orchestrates platform scraper services and saves the fetched data
 to the database via the repository layer.
 """
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from resumesh_scrapers import IScraperService
 from resumesh_scrapers.exceptions import ScraperError
@@ -47,10 +47,7 @@ class IngestionService:
                 log_repo,
                 platform_name,
                 f"{platform_name} scraper error: {exc}",
-                {
-                    "username": username,
-                    "status_code": getattr(exc, "status_code", None),
-                },
+                username,
             )
 
     async def fetch_github_repos(
@@ -58,25 +55,48 @@ class IngestionService:
         scraper: IScraperService,
         username: str,
         provider: IProjectRepository,
-        pat: str | None = None,
+        pat: Optional[str] = None,
         include_forks: bool = False,
     ):
         """Fetches GitHub repositories and saves via provider."""
-        await self._execute_scraper(
-            scraper,
-            provider.upsert_project,
-            "GITHUB",
-            username,
-            pat=pat,
-            include_forks=include_forks,
-        )
+        try:
+            items = await scraper.fetch_data(
+                username, pat=pat, include_forks=include_forks
+            )
+            for item in items:
+                proj = ProjectCreate(
+                    title=getattr(item, "name", None) or getattr(item, "title", ""),
+                    description=getattr(item, "description", None),
+                    url=getattr(item, "html_url", None) or getattr(item, "url", None),
+                    stars=getattr(item, "stargazers_count", 0)
+                    or getattr(item, "stars", 0),
+                    watchers=getattr(item, "watchers_count", 0)
+                    or getattr(item, "watchers", 0),
+                    forks=getattr(item, "forks_count", 0) or getattr(item, "forks", 0),
+                    languages=(
+                        [item.language]
+                        if getattr(item, "language", None)
+                        else getattr(item, "languages", [])
+                    ),
+                    tags=getattr(item, "tags", []),
+                    created_at=getattr(item, "created_at", None),
+                )
+                await provider.upsert_project(proj)
+        except ScraperError as exc:
+            log_repo = self.log_provider or provider
+            await LogService.warning(
+                log_repo,
+                "GITHUB",
+                f"GITHUB scraper error: {exc}",
+                username,
+            )
 
     async def fetch_devto_articles(
         self,
         scraper: IScraperService,
         username: str,
         provider: IArticleRepository,
-        api_key: str | None = None,
+        api_key: Optional[str] = None,
     ):
         """Fetches Dev.to articles and saves via provider."""
         await self._execute_scraper(
@@ -125,7 +145,7 @@ class IngestionService:
                 log_repo,
                 "PYPI",
                 f"PYPI scraper error: {exc}",
-                {"username": username},
+                username,
             )
 
     async def fetch_npm_packages(
@@ -159,7 +179,7 @@ class IngestionService:
                 log_repo,
                 "NPM",
                 f"NPM scraper error: {exc}",
-                {"username": username},
+                username,
             )
 
     async def fetch_substack_articles(
@@ -197,7 +217,7 @@ class IngestionService:
                 log_repo,
                 "SUBSTACK",
                 f"SUBSTACK scraper error: {exc}",
-                {"username": username},
+                username,
             )
 
     async def fetch_behance_projects(
@@ -205,7 +225,7 @@ class IngestionService:
         scraper: IScraperService,
         username: str,
         provider: IProjectRepository,
-        api_key: str | None = None,
+        api_key: Optional[str] = None,
     ):
         """Fetches Behance projects and saves them via provider."""
         try:
@@ -231,7 +251,7 @@ class IngestionService:
                 log_repo,
                 "BEHANCE",
                 f"BEHANCE scraper error: {exc}",
-                {"username": username},
+                username,
             )
 
     async def import_linkedin_data(
