@@ -37,7 +37,7 @@ class SupabaseStorageService:
     async def list_cvs(self):
         """Lists files in the cv-pdfs bucket."""
         try:
-            res = await self.client.storage.from_(self.bucket_name).list()
+            res = await self.client.storage.from_(self.bucket_name).list("")
             return res
         except Exception as e:
             raise Exception(f"Failed to list CVs: {str(e)}")
