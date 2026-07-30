@@ -72,6 +72,11 @@ export default function AdminProjects() {
     { header: 'Description', accessorKey: 'description', cell: (p: Project) => <span className="line-clamp-1">{p.description || '-'}</span> },
     { header: 'Stars', accessorKey: 'stars' },
     { header: 'Forks', accessorKey: 'forks' },
+    {
+      header: 'Created At',
+      accessorKey: 'created_at',
+      cell: (p: Project) => p.created_at ? new Date(p.created_at).toLocaleDateString() : '-'
+    },
   ];
 
   const handleEdit = (project: Project) => {
