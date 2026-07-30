@@ -38,6 +38,7 @@ class SupabaseProjectRepository(IProjectRepository):
             "forks",
             "languages",
             "tags",
+            "created_at",
         }
         project_data = {k: v for k, v in project_data.items() if k in valid_keys}
 
@@ -96,6 +97,7 @@ class SupabaseProjectRepository(IProjectRepository):
             "forks",
             "languages",
             "tags",
+            "created_at",
         }
         project_data = {k: v for k, v in project_data.items() if k in valid_keys}
 

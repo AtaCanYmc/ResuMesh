@@ -1,19 +1,10 @@
 from datetime import datetime
-from typing import List, Optional
+from pydantic import ConfigDict
+from resumesh_scrapers.models import GitHubRepositoryModel
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl
 
-
-class ProjectBase(BaseModel):
-    title: str
-    description: Optional[str] = None
-    url: Optional[HttpUrl] = None
-    stars: int = 0
-    watchers: int = 0
-    forks: int = 0
-    languages: List[str] = Field(default_factory=list)
-    tags: List[str] = Field(default_factory=list)
-    created_at: Optional[datetime] = None
+class ProjectBase(GitHubRepositoryModel):
+    pass
 
 
 class ProjectCreate(ProjectBase):
