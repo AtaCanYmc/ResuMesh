@@ -40,7 +40,7 @@ class SupabaseSearchRepository(ISearchRepository):
                 id=str(p["id"]),
                 title=p["title"],
                 subtitle=p.get("description")[:100] if p.get("description") else None,
-                url=p.get("github_url"),
+                url=p.get("url"),
                 tags=p.get("languages", []) + p.get("tags", []),
             )
             for p in projects_res.data

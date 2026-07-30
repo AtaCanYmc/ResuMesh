@@ -27,7 +27,7 @@ def test_mapper_project_mapping():
         id="proj-123",
         title="My Awesome Project",
         description="A great test project",
-        github_url="https://github.com/user/project",
+        url="https://github.com/user/project",
         languages=["Python", "HTML"],
         tags=["web", "backend"],
         stars=15,

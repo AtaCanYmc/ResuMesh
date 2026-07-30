@@ -62,7 +62,7 @@ const FeaturedProjects: React.FC = () => {
             <motion.div variants={itemVariants} key={project.id} className="h-full">
               <SpotlightCard spotlightColor={getSpotlightColor(project.color)} className="h-full">
                 <a
-                  href={project.url || project.github_url || '#'}
+                  href={project.url || '#'}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex flex-col h-full p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shadow-sm hover:shadow-md"

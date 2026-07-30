@@ -217,16 +217,12 @@ class IngestionService:
                         f"Behance Project. Views: {item.stats_views}, "
                         f"Appreciations: {item.stats_appreciations}"
                     ),
-                    github_url=None,
+                    url=None,
                     stars=item.stats_appreciations,
                     watchers=item.stats_views,
                     forks=0,
                     languages=[],
-                    tags=item.tags or [],
-                    raw_github_data={
-                        "behance_id": item.id,
-                        "covers_url": item.covers_url,
-                    },
+                    tags=item.tags or []
                 )
                 await provider.upsert_project(proj)
         except ScraperError as exc:

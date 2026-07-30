@@ -343,7 +343,7 @@ async def test_create_project_requires_admin(client):
         "/api/v1/projects/",
         json={
             "title": "Test Project",
-            "github_url": "https://github.com/test/repo",
+            "url": "https://github.com/test/repo",
         },
     )
     assert response.status_code == 401
@@ -356,7 +356,7 @@ async def test_create_project_with_admin(client, mock_provider, auth_override):
         "/api/v1/projects/",
         json={
             "title": "Test Project",
-            "github_url": "https://github.com/test/repo",
+            "url": "https://github.com/test/repo",
         },
     )
     assert response.status_code == 200
@@ -369,7 +369,7 @@ async def test_update_project_requires_admin(client, mock_provider):
     project = await mock_provider.project_repo.create_project(
         ProjectCreate(
             title="Test",
-            github_url="https://github.com/test/1",
+            url="https://github.com/test/1",
         )
     )
 
@@ -386,7 +386,7 @@ async def test_update_project_with_admin(client, mock_provider, auth_override):
     project = await mock_provider.project_repo.create_project(
         ProjectCreate(
             title="Test",
-            github_url="https://github.com/test/1",
+            url="https://github.com/test/1",
         )
     )
 
@@ -404,7 +404,7 @@ async def test_delete_project_requires_admin(client, mock_provider):
     project = await mock_provider.project_repo.create_project(
         ProjectCreate(
             title="Test",
-            github_url="https://github.com/test/1",
+            url="https://github.com/test/1",
         )
     )
 
@@ -418,7 +418,7 @@ async def test_delete_project_with_admin(client, mock_provider, auth_override):
     project = await mock_provider.project_repo.create_project(
         ProjectCreate(
             title="Test",
-            github_url="https://github.com/test/1",
+            url="https://github.com/test/1",
         )
     )
 

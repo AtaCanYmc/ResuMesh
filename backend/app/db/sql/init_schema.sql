@@ -20,13 +20,12 @@ CREATE TABLE IF NOT EXISTS projects (
     id BIGSERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    github_url VARCHAR(512) NOT NULL UNIQUE,
+    url VARCHAR(512) NOT NULL UNIQUE,
     stars INT DEFAULT 0,
     watchers INT DEFAULT 0,
     forks INT DEFAULT 0,
     languages TEXT[] DEFAULT '{}',
     tags TEXT[] DEFAULT '{}',
-    raw_github_data JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

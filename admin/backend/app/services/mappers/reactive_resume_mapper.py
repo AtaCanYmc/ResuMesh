@@ -65,7 +65,7 @@ class ReactiveResumeMapper:
             date=project.created_at.strftime("%Y-%m") if project.created_at else "",
             summary=summary,
             keywords=keywords,
-            url=project.github_url or "",
+            url=project.url or "",
         )
 
     @classmethod
