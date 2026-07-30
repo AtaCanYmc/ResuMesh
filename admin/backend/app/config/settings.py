@@ -29,10 +29,6 @@ class Settings(BaseSettings):
     DEVTO_USERNAME: str = ""
     DEVTO_API_KEY: str = ""
 
-    # Admin Toggle
-    ENABLE_ADMIN_WORKSPACE: bool = False
-    ENABLE_CRON_JOBS: bool = True
-
     # Sentry Telemetry
     SENTRY_DSN: str = ""
 

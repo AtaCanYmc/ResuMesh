@@ -32,25 +32,17 @@ class IngestionService:
     async def _execute_scraper(
         self,
         scraper: IScraperService,
-        provider,
+        upsert_func,
         platform_name: str,
         username: str,
-        upsert_method: str,
         **kwargs,
     ):
         try:
             items = await scraper.fetch_data(username, **kwargs)
             for item in items:
-                func = getattr(provider, upsert_method, None)
-                if func:
-                    await func(item)
-                else:
-                    raise ValueError(
-                        f"Provider does not have method {upsert_method} "
-                        f"for {platform_name}"
-                    )
+                await upsert_func(item)
         except ScraperError as exc:
-            log_repo = self.log_provider or provider
+            log_repo = self.log_provider
             await LogService.warning(
                 log_repo,
                 platform_name,
@@ -72,10 +64,9 @@ class IngestionService:
         """Fetches GitHub repositories and saves via provider."""
         await self._execute_scraper(
             scraper,
-            provider,
+            provider.upsert_project,
             "GITHUB",
             username,
-            "upsert_project",
             pat=pat,
             include_forks=include_forks,
         )
@@ -89,7 +80,7 @@ class IngestionService:
     ):
         """Fetches Dev.to articles and saves via provider."""
         await self._execute_scraper(
-            scraper, provider, "DEV_TO", username, "upsert_article", api_key=api_key
+            scraper, provider.upsert_article, "DEV_TO", username, api_key=api_key
         )
 
     async def fetch_medium_articles(
@@ -100,7 +91,7 @@ class IngestionService:
     ):
         """Fetches Medium RSS articles and saves via provider."""
         await self._execute_scraper(
-            scraper, provider, "MEDIUM", username, "upsert_article"
+            scraper, provider.upsert_article, "MEDIUM", username
         )
 
     async def fetch_pypi_packages(

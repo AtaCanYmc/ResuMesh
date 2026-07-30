@@ -10,7 +10,3 @@ export const ENV = {
   MODE: import.meta.env.MODE || 'development',
   GITHUB_USERNAME: import.meta.env.VITE_GITHUB_USERNAME || '',
 };
-
-export const useEnv = () => {
-  return ENV;
-};

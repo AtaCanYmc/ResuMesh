@@ -6,23 +6,23 @@ from app.schemas.skill import SkillCreate, SkillResponse, SkillUpdate
 
 class ISkillRepository(ABC):
     @abstractmethod
-    def get_skills(self, skip: int = 0, limit: int = 100) -> List[SkillResponse]:
+    async def get_skills(self, skip: int = 0, limit: int = 100) -> List[SkillResponse]:
         pass
 
     @abstractmethod
-    def get_skill_by_id(self, skill_id: str) -> Optional[SkillResponse]:
+    async def get_skill_by_id(self, skill_id: str) -> Optional[SkillResponse]:
         pass
 
     @abstractmethod
-    def create_skill(self, skill: SkillCreate) -> SkillResponse:
+    async def create_skill(self, skill: SkillCreate) -> SkillResponse:
         pass
 
     @abstractmethod
-    def update_skill(
+    async def update_skill(
         self, skill_id: str, skill: SkillUpdate
     ) -> Optional[SkillResponse]:
         pass
 
     @abstractmethod
-    def delete_skill(self, skill_id: str) -> bool:
+    async def delete_skill(self, skill_id: str) -> bool:
         pass

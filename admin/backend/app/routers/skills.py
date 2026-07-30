@@ -12,33 +12,33 @@ router = APIRouter(prefix="/skills", tags=["Skills"])
 
 
 @router.get("/", response_model=List[SkillResponse])
-def get_skills(
+async def get_skills(
     skip: int = 0,
     limit: int = 100,
     skill_repo: ISkillRepository = Depends(get_skill_repo),
 ):
-    return skill_repo.get_skills(skip=skip, limit=limit)
+    return await skill_repo.get_skills(skip=skip, limit=limit)
 
 
 @router.get("/{skill_id}", response_model=SkillResponse)
-def get_skill(
+async def get_skill(
     skill_id: str,
     skill_repo: ISkillRepository = Depends(get_skill_repo),
 ):
-    skill = skill_repo.get_skill_by_id(skill_id)
+    skill = await skill_repo.get_skill_by_id(skill_id)
     if not skill:
         raise HTTPException(status_code=404, detail="Skill not found")
     return skill
 
 
 @router.post("/", response_model=SkillResponse)
-def create_skill(
+async def create_skill(
     skill: SkillCreate,
     skill_repo: ISkillRepository = Depends(get_skill_repo),
     admin: dict = Depends(get_current_admin),
     telemetry_ctx: dict = Depends(get_telemetry_data),
 ):
-    db_skill = skill_repo.create_skill(skill)
+    db_skill = await skill_repo.create_skill(skill)
     telemetry_ctx["background_tasks"].add_task(
         telemetry.capture_event,
         distinct_id=telemetry_ctx["ip"],
@@ -55,14 +55,14 @@ def create_skill(
 
 
 @router.put("/{skill_id}", response_model=SkillResponse)
-def update_skill(
+async def update_skill(
     skill_id: str,
     skill: SkillUpdate,
     skill_repo: ISkillRepository = Depends(get_skill_repo),
     admin: dict = Depends(get_current_admin),
     telemetry_ctx: dict = Depends(get_telemetry_data),
 ):
-    db_skill = skill_repo.update_skill(skill_id, skill)
+    db_skill = await skill_repo.update_skill(skill_id, skill)
     if not db_skill:
         raise HTTPException(status_code=404, detail="Skill not found")
 
@@ -82,18 +82,18 @@ def update_skill(
 
 
 @router.delete("/{skill_id}")
-def delete_skill(
+async def delete_skill(
     skill_id: str,
     skill_repo: ISkillRepository = Depends(get_skill_repo),
     admin: dict = Depends(get_current_admin),
     telemetry_ctx: dict = Depends(get_telemetry_data),
 ):
     # Fetch skill details for telemetry first before deleting
-    db_skill = skill_repo.get_skill_by_id(skill_id)
+    db_skill = await skill_repo.get_skill_by_id(skill_id)
     if not db_skill:
         raise HTTPException(status_code=404, detail="Skill not found")
 
-    skill_repo.delete_skill(skill_id)
+    await skill_repo.delete_skill(skill_id)
 
     telemetry_ctx["background_tasks"].add_task(
         telemetry.capture_event,

@@ -66,7 +66,7 @@ async def generate_cv(
             project_repo, experience_repo, article_repo, cert_repo, llm_client
         )
 
-        skills = skill_repo.get_skills(limit=1000)
+        skills = await skill_repo.get_skills(limit=1000)
 
         cv_data = await cv_service.generate_tailored_cv(
             str(payload.job_url), skills=skills

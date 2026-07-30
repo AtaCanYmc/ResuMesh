@@ -3,6 +3,8 @@
 .vscode/
 *.swp
 *.swo
+venv
+.venv
 
 # Python / Backend
 backend/.venv/

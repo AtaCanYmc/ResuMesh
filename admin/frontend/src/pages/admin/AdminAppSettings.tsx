@@ -2,16 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { Check, Eye, Globe, Share2 } from 'lucide-react';
+import { Check, Cpu, Eye, Globe, Share2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useEnv } from '../../hooks/useEnv';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
-import { AppSettings, HeroContent, MetricItem, SectionVisibility } from '../../types';
+import { AppSettings, HeroContent, IntegrationsConfig, LlmConfig, MetricItem, SectionVisibility } from '../../types';
 import VisibilityTab from './app-settings/VisibilityTab';
 import SocialsTab from './app-settings/SocialsTab';
 import ContentTab from './app-settings/ContentTab';
+import SystemTab from './app-settings/SystemTab';
 
-type ActiveTab = 'visibility' | 'socials' | 'content_en' | 'content_tr';
+type ActiveTab = 'visibility' | 'socials' | 'system' | 'content_en' | 'content_tr';
 
 export default function AdminAppSettings() {
   const { token } = useAuth();
@@ -63,6 +64,20 @@ export default function AdminAppSettings() {
     setFormData((prev) => {
       if (!prev) return null;
       return { ...prev, sections: { ...prev.sections, [key]: !prev.sections?.[key] } };
+    });
+  };
+
+  const updateIntegrations = (key: keyof IntegrationsConfig, value: string) => {
+    setFormData((prev) => {
+      if (!prev) return null;
+      return { ...prev, integrations: { ...prev.integrations, [key]: value } };
+    });
+  };
+
+  const updateLlm = (key: keyof LlmConfig, value: string) => {
+    setFormData((prev) => {
+      if (!prev) return null;
+      return { ...prev, llm: { ...prev.llm, [key]: value } };
     });
   };
 
@@ -170,6 +185,9 @@ export default function AdminAppSettings() {
         <button onClick={() => setActiveTab('visibility')} className={tabCls('visibility')}>
           <div className="flex items-center gap-2"><Eye size={16} /><span>General &amp; Visibility</span></div>
         </button>
+        <button onClick={() => setActiveTab('system')} className={tabCls('system')}>
+          <div className="flex items-center gap-2"><Cpu size={16} /><span>AI &amp; System Config</span></div>
+        </button>
         <button onClick={() => setActiveTab('socials')} className={tabCls('socials')}>
           <div className="flex items-center gap-2"><Share2 size={16} /><span>Social Links</span></div>
         </button>
@@ -192,6 +210,14 @@ export default function AdminAppSettings() {
             onMarqueeChange={(value) =>
               setFormData((prev) => prev ? { ...prev, marquee: value.split(',').map((s) => s.trim()) } : null)
             }
+          />
+        )}
+
+        {activeTab === 'system' && (
+          <SystemTab
+            formData={formData}
+            onIntegrationsChange={updateIntegrations}
+            onLlmChange={updateLlm}
           />
         )}
 

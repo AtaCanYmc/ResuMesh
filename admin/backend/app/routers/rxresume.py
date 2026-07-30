@@ -74,8 +74,8 @@ async def sync_rxresume(
 ):
     try:
         # Fetch all database records using repositories
-        skills = skill_repo.get_skills(limit=1000)
-        educations = education_repo.get_educations(limit=1000)
+        skills = await skill_repo.get_skills(limit=1000)
+        educations = await education_repo.get_educations(limit=1000)
 
         db_projects = await project_repo.get_projects(limit=1000)
         db_experiences = await experience_repo.get_all_experiences(limit=1000)
