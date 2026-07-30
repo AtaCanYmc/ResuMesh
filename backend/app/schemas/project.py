@@ -5,7 +5,9 @@ from resumesh_scrapers.models import GitHubRepositoryModel
 
 
 class ProjectBase(GitHubRepositoryModel):
-    pass
+    @property
+    def title(self) -> str:
+        return self.name
 
 
 class ProjectCreate(ProjectBase):

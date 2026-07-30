@@ -8,8 +8,10 @@ from app.schemas.project import ProjectCreate
 async def test_global_search(client, mock_provider):
     await mock_provider.create_project(
         ProjectCreate(
+            name="React Portfolio",
             title="React Portfolio",
             description="A cool portfolio built with React",
+            html_url="http://test.com",
             url="http://test.com",
             languages=["React"],
         )
