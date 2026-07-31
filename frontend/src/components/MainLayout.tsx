@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { Outlet, NavLink, Link, useLocation } from 'react-router-dom';
-import { User, Briefcase, FolderGit, BookOpen, Award, Menu, X, Moon, Sun, GraduationCap, Wand2, Package as PackageIcon } from 'lucide-react';
+import { User, Briefcase, FolderGit, BookOpen, Award, Menu, X, Moon, Sun, GraduationCap, Wand2, Package as PackageIcon, Video as VideoIcon, Share2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import SearchBar from './SearchBar';
 import { useTheme } from '../context/ThemeContext';
@@ -50,6 +50,8 @@ const MainLayout: React.FC = () => {
     { path: '/skills', label: t('nav.skills'), icon: <Wand2 size={20} aria-hidden="true" /> },
     { path: '/projects', label: t('nav.projects'), icon: <FolderGit size={20} aria-hidden="true" />, visible: settings?.show_projects !== false },
     { path: '/packages', label: t('nav.packages'), icon: <PackageIcon size={20} aria-hidden="true" />, visible: settings?.show_packages !== false },
+    { path: '/videos', label: t('nav.videos'), icon: <VideoIcon size={20} aria-hidden="true" />, visible: settings?.show_videos !== false },
+    { path: '/posts', label: t('nav.posts'), icon: <Share2 size={20} aria-hidden="true" />, visible: settings?.show_posts !== false },
     { path: '/articles', label: t('nav.articles'), icon: <BookOpen size={20} aria-hidden="true" /> },
     { path: '/certificates', label: t('nav.certificates'), icon: <Award size={20} aria-hidden="true" />, visible: settings?.show_certificates !== false },
   ].filter(item => item.visible !== false);

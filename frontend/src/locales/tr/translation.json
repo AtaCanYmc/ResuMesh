@@ -13,6 +13,8 @@
     "articles": "Makaleler",
     "certificates": "Sertifikalar",
     "packages": "Paketler",
+    "videos": "Videolar",
+    "posts": "Gönderiler",
     "admin": "Admin"
   },
   "search": {
@@ -53,6 +55,20 @@
     "docs": "Dokümantasyon",
     "downloads": "Aylık İndirme",
     "version": "Sürüm"
+  },
+  "videos": {
+    "title": "Videolar & Yayınlar",
+    "subtitle": "YouTube ve diğer mecralarda yayınladığım videolar, sunumlar ve içerikler.",
+    "emptyTitle": "Video Bulunamadı",
+    "emptyDesc": "Sistemde henüz yayınlanmış bir video bulunmuyor.",
+    "watch": "İzle"
+  },
+  "posts": {
+    "title": "Gönderiler & Paylaşımlar",
+    "subtitle": "Sosyal medya ve topluluk kanallarındaki öne çıkan paylaşımlarım.",
+    "emptyTitle": "Gönderi Bulunamadı",
+    "emptyDesc": "Sistemde henüz yayınlanmış bir gönderi bulunmuyor.",
+    "viewPost": "Gönderiyi Gör"
   },
   "articles": {
     "title": "Makaleler",

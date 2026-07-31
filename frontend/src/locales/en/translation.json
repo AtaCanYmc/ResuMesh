@@ -13,6 +13,8 @@
     "articles": "Articles",
     "certificates": "Certificates",
     "packages": "Packages",
+    "videos": "Videos",
+    "posts": "Posts",
     "admin": "Admin"
   },
   "search": {
@@ -53,6 +55,20 @@
     "docs": "Documentation",
     "downloads": "Monthly Downloads",
     "version": "Version"
+  },
+  "videos": {
+    "title": "Videos & Talks",
+    "subtitle": "Videos, talks, and presentations published on YouTube and other platforms.",
+    "emptyTitle": "No Videos Found",
+    "emptyDesc": "There are no published videos in the system yet.",
+    "watch": "Watch Video"
+  },
+  "posts": {
+    "title": "Posts & Updates",
+    "subtitle": "Featured social media posts and community updates.",
+    "emptyTitle": "No Posts Found",
+    "emptyDesc": "There are no published posts in the system yet.",
+    "viewPost": "View Post"
   },
   "articles": {
     "title": "Articles",
