@@ -18,7 +18,7 @@ router = APIRouter(prefix="/packages", tags=["packages"])
 
 
 class PackageRefreshRequest(BaseModel):
-    platform: str
+    platform: str = "all"
     username: str = ""
     package_names: List[str] = []
 
@@ -41,24 +41,28 @@ async def refresh_packages(
             or settings.GITHUB_USERNAME
         )
 
-        if request.platform.lower() == "npm":
-            scraper = NpmScraperService()
+        platform_lower = (request.platform or "all").lower()
+
+        if platform_lower in ("all", "npm"):
+            scraper_npm = NpmScraperService()
             background_tasks.add_task(
                 ingestion.fetch_npm_packages,
-                scraper=scraper,
+                scraper=scraper_npm,
                 username=username,
                 provider=provider,
             )
-        elif request.platform.lower() == "pypi":
-            scraper = PyPIScraperService()
+
+        if platform_lower in ("all", "pypi"):
+            scraper_pypi = PyPIScraperService()
             background_tasks.add_task(
                 ingestion.fetch_pypi_packages,
-                scraper=scraper,
+                scraper=scraper_pypi,
                 username=username,
                 provider=provider,
                 package_names=request.package_names,
             )
-        else:
+
+        if platform_lower not in ("all", "npm", "pypi"):
             raise HTTPException(status_code=400, detail="Unsupported platform")
 
         telemetry_ctx["background_tasks"].add_task(
