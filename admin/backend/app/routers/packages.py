@@ -41,6 +41,13 @@ async def refresh_packages(
             or settings.GITHUB_USERNAME
         )
 
+        pypi_user = (
+            integrations.get("pypi_username")
+            or integrations.get("github_username")
+            or settings.GITHUB_USERNAME
+        )
+        pypi_pkgs = []
+
         platform_lower = (request.platform or "all").lower()
 
         if platform_lower in ("all", "npm"):
@@ -57,9 +64,9 @@ async def refresh_packages(
             background_tasks.add_task(
                 ingestion.fetch_pypi_packages,
                 scraper=scraper_pypi,
-                username=username,
+                username=pypi_user,
                 provider=provider,
-                package_names=request.package_names,
+                package_names=pypi_pkgs,
             )
 
         if platform_lower not in ("all", "npm", "pypi"):

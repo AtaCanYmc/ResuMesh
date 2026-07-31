@@ -53,22 +53,11 @@ export default function AdminPackages() {
 
   const refreshMutation = useMutation({
     mutationFn: async () => {
-      const npmUser = import.meta.env.VITE_NPM_USERNAME || 'atacanymc';
-      const pypiUser = import.meta.env.VITE_PYPI_USERNAME || 'atacanymc';
-      const pypiPackages = (import.meta.env.VITE_PYPI_PACKAGES || '').split(',').filter(Boolean);
-
-      await Promise.all([
-        axios.post(
-          `${ADMIN_API_URL}/api/v1/packages/refresh`,
-          { platform: 'npm' },
-          { headers: { Authorization: `Bearer ${token}` } }
-        ),
-        axios.post(
-          `${ADMIN_API_URL}/api/v1/packages/refresh`,
-          { platform: 'pypi' },
-          { headers: { Authorization: `Bearer ${token}` } }
-        )
-      ]);
+      await axios.post(
+        `${ADMIN_API_URL}/api/v1/packages/refresh`,
+        { platform: 'all', package_names: [] },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
     },
     onSuccess: () => {
       toast.success('Packages ingestion started in background.');
