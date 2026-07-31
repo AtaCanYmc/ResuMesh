@@ -94,3 +94,15 @@ export const useArticles = (limit?: number) => {
     },
   });
 };
+
+export const usePackages = () => {
+  const { API_URL } = useEnv();
+  return useQuery({
+    queryKey: ['packages'],
+    queryFn: async () => {
+      const response = await axios.get(`${API_URL}/api/v1/packages/`);
+      return Array.isArray(response.data) ? response.data : [];
+    },
+  });
+};
+

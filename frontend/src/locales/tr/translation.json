@@ -12,6 +12,7 @@
     "projects": "Projeler",
     "articles": "Makaleler",
     "certificates": "Sertifikalar",
+    "packages": "Paketler",
     "admin": "Admin"
   },
   "search": {
@@ -42,6 +43,16 @@
     "filter": "Platform: {{platform}}",
     "emptyTitle": "Henüz Proje Bulunamadı",
     "emptyDesc": "Sistemde henüz yayınlanmış bir proje bulunmuyor. Lütfen daha sonra tekrar kontrol edin."
+  },
+  "packages": {
+    "title": "Paketler & Kütüphaneler",
+    "subtitle": "Geliştirdiğim ve yayınladığım açık kaynak paketler, kütüphaneler ve modüller.",
+    "filter": "Platform: {{platform}}",
+    "emptyTitle": "Paket Bulunamadı",
+    "emptyDesc": "Sistemde henüz yayınlanmış bir paket veya kütüphane bulunmuyor.",
+    "docs": "Dokümantasyon",
+    "downloads": "Aylık İndirme",
+    "version": "Sürüm"
   },
   "articles": {
     "title": "Makaleler",

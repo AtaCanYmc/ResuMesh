@@ -12,6 +12,7 @@
     "projects": "Projects",
     "articles": "Articles",
     "certificates": "Certificates",
+    "packages": "Packages",
     "admin": "Admin"
   },
   "search": {
@@ -42,6 +43,16 @@
     "filter": "Platform: {{platform}}",
     "emptyTitle": "No Projects Found",
     "emptyDesc": "There are no published projects in the system yet. Please check back later."
+  },
+  "packages": {
+    "title": "Packages & Libraries",
+    "subtitle": "Open source packages, libraries, and modules published by me.",
+    "filter": "Platform: {{platform}}",
+    "emptyTitle": "No Packages Found",
+    "emptyDesc": "There are no published packages or libraries in the system yet.",
+    "docs": "Documentation",
+    "downloads": "Monthly Downloads",
+    "version": "Version"
   },
   "articles": {
     "title": "Articles",

@@ -16,6 +16,7 @@ const Skills = React.lazy(() => import('./pages/Skills'));
 const Projects = React.lazy(() => import('./pages/Projects'));
 const Articles = React.lazy(() => import('./pages/Articles'));
 const Certificates = React.lazy(() => import('./pages/Certificates'));
+const Packages = React.lazy(() => import('./pages/Packages'));
 
 
 // Create a client
@@ -46,6 +47,7 @@ const router = createBrowserRouter([
       { path: '/projects', element: <Projects /> },
       { path: '/articles', element: <Articles /> },
       { path: '/certificates', element: <Certificates /> },
+      { path: '/packages', element: <Packages /> },
     ],
   },
 ]);
