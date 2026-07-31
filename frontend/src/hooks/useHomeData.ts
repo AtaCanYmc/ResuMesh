@@ -106,3 +106,26 @@ export const usePackages = () => {
   });
 };
 
+export const useVideos = () => {
+  const { API_URL } = useEnv();
+  return useQuery({
+    queryKey: ['videos'],
+    queryFn: async () => {
+      const response = await axios.get(`${API_URL}/api/v1/videos/`);
+      return Array.isArray(response.data) ? response.data : [];
+    },
+  });
+};
+
+export const usePosts = () => {
+  const { API_URL } = useEnv();
+  return useQuery({
+    queryKey: ['posts'],
+    queryFn: async () => {
+      const response = await axios.get(`${API_URL}/api/v1/posts/`);
+      return Array.isArray(response.data) ? response.data : [];
+    },
+  });
+};
+
+
