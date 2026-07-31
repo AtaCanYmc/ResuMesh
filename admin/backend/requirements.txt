@@ -16,7 +16,7 @@ slowapi>=0.1.10
 sentry-sdk>=1.39.0
 
 # Scraping & AI
-resumesh-scrapers==0.6.0
+resumesh-scrapers==0.8.0
 resumesh-llm==0.6.0
 
 # PDF Parsing
